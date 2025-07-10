@@ -1,0 +1,310 @@
+﻿@model NumeroClienteModel
+@{
+    //Model para crear un Cliente utilizado en la pagina MiUnidad/EnergeticosConfig
+    EnergeticoConfigModel data = (EnergeticoConfigModel)ViewData["EnergeticoConfigModelData"];
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+    long energeticoId = (long)ViewData["energeticoId"];
+
+    string errEmpresaDistribuidora = data.EmpresaDistribuidora.Count > 0 ? "" : "d-block";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //accion de agregar numero de cliente
+        $("#numCliente button[data-target='#ModalNumCliente']").click(function () {
+            $('#hiddenId').val(0);
+            $('#Id').val(0);
+            $("#tituloModalNclienteMedidor").html('Agregar N° Cliente');
+            $("#frmNCliente")[0].reset();
+
+            //$('#frmNCliente #alertModalCliente').addClass('d-none');
+            $("#alertModalClienteMedidores").hide();
+            //$('#frmNCliente #btnCancel').addClass('d-none');
+
+            $("#btnAgregarNumCliente").show();
+            $("#btnFinalizarNumClienteModal").hide();
+        });
+
+        //Accion de modificar
+        $("body").on('click', "a[data-target='#ModalNumCliente']", function (e) {
+
+            var numClienteId = $(this).parent().parent().attr('class'); //obtiene el id de la fila (row class)
+            $('#hiddenId').val(numClienteId);
+
+            $("#tituloModalNclienteMedidor").html('Editar N° Cliente');
+            $("#alertModalClienteMedidores").hide();
+            $("#divNumCliente").show();
+            $("#divMedidores").hide();
+
+            $("#btnAgregarNumCliente").show();
+            $("#btnFinalizarNumClienteModal").hide();
+
+
+            BuscarNumeroClienteParaEditar(numClienteId).then();
+            //BuscarNumeroCliente(numClienteId).then();
+
+        });
+
+        //Obtener la data segun el Numero de Cliente ingresado al textobox.
+        $("#tbNumero, #EmpresaDistribuidoraId").focusout(function (e) {
+
+            let escritura = "@permisos.Escritura".toLowerCase() == "true";
+            
+            if (!$("#tbNumero").val() || !$("#EmpresaDistribuidoraId").val() || !escritura) 
+                return;
+
+            console.log('Buscando...');
+
+            const findNCliente = {
+                numero: $("#tbNumero").val(),
+                EmpresaDistribuidoraId: $('#EmpresaDistribuidoraId').val()
+            }
+
+            BuscarNumeroCliente(findNCliente).then(function (response) {
+                if (response == null || !response.success) {
+                    return;
+                }
+
+                    
+                //$('#alertModalCliente').html(response.text).removeClass('d-none');
+                $("#alertModalClienteMedidores").html(response.text).show();
+                
+
+                console.log('Numero de Cliente existe');
+                SetDataOnForm(response.data);
+
+                //mostrar alerta
+                //$('#alertModalCliente, #frmNCliente #btnCancel').removeClass('d-none');
+                $("#alertModalClienteMedidores, #frmNCliente #btnCancel").show();
+            });
+
+        });
+
+        $('#frmNCliente #btnCancel').click(function () {
+            $('#ModalNumCliente').modal('hide');
+        });
+
+        $('#ModalNumCliente').on('hidden.bs.modal', function () {
+            $("#divMedidores").html(" ");
+        });
+
+    });
+
+    $("body").on("click", "#btnAgregarNumCliente", function (e) {
+        e.preventDefault();
+        //console.log("evento click btn agregar numero de cliente");
+        if ($("#divMedidores").is(":visible")) {
+            $("#ModalNumCliente").modal("toggle");
+            return;
+        }
+
+        GuardarNumCliente().then(function () {
+            $("#tituloModalNclienteMedidor strong").html("Asociar medidores precargados");
+            //$("#btnAgregarNumCliente").removeAttr("form");//.html("Finalizar");
+            $("#frmMedidor #Id").val("0");
+            
+        });
+
+    });
+
+    
+    $("body").on('click', "#btnAgregarMedidor", function (e) {
+        e.preventDefault();
+        GuardarMedidor().then();
+    });
+
+    async function BuscarNumeroClienteParaEditar(numClienteId) {
+        let response;
+        try {
+       
+            response = await $.get({
+                url: "/miunidad/GetNCliente",
+                data: { id: numClienteId },
+                contentType: 'application/json; charset=utf-8',
+                datatype: 'json'
+            });
+
+            SetDataOnForm(response);
+
+        } catch (e) {
+
+        }
+
+    }
+
+    async function GuardarNumCliente() {
+        let response;
+
+        try {
+            $("#btnAgregarNumCliente").button("loading");
+
+            response = await $.post({
+                url: $("#frmNCliente").attr("action"),
+                data: $("#frmNCliente").serialize()
+            });
+
+            GetAll();
+
+            $("#divMedidores").html(response).show();
+            $("#divNumCliente").hide();
+
+            $("#btnAgregarNumCliente").hide();
+            $("#btnFinalizarNumClienteModal").show();
+
+        } catch (e) {
+            MostrarErrores(e);
+        } finally {
+            $("#btnAgregarNumCliente").button("reset");
+        }
+
+    }
+
+    //pinta los datos a las cajas de texto y DDL segun la fuente entregada por parametro
+    function SetDataOnForm(source) {
+        $('#hiddenId').val(source.id);
+        $("#Id").val(source.id);
+        $("#tbNumero").val(source.numero);
+        $("#tbNombreCliente").val(source.nombreCliente);
+        $("#tbPotenciaSuministrada").val(source.potenciaSuministrada);
+        $("#tbNumMedidoresCompartidos").val(source.numMedidoresCompartidos);
+
+        $('#EmpresaDistribuidoraId').val(source.empresaDistribuidoraId);
+        $('#TipoTarifaId').val(source.tipoTarifaId);
+    }
+
+    async function BuscarNumeroCliente(findNCliente) {
+        let response;
+        let campos = $("#tbNumero, #EmpresaDistribuidoraId, #tbNombreCliente, #TipoTarifaId, #tbPotenciaSuministrada, #btnAgregarNumCliente");
+        try {
+
+            campos.attr("disabled", "disabled");
+
+            response = await $.post({
+                url: '@Url.Action("NClienteAutoComplete", "MiUnidad")',
+                data: JSON.stringify(findNCliente),
+                contentType: "application/json; charset=utf-8",
+                datatype: 'json'
+            });
+
+            return response;
+
+        } catch (e) {
+            
+        } finally {
+            campos.removeAttr("disabled");
+        }
+
+    }
+</script>
+
+
+<div class="modal fade" id="ModalNumCliente" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true"  ng-app="common">
+    <div class="modal-dialog modal-dialog-centered" role="document"  style="max-width: 32%;">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 style="color: #4787d2;" class="modal-title" id="tituloModalNclienteMedidor">
+                    <strong>
+                        Agregar N° Cliente
+                    </strong>
+                </h5>
+            </div>
+
+
+            <div class="alert alert-warning" id="alertModalClienteMedidores" role="alert">
+                <!-- Mensaje Dinamico desde el servidor -->
+            </div>
+
+            <div class="modal-body">
+                <div id="divNumCliente">
+
+                    <form asp-action="SaveCliente" method="post" id="frmNCliente" name="frmNCliente" style="color:#007bff;" novalidate>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" id="energeticoId" name="EnergeticoId" value="@energeticoId" />
+                        @*Se comenta por falta de definicion si va o no van estos campos
+                            <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
+                            <label class="btn btn-outline-primary active">
+                                <input type="radio" name="chkTipoMedidor" id="chkConsumos" autocomplete="off" checked> Consumo
+                            </label>
+                            <label class="btn btn-outline-primary">
+                                <input type="radio" name="chkTipoMedidor" id="chkGeneracion" autocomplete="off"> Generación
+                            </label>
+                        </div>*@
+
+                        <div class="form-group row mr-1">
+                            <label asp-for="EmpresaDistribuidoraId" class="col-5">Empresa Distribuidora:</label>
+
+                            <select class="custom-select col-7" required asp-for="EmpresaDistribuidoraId" asp-items="@(new SelectList(data.EmpresaDistribuidora, "Id", "Nombre"))">
+                                <option value="">@Constants.Titles.SELECCIONE</option>
+                            </select>
+                            <label class="invalid-feedback @errEmpresaDistribuidora ">
+                                No existen empresas distribuidoras para esta comuna. Contactar con su administrador.
+                            </label>
+                        </div>
+
+                        <div class="form-group row mr-1">
+                            <label asp-for="Numero" class="col-5"></label>
+                            <input asp-for="Numero" required class="form-control col-7" id="tbNumero" placeholder="Número" autocomplete="off">
+                        </div>
+
+                        <div class="form-group row mr-1">
+                            @if (ViewBag.PermiteTipoTarifa)
+                            {
+
+                                <label asp-for="TipoTarifaId" class="col-5">Tipo de Tarifa:</label>
+
+                                <select class="custom-select col-7" required asp-for="TipoTarifaId" asp-items="@(new SelectList(data.TipoTarifa,"Id","Nombre"))">
+                                    <option value="">@Constants.Titles.SELECCIONE</option>
+                                </select>
+                            }
+                        </div>
+
+                        <div class="form-group row mr-1">
+                            @if (ViewBag.PermitePotenciaSum)
+                            {
+
+                                <label asp-for="PotenciaSuministrada" class="col-5">Potencia Conectada:</label>
+                                <input asp-for="Potencia"
+                                       name="potencia"
+                                       required
+                                       class="form-control col-7"
+                                       ng-model="cliente.potencia"
+                                       ng-class="{'is-invalid':frmNCliente.potencia.$invalid  && (frmNCliente.potencia.$touched || frmNCliente.potencia.$dirty) }"
+                                       id="tbPotenciaSuministrada"
+                                       placeholder="Potencia Suministrada"
+                                       autocomplete="off"
+                                       onkeydown="return event.keyCode !== 69"
+                                       ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/">
+                                <small ng-show="frmNCliente.potencia.$error.required && (frmNCliente.potencia.$touched || frmNCliente.potencia.$dirty)"
+                                       id="superficieHelp" class="form-text text-danger">Campo requerido</small>
+                                <small ng-show="frmNCliente.potencia.$error.pattern && (frmNCliente.potencia.$touched || frmNCliente.potencia.$dirty)"
+                                       id="potenciaHelp" class="form-text text-danger pl-5">Solo numeros sin separadores de miles y punto para los decimales </small>
+                            }
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <div id="divMedidores" style="display:none;">
+                    <div id='loader' @*style='display: none;'*@ class="text-center">
+                        <img src='~/images/reload.gif' style="width:32px; height:32px">
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="modal-footer">
+                @*<button type="button" data-dismiss="modal" class="btn btn-danger">Cancelar</button>*@
+
+                @if (data.EmpresaDistribuidora.Count > 0 && permisos.Escritura)
+                {
+                    <button type="button" ng-disabled="frmNCliente.$invalid" id="btnAgregarNumCliente" form="frmNCliente" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Guardando..."><span class="fa fa-save"></span> Siguiente</button>
+                    <button type="button" id="btnFinalizarNumClienteModal" data-dismiss="modal" class="btn btn-primary"  style="display:none;">Finalizar</button>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>

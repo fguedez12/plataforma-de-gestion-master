@@ -1,0 +1,39 @@
+﻿<h1>Revisión del Diagnóstico de Gestión Ambiental</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="card">
+    <div class="card-body">
+        <p>Diagnóstico de Gestión Ambiental : Estado {{diagnostico?'Aprobado por el comité':'Sin aprobación del comité'}}</p>
+    </div>
+    <div class="card-footer">
+        <a href="http://reportes.gestionaenergia.cl/2017/control_de_carga_EV/{{selectedServicioId}}.xlsx" target="_blank" class="btn btn-warning">Descargar</a>
+        <button type="button"
+                ng-click="aprobar()"
+                ng-disabled="diagnostico || isConsulta"
+                class="btn btn-warning">Aprobar</button>
+    </div>
+</div>
+<div class="card bg-primary mt-2" >
+    <div class="card-body">
+        <p class="text-white">
+            Importante: <br />Al aprobar el Diagnóstico de Gestión Ambiental, la plataforma ya no permitirá ingresar o editar información para el presente período PMG.
+
+            Además, se recuerdan las funciones del CEV definidas para la etapa 1 de PMG Sistema Estado Verde:
+            <ol class="text-white">
+                <li>
+                   El Comité Estado Verde revisa la existencia de una resolución que apruebe la política ambiental o de sustentabilidad, que incluya al menos los siguientes aspectos: gestión de residuos y economía circular (3R), eficiencia energética, gestión hídrica, gestión del papel y compras sustentables, así como mecanismos de concientización ambiental para las y los colaboradores.
+                </li>
+                <li>
+                    Al menos un 30% de los colaboradores del Servicio asisten a actividad(es) de concientización en materia del Sistema Estado Verde y cambio climático, la(s) que deberá(n) ser determinada(s) por el Comité Estado Verde.
+                </li>
+                <li>
+                    El Comité Estado Verde determina el alcance territorial del diagnóstico de su gestión ambiental del período t, el que cuenta con la opinión técnica favorable de la Subsecretaría del Medio Ambiente y la Subsecretaría de Energía, y señala:
+                </li>
+                <li>
+                    El Servicio desarrolla -y aprueba a través del Comité Estado Verde- un diagnóstico de su gestión ambiental que permita medir su huella de carbono en el período t (comprendido entre noviembre del año t-1 hasta octubre del año t), y lo reporta a las Redes de Expertos respectivas mediante la plataforma www.gestionaenergia.cl a más tardar el 31 de diciembre del año t, de quienes obtiene una opinión técnica sobre la completitud y oportunidad de la información, considerando la existencia o inexistencia de los siguientes aspectos, y sus fundamentaciones.
+                </li>
+            </ol>
+        </p>
+    </div>
+</div>

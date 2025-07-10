@@ -1,0 +1,154 @@
+﻿<link rel="stylesheet" type="text/css" href="./vendor/DataTables/css/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="./vendor/DataTables/css/jquery.dataTables.min.css" />
+<script src="./vendor/jquery/jquery.js"></script>
+<script type="text/javascript" src="./vendor/DataTables/js/datatables.min.js"></script>
+
+<br />
+<h3>Estado reporte de consumos unidades </h3>
+<hr />
+<!--<div>
+    <p>Unidades totales cargadas: {{model.total}}</p>
+</div>
+<div>
+    <p>Unidades que reportan al PMG: {{model.totalPMG}}</p>
+</div>
+<hr />-->
+<div style="font-size:1.4em;">
+    <strong>Ingresa justificación de unidades que no reportan consumo:</strong>
+</div>
+<hr />
+<div>
+    <div ng-show="loading" class="text-center">
+        <img src='./images/reload.gif' style="width:32px; height:32px">
+    </div>
+
+    <div class="table-responsive">
+        <table id="reporteConsumosTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Unidad</th>
+                    <th class="text-center">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in model.unidades">
+                    <td class="text-center">{{item.id}}</td>
+                    <td>{{item.direccion}}</td>
+                    <td class="text-center">
+                        <button style="width:126px;" ng-class="{'btn btn-secondary' : item.estadoCompromiso2022 ==null ,
+                                'btn btn-warning':item.estadoCompromiso2022 ==1 ,
+                                'btn btn-danger':item.estadoCompromiso2022 ==2 ,
+                                'btn btn-success':item.estadoCompromiso2022 ==3  }"
+                                ng-click="showModal(item)">
+                            {{item.estadoJustificacion}}
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<!--<pre>{{model.unidades | json}}</pre>-->
+<div class="modal fade" id="modalJustifica" tabindex="-1" role="dialog" aria-labelledby="modalJustifica" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Justificación para no reportar consumos</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <!--<div class="form-group">
+        <label>Tiene acceso a las facturas de tus compras</label>
+        <select class="form-control" ng-model="unidad.accesoFactura" disabled>
+            <option value="0">--Seleccione--</option>
+            <option value="1">Si</option>
+            <option value="2">No, Otro servicio público</option>
+            <option value="3">No, Otra organización (especificar)</option>
+        </select>
+    </div>-->
+                    <!--<div class="form-group">
+        <label>Servicio responsable de los consumos</label>
+        <input type="text" class="form-control"  ng-model="unidad.servicio" disabled/>
+    </div>-->
+                    <!--<hr />-->
+                    <div>
+                        <p>¿Podrá el Servicio reportar  <u>su consumo</u> energético en el presente periodo PMG?</p>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-2" style="font-size: 1.2rem;">No</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input id="compromete" type="checkbox" ng-model="justifica.check">
+                                <span class="slider round"></span>
+                            </label>
+                            <span class="ml-2" style="font-size: 1.2rem;">Si</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Si la respuesta en “No”, ingresar justificación.</label>
+                        <textarea class="form-control" rows="5" ng-model="justifica.text"></textarea>
+                    </div>
+                    <div class="form-group" ng-show="isAdmin=='Si' || justifica.estadoCompromiso2022 ==2">
+                        <label>Observación:</label>
+                        <textarea class="form-control" rows="3" ng-model="justifica.observacionCompromiso2022" ng-disabled="justifica.estadoCompromiso2022 ==2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div ng-show="isAdmin=='Si'">
+                        <button type="button" class="btn btn-success"
+                                ng-click="validarJustificacion()"
+                                >Validar</button>
+                        <button type="button" class="btn btn-warning"
+                                ng-click="observarJustificacion()"
+                                ng-disabled="justifica.obs.length==0 || !justifica.observacionCompromiso2022">Observar</button>
+                    </div>
+                    
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary"
+                            ng-show="isConsulta=='No'"
+                            ng-disabled="!justifica.check && justifica.text==null "
+                            ng-click="saveJustifica()">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    //(function () {
+    //    $('#reporteConsumosTable').DataTable({
+    //        "searching": true,
+    //        "lengthChange": true,
+    //        "language": {
+    //            "sProcessing": "Procesando...",
+    //            "sLengthMenu": "Mostrar _MENU_ registros",
+    //            "sZeroRecords": "No se encontraron resultados",
+    //            "sEmptyTable": "Ningún dato disponible en esta tabla",
+    //            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+    //            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+    //            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+    //            "sInfoPostFix": "",
+    //            "sSearch": "Buscar:",
+    //            "sUrl": "",
+    //            "sInfoThousands": ".",
+    //            "sLoadingRecords": "Cargando...",
+    //            "oPaginate": {
+    //                "sFirst": "Primero",
+    //                "sLast": "Último",
+    //                "sNext": "Siguiente",
+    //                "sPrevious": "Anterior"
+    //            }
+    //        }
+    //    });
+    //})();
+
+</script>
+

@@ -1,0 +1,31 @@
+.side-menu{
+    top: 60px !important;
+    margin-right: 20px;
+    width:190px;
+}
+.side-menu-actions{
+    top: 100px !important;
+    margin-right: 20px;
+    width:190px;
+}
+.side-menu-options{
+    width:190px;
+}
+
+@media (max-width: 479px) {
+    .menu-web {
+      display: none;
+    }
+    .menu-mobil {
+        display: block;
+      }
+  }
+
+  @media (min-width: 480px) {
+    .menu-web {
+      display: block;
+    }
+    .menu-mobil {
+        display: none;
+      }
+  }

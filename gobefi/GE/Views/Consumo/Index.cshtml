@@ -1,0 +1,178 @@
+﻿@model ConsumoModel
+@{
+    /*
+     * Pagina "Mis Compras"
+     * corresponde al controllador Controllers/ConsumoController
+     * llama al modal Shared/_ModalCompras.cshtml el cual permite ingresar una nueva compra
+     *
+     * */
+
+    ViewData["Title"] = "Mis compras";
+    AjustesDTO ajustes = (AjustesDTO)ViewData["ajustes"];
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script src="~/vendor/moment/moment.js"></script>
+
+<script src="~/vendor/excel-bootstrap-table-filter/excel-bootstrap-table-filter-bundle.js"></script>
+<link rel="stylesheet" href="~/vendor/excel-bootstrap-table-filter/excel-bootstrap-table-filter-style.css">
+
+<script src="~/vendor/flatpickr/js/flatpickr.js"></script>
+<link href="~/vendor/flatpickr/css/flatpickr.min.css" rel="stylesheet" />
+<script src="~/vendor/flatpickr/locale/es.js"></script>
+
+<script src="~/js/consumos.js" asp-append-version="true"></script>
+<script src="~/js/modalCompras.js" asp-append-version="true"></script>
+
+
+
+
+<style>
+    .chart {
+        width: 100%;
+        min-height: 450px;
+    }
+
+    :root {
+        --color-tabla: #bababa;
+    }
+
+    #consumos-contenedor table tbody tr td {
+        border-right: solid 1px var(--color-tabla);
+        border-left: solid 1px var(--color-tabla);
+    }
+
+    #consumos-contenedor table thead tr th {
+        border-right: solid 1px var(--color-tabla);
+        border-left: solid 1px var(--color-tabla);
+    }
+
+    #consumos-contenedor table tfoot tr td {
+        border-right: solid 1px var(--color-tabla);
+        border-left: solid 1px var(--color-tabla);
+    }
+
+    #consumos-contenedor table {
+        border: solid 1px var(--color-tabla);
+    }
+
+    .progress-bar-custom {
+        /*background-color: #28a745;*/
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+    }
+
+        .progress-bar-custom.hover {
+            border-style: solid;
+            border-width: 2px;
+            border-color: brown;
+        }
+
+    table {
+        font-size: 0.75rem;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+        table thead {
+            background-color: #0069d9;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    .footer {
+        text-align: center;
+    }
+</style>
+
+@(await Component.InvokeAsync<BodyHeaderViewComponent>(new BodyHeader { Nombre = "Consumos" }))
+
+<hr />
+
+<div class="alert alert-info" role="alert">
+    <b>Actualización filtro Módulo Consumos</b>
+    <p>Se ha actualizado el módulo Consumos con un filtro que muestra por año las boletas considerando su fin de Lectura. Esto nos ayudará a visualizar más rápidamente los datos cargados.</p>
+</div>
+<div class="form-group">
+    <label>ingreso de observaciones y/o fundamentación de inexistencia para energía y vehículos</label>
+    <div class="position-relative">
+        <textarea class="form-control" id="txtObservacion" rows="3" style="resize: vertical; min-height: 100px;"></textarea>
+        <small class="text-muted d-block mt-1">
+            Los cambios se guardan automáticamente
+            <span id="save-indicator" class="spinner-border spinner-border-sm d-none text-primary ml-1" role="status">
+                <span class="sr-only">Guardando...</span>
+            </span>
+        </small>
+    </div>
+</div>
+<div class="form-group">
+    <label>Año:</label>
+    <select class="form-control" id="selFiltro">
+    </select>
+</div>
+
+<div id='loader' style='display: none;' class="text-center">
+    <img src='~/images/reload.gif' style="width:32px; height:32px">
+</div>
+
+<div class="container border d-none" id="contenedor-grafico">
+    <div class="row">
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-8">
+            <div id="piechart" class="chart"></div>
+        </div>
+    </div>
+</div>
+
+<br />
+
+
+<div id="consumos-navegacion">
+
+    <!-- despliegue del contenedor consumos -->
+    <ul class="nav nav-tabs nav-detalle-data" style="color:blue;">
+        <!-- se crea dinamicamente en consumo.js -->
+    </ul>
+</div>
+
+<br />
+
+<div class="container" id="consumos-contenedor">
+
+
+    @*<br />
+
+        <div id="contenedor-consumos">
+            <!-- se crea dinamicamente en consumo.js -->
+        </div>
+
+
+        <div id="contenedor-boletas">
+            <!-- se crea dinamicamente en consumo.js -->
+        </div>*@
+
+</div>
+@if (((bool)ViewBag.isAdmin || (bool)ViewBag.isGestServ) && ajustes.ComprasServicio)
+{
+    <button type="button" class="btn  pull-left" id="btnEnableCompras">
+    </button>
+}
+
+@if (permisos.Escritura)
+{
+    <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ModalCompras" id="btnModalCompras">
+        <i class="fa fa-plus" aria-hidden="true"></i> Agregar Compra
+    </button>
+}
+<div id="compraInfo"class="row col-12" hidden>
+    <p><h4><b>El ingreso y edición de compras se encuentran deshabilitados para este servicio</b></h4></p>
+</div>
+
+@Html.Hidden("hfIsAdmin", (object)ViewBag.isAdmin)
+
+<partial name="Shared/_ModalCompras.cshtml" for="NuevaCompra" />

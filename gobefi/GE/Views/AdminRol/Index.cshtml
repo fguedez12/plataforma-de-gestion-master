@@ -1,0 +1,41 @@
+﻿@model IEnumerable<GobEfi.Web.Models.RolModels.RolModel>
+
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<div class="row">
+    <div class="col-12">
+        <h2>Roles</h2>
+        <p>
+            <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>@Constants.Titles.ACCION</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (string)(item.Id), Permisos = permisos }))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

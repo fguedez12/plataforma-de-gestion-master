@@ -1,0 +1,494 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>Ejecución de acciones y tareas</h1>
+            <h4>Servicio: {{selectedServicioNombre}}</h4>
+            <hr />
+
+            <!-- Panel de Filtros -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fa fa-filter mr-2"></i>Filtros de Búsqueda
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form ng-submit="aplicarFiltros()">
+                        <div class="row align-items-end">
+                            <!-- Filtro por Dimensión -->
+                            <div class="col-sm-6 col-md-3 mb-3">
+                                <label for="filtroDimension" class="form-label">Dimensión</label>
+                                <select id="filtroDimension" class="form-control" ng-model="filtros.dimensionId"
+                                    ng-change="onDimensionChange()">
+                                    <option value="">Seleccione una dimensión</option>
+                                    <option ng-repeat="dimension in dimensiones" value="{{dimension.id}}">
+                                        {{dimension.nombre}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Filtro por Objetivo -->
+                            <div class="col-sm-6 col-md-4 mb-3">
+                                <label for="filtroObjetivo" class="form-label">
+                                    Objetivo
+                                    <span ng-show="loadingObjetivos" class="spinner-border spinner-border-sm ml-2"
+                                        role="status">
+                                        <span class="sr-only">Cargando objetivos...</span>
+                                    </span>
+                                </label>
+                                <select id="filtroObjetivo" class="form-control objetivo-select"
+                                    ng-model="filtros.objetivoId" ng-change="onObjetivoChange()"
+                                    ng-disabled="loadingObjetivos">
+                                    <option value="">
+                                        {{loadingObjetivos ? 'Cargando objetivos...' : 'Seleccione un objetivo'}}
+                                    </option>
+                                    <option ng-repeat="objetivo in objetivos" value="{{objetivo.id}}"
+                                        title="{{objetivo.tituloOriginal || objetivo.titulo}}">
+                                        {{objetivo.tituloTruncado || objetivo.titulo}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Filtro por Año -->
+                            <div class="col-sm-6 col-md-3 mb-3">
+                                <label for="filtroAnio" class="form-label">Año de ejecución</label>
+                                <select id="filtroAnio" class="form-control" ng-model="filtros.anio"
+                                    ng-change="aplicarFiltros()">
+                                    <option value="">Todos los años</option>
+                                    <option ng-repeat="anio in aniosDisponibles" value="{{anio}}">
+                                        {{anio}}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="col-sm-6 col-md-2 mb-3 d-flex align-items-end justify-content-center">
+                                <button type="button" class="btn btn-secondary btn-sm w-100"
+                                    ng-click="limpiarFiltros()">
+                                    <i class="fa fa-eraser"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div ng-show="loading" class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Cargando...</span>
+                </div>
+                <p class="mt-2">Cargando datos...</p>
+            </div>
+
+            <!-- Brechas Asociadas -->
+            <div ng-show="!loading && brechas.length > 0" class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fa fa-exclamation-triangle mr-2"></i>Brechas Asociadas al Objetivo
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div ng-repeat="brecha in brechas" class="alert alert-light border-left-warning mb-2">
+                        <h6 class="alert-heading mb-1">{{brecha.titulo}}</h6>
+                        <p class="mb-0 text-muted">{{brecha.descripcion}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones y Tareas -->
+            <div ng-show="!loading && acciones.length > 0" class="mb-4">
+                <div ng-repeat="accion in acciones" class="mb-4">
+
+                    <!-- Acción (Alert Azul) -->
+                    <div class="alert alert-primary">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h5 class="alert-heading mb-2">
+                                    <i class="fa fa-cog mr-2"></i>Acción: <span class="badge badge-secondary">{{$index +
+                                        1}}</span>
+                                </h5>
+                                <p class="mb-1"><strong>Medida:</strong> {{accion.medida == 'Otra Medida' ?
+                                    accion.medida + ' - ' + accion.medidaDescripcion : accion.medida}}</p>
+                                <p class="mb-1" ng-show="accion.subtitulo">
+                                    <strong>Subtítulo:</strong> {{accion.subtitulo}}
+                                </p>
+                                <p class="mb-1" ng-show="accion.itemPresupuestario">
+                                    <strong>Item:</strong> {{accion.itemPresupuestario}}
+                                </p>
+                                <p class="mb-1" ng-show="accion.asignacionPresupuestaria">
+                                    <strong>Asignación presupuestaria:</strong> {{accion.asignacionPresupuestaria}}
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Fechas:</strong>
+                                    {{calcularFechasAccion(accion).fechaInicio}} -
+                                    {{calcularFechasAccion(accion).fechaFin}}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <span class="badge mr-2" ng-class="getEstadoBadgeClass(accion.estadoAvance)">
+                                    {{accion.estadoAvance || 'No completada'}}
+                                </span>
+                                <button type="button" class="btn btn-light btn-sm" ng-show="escritura"
+                                    ng-click="abrirModalAccion(accion)">
+                                    <i class="fa fa-edit mr-1"></i>Actualizar
+                                </button>
+                                <button type="button" class="btn btn-outline-primary btn-sm ml-2 mt-2"
+                                    ng-click="toggleTareas(accion)">
+                                    <i class="fa"
+                                        ng-class="accion.mostrarTareas ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                                    {{accion.mostrarTareas ? 'Ocultar' : 'Mostrar'}} Tareas ({{(accion.tareas &&
+                                    accion.tareas.length) || 0}})
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tareas (Acordeón) -->
+                    <div ng-show="accion.mostrarTareas" class="ml-4">
+                        <!-- Mensaje cuando no hay tareas -->
+                        <div ng-show="!accion.tareas || accion.tareas.length === 0" class="alert alert-info">
+                            <i class="fa fa-info-circle mr-2"></i>
+                            No hay tareas asociadas a esta acción.
+                        </div>
+
+                        <!-- Lista de tareas -->
+                        <div ng-repeat="tarea in accion.tareas" class="alert alert-light border mb-2">
+                            <div class="row align-items-center">
+                                <div class="col-md-1 text-center">
+                                    <span class="badge badge-secondary">{{$index + 1}}</span>
+                                </div>
+                                <div class="col-md-7">
+                                    <h6 class="mb-1">{{tarea.nombre}}</h6>
+                                    <p class="mb-1 text-muted">
+                                        <i class="fa fa-calendar mr-1"></i>
+                                        {{tarea.fechaInicio | date:'dd-MM-yyyy'}} - {{tarea.fechaFin |
+                                        date:'dd-MM-yyyy'}}
+                                    </p>
+                                    <p class="mb-0 text-muted">
+                                        <i class="fa fa-user mr-1"></i>
+                                        <strong>Responsable:</strong> {{tarea.responsable}}
+                                    </p>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <span class="badge" ng-class="getEstadoBadgeClass(tarea.estadoAvance)">
+                                        {{tarea.estadoAvance || 'No implementado'}}
+                                    </span>
+                                </div>
+                                <div class="col-md-2 text-right">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" ng-show="escritura"
+                                        ng-click="abrirModalTarea(tarea)">
+                                        <i class="fa fa-edit mr-1"></i>Actualizar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay datos -->
+            <div ng-show="!loading && filtros.objetivoId && acciones.length === 0" class="alert alert-info text-center">
+                <i class="fa fa-info-circle mr-2"></i>
+                No se encontraron acciones para los filtros seleccionados.
+            </div>
+
+            <!-- Mensaje cuando no se ha seleccionado objetivo -->
+            <div ng-show="!loading && !filtros.objetivoId" class="alert alert-warning text-center">
+                <i class="fa fa-warning mr-2"></i>
+                Seleccione un objetivo para visualizar las acciones y tareas.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Actualizar Acción -->
+<div class="modal fade" id="modal-actualizar-accion" tabindex="-1" role="dialog"
+    aria-labelledby="modal-actualizar-accion-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-actualizar-accion-label">
+                    <i class="fa fa-edit mr-2"></i>Actualizar Acción
+                </h5>
+                <button type="button" class="close" ng-click="cerrarModalAccion()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form ng-submit="guardarAccion()" novalidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Acción (Solo lectura) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Acción</label>
+                            <input type="text" class="form-control" ng-model="accionSeleccionada.medida | limitTo:50"
+                                readonly>
+                        </div>
+
+                        <!-- Fechas (Solo lectura) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Inicio</label>
+                            <input type="text" class="form-control"
+                                value="{{calcularFechasAccion(accionSeleccionada).fechaInicio}}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Fin</label>
+                            <input type="text" class="form-control"
+                                value="{{calcularFechasAccion(accionSeleccionada).fechaFin}}" readonly>
+                        </div>
+
+                        <!-- Subtítulo (Editable) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Subtítulo</label>
+                            <input type="number" class="form-control" ng-model="accionSeleccionada.subtitulo" min="0">
+                        </div>
+
+                        <!-- Item Presupuestario (Editable) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Item</label>
+                            <input type="number" class="form-control" ng-model="accionSeleccionada.itemPresupuestario"
+                                min="0">
+                        </div>
+
+                        <!-- Asignación Presupuestaria (Opcional) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Asignación presupuestaria</label>
+                            <input type="number" class="form-control"
+                                ng-model="accionSeleccionada.asignacionPresupuestaria" min="0">
+                        </div>
+
+                        <!-- Costo Asociado (Editable) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Costo asociado</label>
+                            <input type="number" class="form-control" ng-model="accionSeleccionada.costoAsociado"
+                                step="0.01" min="0" required>
+                        </div>
+
+                        <!-- Estado de Avance -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Estado de avance</label>
+                            <select class="form-control" ng-model="accionSeleccionada.estadoAvance" required>
+                                <option value="">Seleccione un estado</option>
+                                <option value="No completada">No completada</option>
+                                <option value="Completada">Completada</option>
+                            </select>
+                        </div>
+
+                        <!-- Observaciones (Opcional) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" rows="3"
+                                ng-model="accionSeleccionada.observaciones"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="cerrarModalAccion()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save mr-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Actualizar Tarea -->
+<div class="modal fade" id="modal-actualizar-tarea" tabindex="-1" role="dialog"
+    aria-labelledby="modal-actualizar-tarea-label" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-actualizar-tarea-label">
+                    <i class="fa fa-edit mr-2"></i>Actualizar Tarea
+                </h5>
+                <button type="button" class="close" ng-click="cerrarModalTarea()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form ng-submit="guardarTarea()" novalidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Tarea (Solo lectura) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Tarea</label>
+                            <input type="text" class="form-control" ng-model="tareaSeleccionada.nombre" readonly>
+                        </div>
+
+                        <!-- Fechas (Solo lectura) -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Inicio</label>
+                            <input type="text" class="form-control"
+                                value="{{tareaSeleccionada.fechaInicio | date:'dd-MM-yyyy'}}" readonly>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha Fin</label>
+                            <input type="text" class="form-control"
+                                value="{{tareaSeleccionada.fechaFin | date:'dd-MM-yyyy'}}" readonly>
+                        </div>
+
+                        <!-- Responsable (Solo lectura) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Responsable</label>
+                            <input type="text" class="form-control" ng-model="tareaSeleccionada.responsable" readonly>
+                        </div>
+
+                        <!-- Estado de Avance -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Estado de avance</label>
+                            <select class="form-control" ng-model="tareaSeleccionada.estadoAvance" required>
+                                <option value="">Seleccione un estado</option>
+                                <option value="No implementado">No implementado</option>
+                                <option value="Implementado">Implementado</option>
+                            </select>
+                        </div>
+
+                        <!-- Descripción de tarea ejecutada (Requerido) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Descripción de tarea ejecutada <span
+                                    class="text-danger">*</span></label>
+                            <textarea class="form-control" rows="4"
+                                ng-model="tareaSeleccionada.descripcionTareaEjecutada"
+                                placeholder="Describa las actividades realizadas..." required></textarea>
+                        </div>
+
+                        <!-- Observaciones (Opcional) -->
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Observaciones</label>
+                            <textarea class="form-control" rows="3" ng-model="tareaSeleccionada.observaciones"
+                                placeholder="Observaciones adicionales..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="cerrarModalTarea()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-save mr-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-warning {
+        border-left: 4px solid #ffc107 !important;
+    }
+
+    .alert-primary {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+    }
+
+    .alert-light {
+        background-color: #fefefe;
+        border-color: #dee2e6;
+        color: #6c757d;
+    }
+
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    /* Asegurar que los colores de estado se apliquen correctamente */
+    .badge-secondary {
+        background-color: #6c757d !important;
+        color: #fff !important;
+    }
+
+    /* Estilos para etiquetas de estado */
+    .badge-completada,
+    .badge-implementado {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+
+    .badge.badge-no-completada,
+    .badge.badge-no-implementado,
+    span.badge-no-completada,
+    span.badge-no-implementado {
+        background-color: #dc3545 !important;
+        color: #fff !important;
+        border-color: #dc3545 !important;
+    }
+
+    .badge-en-proceso {
+        background-color: #ffc107 !important;
+        color: #212529 !important;
+    }
+
+    .badge-cancelado {
+        background-color: #6c757d !important;
+        color: #fff !important;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.25rem;
+    }
+
+    .spinner-border {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.1em;
+    }
+
+    /* Estilos para el filtro de objetivo con truncamiento */
+    .objetivo-select {
+        position: relative;
+    }
+
+    .objetivo-select option {
+        padding: 0.375rem 0.75rem;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Tooltip personalizado para opciones largas */
+    .objetivo-select option[title]:hover {
+        position: relative;
+    }
+
+    /* Mejorar la legibilidad de las opciones */
+    .objetivo-select option {
+        line-height: 1.4;
+        min-height: 2rem;
+    }
+
+    @media (max-width: 768px) {
+
+        .col-md-8,
+        .col-md-4 {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn-group {
+            width: 100%;
+        }
+
+        .alert {
+            font-size: 0.9rem;
+        }
+
+        /* Ajustes para móviles del filtro de objetivo */
+        .objetivo-select option {
+            font-size: 0.9rem;
+        }
+    }
+</style>

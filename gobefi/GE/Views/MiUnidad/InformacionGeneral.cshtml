@@ -1,0 +1,112 @@
+﻿@model DivisionVerModel
+@{
+    ViewData["Title"] = "Información General";
+
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+    SelectList patentes = (SelectList)ViewData["Patentes"];
+
+}
+
+<div class="row">
+    <div class="col-12">
+        <h4 id="subtitulo">Información General - <span>@Model.Direccion</span></h4>
+    </div>
+</div>
+<hr />
+<div class="card container">
+    <br />
+    <h5 class="card-title">
+        Mi Edificio
+    </h5>
+    <div class="form-group row">
+        <label class="col-2">Dirección</label>
+        <label class="col-10">@Model.Edificio.Direccion
+        </label>
+    </div>
+    <div class="form-group row">
+        <label class="col-2">Nº</label>
+        <label class="col-10">@Model.Edificio.Numero
+        </label>
+    </div>
+    <div class="form-group row">
+        <label class="col-2">Región</label>
+        <label class="col-10">@Model.Edificio.Comuna.Region.Nombre
+        </label>
+    </div>
+    <div class="form-group row">
+        <label class="col-2">Provincia</label>
+        <label class="col-10">@Model.Edificio.Comuna.Provincia.Nombre
+        </label>
+    </div>
+    <div class="form-group row">
+        <label class="col-2">Comuna</label>
+        <label class="col-10">@Model.Edificio.Comuna.Nombre
+        </label>
+    </div>
+    <div class="form-group row">
+        <label class="col-2">Tipo de Edificio</label>
+        <div class="col-10">@Model.Edificio.TipoEdificio?.Nombre
+        </div>
+    </div>
+</div>
+<br />
+<div class="card container">
+    <br />
+    <h5 class="card-title">
+        Mi Unidad
+    </h5>
+    <fieldset id="fieldSetMiUnidad"></fieldset>
+
+    @*@if (permisos.Escritura)
+    {
+        <div class="form-group">
+            <button class="btn btn-warning" id="btnEditarDivision"
+               data-target="@Model.Id" title="Editar">
+                <span class="@Constants.Icons.EDITAR" aria-hidden="true"></span> Editar
+            </button>
+        </div>
+    }*@
+
+</div>
+
+
+<script>
+    var DivisionId = '@ViewData["DivisionId"]';
+    // var edit = false;
+
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("InformacionGeneralView", "MiUnidad")" + "/" + DivisionId,
+            error: function (e) { console.log(e); },
+            success: function (partialViewData) {
+                $(".card #fieldSetMiUnidad").html(partialViewData);
+            }
+        });
+
+        $("#btnEditarDivision").click(function () {
+            editInformation($(this), true);
+        });
+
+       
+        
+    });
+
+    function editInformation(element, edit) {
+        var container = $(".card #fieldSetMiUnidad");
+        if (edit) {
+            // edit = true;
+            @*element.removeClass("btn-warning");
+            element.addClass("btn-danger");
+            element.html("<span class='@Constants.Icons.VOLVER'></span> Cancelar");*@
+            element.remove();
+            container.load("@Url.Action("InformacionGeneralEdit", "MiUnidad")" + "/" + DivisionId);
+        } else {
+            // edit = false;
+            @*element.removeClass("btn-danger");
+            element.addClass("btn-warning");
+            element.html("<span class='@Constants.Icons.EDITAR' aria-hidden='true'></span> Editar");*@
+            container.load("@Url.Action("InformacionGeneralView", "MiUnidad")" + "/" + DivisionId);
+        }
+    }
+</script>

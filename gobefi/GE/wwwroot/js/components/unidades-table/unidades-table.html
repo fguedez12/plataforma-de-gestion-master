@@ -1,0 +1,51 @@
+﻿<link rel="stylesheet" type="text/css" href="./vendor/DataTables/css/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="./vendor/DataTables/css/jquery.dataTables.min.css" />
+<script src="./vendor/jquery/jquery.js"></script>
+<script type="text/javascript" src="./vendor/DataTables/js/datatables.min.js"></script>
+
+
+<div class="row">
+    <div class="col" id="divisiones">
+        <div ng-show="$ctrl.loading" class="text-center">
+            <img src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+        <table  id="unidadesTable" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Ubicación</th>
+                    <th ng-if="$ctrl.activo">Activo</th>
+                    <th ng-if="$ctrl.acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="clickable-row" ng-repeat="item in $ctrl.unidades">
+                    <td>{{item.nombre}}</td>
+                    <td>{{item.ubicacion}}</td>
+                    <td ng-if="$ctrl.activo">{{item.active}}</td>
+                    <td ng-if="$ctrl.activo">
+                        <div class=" btn-group">
+                            <div ng-if="$ctrl.admin">
+                                <a class="btn btn-info text-white"
+                                   title="Editar"
+                                   ng-click="$ctrl.editUnidad(item)"
+                                   style="margin-right:5px;"><span class="fa fa-pencil-square-o"></span></a>
+                                <a class="btn btn-danger text-white"
+                                   title="Eliminar"
+                                   ng-click="$ctrl.deleteUnidad(item)"><span class="fa fa-trash-o"></span></a>
+                            </div>
+                            <div ng-if="!$ctrl.admin">
+                                <a class="btn btn-info text-white"
+                                   title="Editar"
+                                   ng-click="$ctrl.editUnidad(item)"
+                                   style="margin-right:5px;"><span class="fa fa-eye"></span></a>
+                            </div>
+                           
+                        </div>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+</div>

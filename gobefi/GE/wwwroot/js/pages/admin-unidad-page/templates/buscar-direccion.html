@@ -1,0 +1,11 @@
+﻿<h3>Unidades </h3>
+<hr />
+<button ng-click="backToHome()" class="btn btn-secondary mb-2 btn-sm"><span class="fa fa-backward"></span>&nbsp;Volver</button>
+<find-location on-change-location="locationChange(direccion)"></find-location>
+<inmueble-search 
+        inmueble-list-search="inmuebleListSearch" 
+        inmueble-searched="inmuebleSearched"
+        inmueble-selected="inmuebleSelected(inmueble)"
+                 loading="loading">
+
+</inmueble-search>

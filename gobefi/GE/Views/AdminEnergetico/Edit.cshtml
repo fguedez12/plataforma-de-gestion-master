@@ -1,0 +1,103 @@
+﻿@model EnergeticoForEditModel
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <h4>Editar @Model.Nombre</h4>
+    </div>
+</div>
+
+<br />
+<div class="card container">
+    <br />
+    <form asp-action="Edit" id="editForm">
+        <input type="hidden" asp-for="Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Nombre" class="control-label"></label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="invalid-feedback"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="PermiteMedidor" class="control-label"></label> <br />
+            <label class="switch">
+                <input type="checkbox" asp-for="PermiteMedidor">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="form-group">
+            <div class="checkbox">
+                <label>
+                    <input asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label asp-for="UnidadesDeMedidasId" class="control-label"></label>
+
+                <div class="input-group">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">
+                            Asociados
+                        </div>
+
+                        <div class="card-body p-0">
+                            <select asp-for="UnidadesDeMedidasId" class="form-control" multiple></select>
+                        </div>
+                    </div>
+
+                    <div class="col-1 text-center btn-group-vertical">
+
+                        @*<a class="btn btn-danger" id="removeUnidadDeMedida"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a class="btn btn-info" id="addUnidadDeMedida"><i class="fa fa-angle-left" aria-hidden="true"></i></a>*@
+
+                    </div>
+
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">No asociados</div>
+                        <div class="card-body p-0">
+                            <select id="UnidadesDeMedidasNoAsociados" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group">
+            @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Guardar = true, Volver = true })
+        </div>
+    </form>
+</div>
+
+
+<script>
+     $("body").on("click", "#btnActions-btnVolver", function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminEnergetico")";
+     });
+
+    $(document).ready(function () {
+        loadSelectData($("#UnidadesDeMedidasId"), apiUnidadesDeMedidas + "/asociadosByEnergeticoId/" + $("input[id='Id']").val());
+        loadSelectData($("#UnidadesDeMedidasNoAsociados"), apiUnidadesDeMedidas + "/noAsociadosByEnergeticoId/" + $("input[id='Id']").val());
+
+        /* Unidades de Medidas */
+        $('#addUnidadDeMedida').click(function () {
+            addSelectData($("select#UnidadesDeMedidasId"), $("select#UnidadesDeMedidasNoAsociados"));
+        });
+
+        $('#removeUnidadDeMedida').click(function () {
+            removeSelectData($("select#UnidadesDeMedidasId"), $("select#UnidadesDeMedidasNoAsociados"));
+        });
+
+        $("#btnGuardar").click(function () {
+            $('select#UnidadesDeMedidasId option').prop("selected", "selected");
+            $("#editForm").submit();
+        });
+    });
+</script>

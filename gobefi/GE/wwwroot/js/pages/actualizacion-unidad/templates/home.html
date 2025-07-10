@@ -1,0 +1,229 @@
+﻿<h1>Actualización Datos Unidad:</h1>
+<h3>{{selectedUnidadNombre}}</h3>
+<hr />
+<form name="actualizaUnidadForm" ng-submit="submitForm()">
+    <div class="card shadow p-3 mb-4 bg-white rounded">
+        <div class="card-body">
+            <div class="form-group">
+                <label class="control-label">N° de Rol</label>
+                <input type="text" class="form-control" name="nroRol" ng-model="data.nroRol" />
+                <span class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="col" style="padding: 15px">
+                    <span class="mr-5" style="font-size: 1rem;">No posee Rol</span>
+                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                        <input id="cb-sinrol" type="checkbox" name="sinRol" ng-model="data.sinRol" ng-change="changeSinRol()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="div-justifica" class="form-group" ng-if="data.sinRol">
+                <label class="control-label">Justificación</label>
+                <input type="text" class="form-control" name="justificaRol" ng-model="data.justificaRol"
+                       ng-required="data.sinRol"
+                       ng-class="{'is-invalid':actualizaUnidadForm.justificaRol.$invalid  && (actualizaUnidadForm.justificaRol.$touched || actualizaUnidadForm.justificaRol.$dirty) }" />
+                <span ng-show="actualizaUnidadForm.justificaRol.$error.required  && (actualizaUnidadForm.justificaRol.$touched || actualizaUnidadForm.funcionarios.$dirty)" class="text-danger">
+                    El campo Justificación es requerido
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">N° colaboradores del servicio</label>
+                <input type="number" class="form-control" name="funcionarios"
+                       ng-class="{'is-invalid':actualizaUnidadForm.funcionarios.$invalid  && (actualizaUnidadForm.funcionarios.$touched || actualizaUnidadForm.funcionarios.$dirty) }"
+                       ng-model="data.funcionarios" required min="1" />
+                <span ng-show="actualizaUnidadForm.funcionarios.$error.required  && (actualizaUnidadForm.funcionarios.$touched || actualizaUnidadForm.funcionarios.$dirty)" class="text-danger">
+                    El campo N° colaboradores del servicio es requerido
+                </span>
+                <span ng-show="actualizaUnidadForm.funcionarios.$error.min  && (actualizaUnidadForm.funcionarios.$touched || actualizaUnidadForm.funcionarios.$dirty)" class="text-danger">
+                    El campo N° colaboradores del servicio debe ser mayor a 0
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">N° Otros colaboradores</label>
+                <input type="number" name="nroOtrosColaboradores" class="form-control" ng-model="data.nroOtrosColaboradores"
+                       required min="0"
+                       ng-class="{'is-invalid':actualizaUnidadForm.nroOtrosColaboradores.$invalid  && (actualizaUnidadForm.nroOtrosColaboradores.$touched || actualizaUnidadForm.nroOtrosColaboradores.$dirty) }" />
+                <span ng-show="actualizaUnidadForm.nroOtrosColaboradores.$error.required  && (actualizaUnidadForm.nroOtrosColaboradores.$touched || actualizaUnidadForm.nroOtrosColaboradores.$dirty)" class="text-danger">
+                    El campo N° Otros colaboradores es requerido
+                </span>
+                <span ng-show="actualizaUnidadForm.nroOtrosColaboradores.$error.min  && (actualizaUnidadForm.nroOtrosColaboradores.$touched || actualizaUnidadForm.nroOtrosColaboradores.$dirty)" class="text-danger">
+                    El campo N° Otros colaboradores debe ser mayor o igual a 0
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow p-3 mb-4 bg-white rounded">
+        <div class="card-body">
+            <div class="form-group">
+                <label>¿Esta unidad tiene disponible un vehículo propio del servicio para su uso?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="disponeVehiculo" id="disponeVehiculoSi" ng-value="true" ng-model="data.disponeVehiculo">
+                    <label class="form-check-label">
+                        Si, esta unidad utiliza vehículos (seleccionar vehículos en cuadro)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="disponeVehiculo" id="disponeVehiculoNo" ng-value="false" ng-model="data.disponeVehiculo">
+                    <label class="form-check-label">
+                        No, esta unidad no utiliza vehículos.
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="sel_vehiculos" ng-if="data.disponeVehiculo">
+                <label>Seleccione los vehiculos</label>
+                <select chosen
+                        options="data.vehiculos"
+                        ng-options="vehiculo.id.toString() as vehiculo.patente | uppercase for vehiculo in data.vehiculos"
+                        data-placeholder="Seleccione las patentes..." multiple class="form-control chosen-select"
+                        ng-model="data.vehiculosIds">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="card shadow p-3 mb-4 bg-white rounded">
+        <div class="card-body d-flex flex-row">
+            <div class="col-5">
+                <div class="form-group">
+                    <label class="control-label">Tiene acceso a las facturas de Agua</label>
+                    <select class="form-control" ng-model="data.accesoFacturaAgua" ng-change="changeAccesoFacturaAgua()">
+                        <option ng-value=0>--Seleccione--</option>
+                        <option ng-value=1>Si</option>
+                        <option ng-value=2>No, Otro servicio público</option>
+                        <option ng-value=3>No, Otra organización (especificar)</option>
+                    </select>
+                </div>
+                <div id="div_resp_pub_agua" ng-if="data.accesoFacturaAgua==2">
+                    <div class="form-group">
+                        <label class="control-label">Institución responsable de los consumos</label>
+                        <select class="form-control"
+                                name="institucionResponsableAguaId"
+                                ng-model="data.institucionResponsableAguaId"
+                                ng-change="changeInstitucion()"
+                                ng-options="institucion.id as institucion.nombre | uppercase for institucion in instituciones"
+                                ng-class="{'is-invalid':actualizaUnidadForm.institucionResponsableAguaId.$invalid  && (actualizaUnidadForm.institucionResponsableAguaId.$touched || actualizaUnidadForm.institucionResponsableAguaId.$dirty) }"
+                                ng-required="data.accesoFacturaAgua==2">
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="actualizaUnidadForm.institucionResponsableAguaId.$error.required  && (actualizaUnidadForm.institucionResponsableAguaId.$touched || actualizaUnidadForm.institucionResponsableAguaId.$dirty)" class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">Servicio responsable de los consumos</label>
+                        <select class="form-control"
+                                name="servicioResponsableAguaId"
+                                ng-model="data.servicioResponsableAguaId"
+                                ng-options="servicio.id as servicio.nombre | uppercase for servicio in servicios"
+                                ng-required="data.accesoFacturaAgua==2"
+                                ng-class="{'is-invalid':actualizaUnidadForm.servicioResponsableAguaId.$invalid  && (actualizaUnidadForm.servicioResponsableAguaId.$touched || actualizaUnidadForm.servicioResponsableAguaId.$dirty) }"
+                                ng-disabled="!data.institucionResponsableAguaId">
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="actualizaUnidadForm.servicioResponsableAguaId.$error.required  && (actualizaUnidadForm.servicioResponsableAguaId.$touched || actualizaUnidadForm.servicioResponsableAguaId.$dirty)" class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                        <span class="text-danger"></span>
+                        <input type="hidden" id="hfServicio_agua" />
+                    </div>
+                </div>
+                <div class="form-group" ng-if="data.accesoFacturaAgua==3">
+                    <label class="control-label">Organización responsable de los consumos</label>
+                    <input type="text" class="form-control"
+                           name="organizacionResponsableAgua"
+                           ng-model="data.organizacionResponsableAgua"
+                           ng-required="data.accesoFacturaAgua==3"
+                           ng-class="{'is-invalid':actualizaUnidadForm.organizacionResponsableAgua.$invalid  && (actualizaUnidadForm.organizacionResponsableAgua.$touched || actualizaUnidadForm.organizacionResponsableAgua.$dirty) }" />
+                    <span ng-show="actualizaUnidadForm.organizacionResponsableAgua.$error.required  && (actualizaUnidadForm.organizacionResponsableAgua.$touched || actualizaUnidadForm.organizacionResponsableAgua.$dirty)" class="text-danger">
+                        El campo Organización responsable de los consumos es requerido
+                    </span>
+                </div>
+            </div>
+            <div class="col-7">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Comparte Medidor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Agua:</td>
+                            <td class="text-center">
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="data.comparteMedidorAgua">
+                                    <span class="slider round"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <!--<div class="card shadow p-3 mb-4 bg-white rounded">
+        <div class="card-body">
+            <h5 class="card-title">
+                Climatización / Calefacción
+            </h5>
+            <div class="alert alert-warning">
+                <p>Importante: en plataforma se está preguntando por sistemas de calefacción/climatización cuyo consumo de energía provenga de la información de consumo que se declara en plataforma. Los sistemas de clima (centralizado) cuyo consumo no está en las facturaciones de la unidad, sino que se pagan en un gasto común aparte, no deben ser considerados en la plataforma (se debe indicar “No” en esta pregunta).</p>
+            </div>
+            <div class="form-group">
+                <label>¿Esta unidad en el consumo de electricidad o gas natural reportado en módulo consumos, considera un sistema de climatización/Calefacción?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="disponeCalefaccion" ng-value="true" ng-model="data.disponeCalefaccion">
+                    <label class="form-check-label" for="disponeCalefaccion">
+                        Si
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="DisponeCalefaccion" name="disponeCalefaccion" ng-value="false" ng-model="data.disponeCalefaccion">
+                    <label class="form-check-label" for="disponeCalefaccion">
+                        No
+                    </label>
+                </div>
+            </div>
+            <div ng-if="data.disponeCalefaccion">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" ng-model="data.aireAcondicionadoElectricidad">
+                    <label class="form-check-label" for="AireAcondicionadoElectricidad">
+                        Sistema de aire acondicionado que consume electricidad
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" ng-model="data.calefaccionGas">
+                    <label class="form-check-label" for="CalefaccionGas">
+                        Sistema de calefacción que consume gas natural
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>-->
+    <div class="card shadow p-3 mb-4 bg-white rounded">
+        <div class="card-body">
+            <div class="form-group">
+                <label>¿La unidad hace gestión de bienes muebles para el presente período PMG?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gestionBienes" ng-value="true" ng-model="data.gestionBienes">
+                    <label class="form-check-label" for="gestionBienes">
+                        Si
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="gestionBienes" ng-value="false" ng-model="data.gestionBienes">
+                    <label class="form-check-label" for="gestionBienes">
+                        No
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-secondary">Cancelar</button>
+        <button type="submit" class="btn btn-primary" ng-disabled="actualizaUnidadForm.$invalid">Guardar</button>
+    </div>
+</form>
+

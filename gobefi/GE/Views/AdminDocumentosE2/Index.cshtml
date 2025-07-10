@@ -1,0 +1,18 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result ||
+    UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_AUDITOR).Result;
+    int? etapa = ViewBag.etapa;
+}
+
+<div ng-app="adminDocumentosApp">
+    <div ng-controller="adminDocumentosController">
+        <input type="hidden" id="input-id" value="@UserManager.GetUserId(User)" />
+        <input type="hidden" id="input-is-admin" value="@_isAdmin.ToString()" />
+        <input type="hidden" id="input-is-consulta" value="@_isConsulta.ToString()" />
+        <input type="hidden" id="input-etapa" value="@etapa" />
+        <ui-view></ui-view>
+    </div>
+</div>

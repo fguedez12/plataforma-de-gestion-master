@@ -1,0 +1,248 @@
+﻿
+@{
+    ViewData["Title"] = "MaquinasEquipos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $('.maqEqui-selector').click(function () {
+            $('.maqEqui-selector').removeClass('active');
+
+            var $clicked = $(this);
+            $('.maqEqui-selector').each(function () {
+                var $menu = $(this);
+                if (!$menu.is($clicked)) {
+                    $($menu.attr('data-item')).hide();
+                }
+            });
+
+            //if ($(this).is(':visible'))
+            $($clicked.attr('data-item')).show();
+            $(this).addClass('active');
+        });
+
+        $('input[type=radio][name=options]').change(function () {
+            $('#chkGeneracion').parent().removeClass('btn-primary').removeClass('btn-light');
+            $('#chkConsumos').parent().removeClass('btn-primary').removeClass('btn-light');
+
+            if (this.id == 'chkConsumos') {
+                $(this).parent().addClass('btn-primary');
+            }
+            else if (this.id == 'chkGeneracion') {
+                $(this).parent().addClass('btn-primary');
+            }
+        });
+    });
+</script>
+
+
+<button type="button" class="btn btn-primary">
+    <span class="fa fa-filter"></span> Filtros
+</button>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <h4>Maquinas y Equipos</h4>
+    </div>
+</div>
+<hr />
+
+<div class="card container">
+    <br />
+    <ul class="nav nav-tabs" style="cursor:pointer;color:blue;">
+        <li class="nav-item">
+            <a class="nav-link active maqEqui-selector" data-item="#Electrico">Electrico</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link maqEqui-selector" data-item="#AireAcondicionado">Aire Acondicionado</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link maqEqui-selector" data-item="#CalorDirecto">Calor Directo</a>
+        </li>
+    </ul>
+
+    <br />
+
+    <div id="Electrico">
+
+        <br />
+
+        <table class="table table-bordered" style="table-layout: fixed;word-wrap: break-word;">
+            <thead style="background-color:#0069d9; color:#fff; border-color:#007bff">
+                <tr>
+                    <th>Id Equipo</th>
+                    <th>Tipo de Equipo</th>
+                    <th>Marca</th>
+                    <th>Potencia Unitaria</th>
+                    <th>Cantidad</th>
+                    <th>Consumo</th>
+                    <th>Alto</th>
+                    <th>Ventanas (m2)</th>
+                    <th>Tipos de Sobreado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>john@example.com</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>john@example.com</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>john@example.com</td>
+                </tr>
+                <tr>
+                    <td>Mary</td>
+                    <td>Moe</td>
+                    <td>mary@example.com</td>
+                    <td>Mary</td>
+                    <td>Moe</td>
+                    <td>mary@example.com</td>
+                    <td>Mary</td>
+                    <td>Moe</td>
+                    <td>mary@example.com</td>
+                </tr>
+                <tr>
+                    <td>July</td>
+                    <td>Dooley</td>
+                    <td>july@example.com</td>
+                    <td>July</td>
+                    <td>Dooley</td>
+                    <td>july@example.com</td>
+                    <td>July</td>
+                    <td>Dooley</td>
+                    <td>july@example.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="AireAcondicionado" style="display:none;">
+
+        <br />
+
+        Aire Acondicionado
+    </div>
+    <div id="CalorDirecto" style="display:none;">
+
+        <br />
+
+        Calor Directo
+    </div>
+
+    <div class="pb-3">
+        <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ModalAgregarEquipo">
+            Agregar Archivo
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="ModalAgregarEquipo" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLongTitle">Agregar Equipo</h5>
+            </div>
+            <div class="modal-body">
+
+                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-primary active">
+                        <input type="radio" name="options" id="chkConsumos" autocomplete="off" checked> Consumo
+                    </label>
+                    <label class="btn btn-light">
+                        <input type="radio" name="options" id="chkGeneracion" autocomplete="off"> Generación
+                    </label>
+                </div>
+
+                <br />
+                <br />
+
+                <!-- se usa como plantilla https://getbootstrap.com/docs/4.0/components/forms/#layout  Form Row-->
+                <form style="color:#007bff;">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Tipo de Tecnologia:</label>
+                            <input type="text" class="form-control" id="tbTipoTec" placeholder="Tipo de Tecnologia">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Modo Operación:</label>
+                            <input type="text" class="form-control" id="tbModoOpe" placeholder="Modo Operación">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Sistema:</label>
+                            <input type="text" class="form-control" id="tbSistema" placeholder="Sistema">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Energético Entrada:</label>
+                            <input type="text" class="form-control" id="tbEnerEntrada" placeholder="Energético Entrada">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Sistema 2:</label>
+                            <input type="text" class="form-control" id="tbSistema2" placeholder="Sistema 2">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Energético Salida:</label>
+                            <input type="text" class="form-control" id="tbEnerSalida" placeholder="Energético Salida">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Horas de Uso:</label>
+                            <input type="text" class="form-control" id="tbHrsDeUso" placeholder="Horas de Uso">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Año Compra:</label>
+                            <input type="text" class="form-control" id="tbAnioCompra" placeholder="Año Compra">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Marca:</label>
+                            <input type="text" class="form-control" id="tbMarca" placeholder="Marca">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Potencia:</label>
+                            <input type="text" class="form-control" id="tbPotencia" placeholder="Potencia">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Modelo:</label>
+                            <input type="text" class="form-control" id="tbModelo" placeholder="Modelo">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Cantidad Equipos:</label>
+                            <input type="text" class="form-control" id="tbCantEqui" placeholder="Cantidad Equipos">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea class="form-control" id="tbDesc" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label>Inversión:</label>
+                            <input type="text" class="form-control" id="tbInversion" placeholder="Inversión">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Costo Mantención Anual:</label>
+                            <input type="text" class="form-control" id="tbCostMantAnual" placeholder="Costo Mantención Anual">
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Agregar Equipo</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+﻿@model BtnActions
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+@if (Model.Crear && !Model.Guardar)
+{
+
+    <button type="submit" id="btnCrear" class="btn btn-primary"><span class="@Constants.Icons.GUARDAR"></span> Crear</button>
+}
+
+@if (Model.Guardar && !Model.Crear)
+{
+    <button type="submit" id="btnGuardar" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Guardando..."><span class="@Constants.Icons.GUARDAR"></span> Guardar</button>
+}
+
+@if (Model.Eliminar)
+{
+    <input type="submit" value="Eliminar" class="btn btn-danger" />
+}
+
+@if (Model.Volver)
+{
+    <a class="btn btn-secondary" href="" id="btnActions-btnVolver"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+}
+
+@if (Model.Cancelar)
+{
+    <a asp-action="Index" class="btn btn-dark"><span class="@Constants.Icons.VOLVER"></span> Cancelar</a>
+}

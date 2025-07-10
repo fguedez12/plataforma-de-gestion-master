@@ -1,0 +1,197 @@
+﻿@model UsuarioModel
+
+@{
+    ViewData["Title"] = "Detalle";
+}
+
+<h2>@($"{Model.Nombres} {Model.Apellidos}")</h2>
+
+<br />
+
+<ul class="nav nav-tabs" id="navegacionDatosUnidades" style="color:blue;">
+    <li class="nav-item">
+        <a class="nav-link active" style="cursor:pointer;" data-item="#Datos">Datos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" style="cursor:pointer;" data-item="#Unidades">Unidades</a>
+    </li>
+</ul>
+
+<br />
+<div id="Datos">
+    <input asp-for="Id" type="hidden" />
+    <div class="row">
+        <div class="col-sm">
+            <label asp-for="Nombres"></label>
+            <input asp-for="Nombres" class="form-control" readonly />
+        </div>
+        <div class="col-sm">
+            <label asp-for="Apellidos"></label>
+            <input asp-for="Apellidos" class="form-control" readonly />
+        </div>
+        <div class="col-sm">
+            <label asp-for="Email"></label>
+            <input asp-for="Email" class="form-control" readonly />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm">
+            <label asp-for="RegionId"></label>
+            <select asp-for="RegionId" class="form-control" asp-items="ViewBag.Regiones" disabled></select>
+        </div>
+        <div class="col-sm">
+            <label asp-for="ProvinciaId"></label>
+            <select asp-for="ProvinciaId" class="form-control" disabled></select>
+            <input asp-for="ProvinciaId" type="hidden" />
+        </div>
+        <div class="col-sm">
+            <label asp-for="ComunaId"></label>
+            <select asp-for="ComunaId" class="form-control" disabled></select>
+            <input asp-for="ComunaId" type="hidden" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm">
+            <label asp-for="SexoId"></label>
+            <select asp-for="SexoId" class="form-control" required asp-items="ViewBag.Sexos" readonly></select>
+        </div>
+        <div class="col-sm">
+            <label asp-for="Rut" class="control-label"></label>
+            <input asp-for="Rut" required class="form-control" maxlength="12" readonly />
+        </div>
+        <div class="col-sm">
+            <label asp-for="NumeroTelefono" class="control-label"></label>
+            <input asp-for="NumeroTelefono" class="form-control" readonly />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-4">
+            <label asp-for="NumeroTelefonoOpcional" class="control-label"></label>
+            <input asp-for="NumeroTelefonoOpcional" class="form-control" readonly />
+        </div>
+        <div class="form-group col-4">
+            <label asp-for="Cargo" class="control-label"></label>
+            <input asp-for="Cargo" class="form-control" readonly />
+        </div>
+
+        <div class="form-group col-4">
+            <label asp-for="Validado" class="control-label"></label> <br />
+            <label class="switch">
+                <input type="checkbox" checked="@Model.Validado" disabled>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-4">
+            <label asp-for="Certificado" class="control-label"></label> <br />
+            <label class="switch">
+                <input type="checkbox" checked="@Model.Certificado" disabled>
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="form-group col-4">
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col">
+            <label asp-for="RolesId" class="control-label"></label>
+            <div class="input-group">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header small">
+                        Asociados
+                    </div>
+
+                    <div class="card-body p-0">
+                        <select asp-for="RolesId" asp-items="ViewBag.RolesAsociados" class="form-control" multiple readonly></select>
+                    </div>
+                </div>
+            </div>
+            <span asp-validation-for="RolesId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col">
+            <label asp-for="Instituciones" class="control-label"></label>
+
+            <div class="input-group">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header small">
+                        Asociados
+                    </div>
+
+                    <div class="card-body p-0">
+                        <select asp-for="InstitucionesId" class="form-control" multiple readonly></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col">
+            <label asp-for="Servicios" class="control-label"></label>
+
+            <div class="input-group">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header small">
+                        Asociados
+                    </div>
+
+                    <div class="card-body p-0">
+                        <select asp-for="ServiciosId" class="form-control" multiple readonly></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <a asp-action="Index" class="btn btn-primary"><span class="@Constants.Icons.VOLVER"></span> @Constants.Buttons.VOLVER</a>
+</div>
+
+
+<div id="Unidades" style="display:none;">
+
+    <div id='loader' style='display: none;' class="text-center">
+        <img src='~/images/reload.gif' style="width:32px; height:32px">
+    </div>
+</div>
+
+<script src="~/js/AdminUsuario/JSComun.js" asp-append-version="true"></script>
+<script src="~/js/AdminUsuario/Details.js" asp-append-version="true"></script>
+
+<script>
+
+    $("#navegacionDatosUnidades li a").click(function () {
+        $("#navegacionDatosUnidades li a").removeClass("active");
+        $("#Datos, #Unidades").hide();
+
+        var actual = $(this).attr("data-item");
+
+        $(actual).show();
+        $("a[data-item='" + actual + "']").addClass('active');
+        
+        if (actual != "#Unidades") {
+            return;
+        }
+
+        if (!$("#loader").length) {
+            return;
+        }
+        
+        GetUnidades().then();
+ 
+        return false;
+
+    });
+
+</script>

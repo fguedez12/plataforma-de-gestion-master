@@ -1,0 +1,53 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+
+    <div class="row align-items-center">
+        @*<div class="col-2">
+            <img src="~/images/traffic_icon.png" class="img-fluid mb-4" />
+        </div>*@
+        <div class="col">
+
+            <h3 class="text-danger">Ooops. Error</h3>
+            <h4 class="text-danger">Lo sentimos, pero ocurrió un error al procesar su petición.</h4>
+
+            <p>Por favor reintente ingresando nuevamente sus credenciales en el portal.</p>
+
+            <form asp-controller="Account" asp-action="Logout" method="get" id="logoutFormErrorPage">
+                <button type="submit" class="btn btn-primary"><i class="fa fa-sign-out" aria-hidden="true"></i> Salir</button>
+            </form>
+
+
+            
+
+
+            @*@if (Model.ShowRequestId)
+        {
+            <p>
+                <strong>Request ID:</strong> <code>@Model.RequestId</code>
+            </p>
+        }*@
+
+            <br />
+            <br />
+            <h5>Otras opciones:</h5>
+            <ul>
+                @*<li>Salir e ingresar del sitio para reintentar la petición.</li>*@
+                <li>Ponerse en contacto con algún administrador.</li>
+                <li>Verifique que la dirección este correctamente escrita.</li>
+            </ul>
+            <h6><strong>Posibles motivos por lo que la petición no fue correctamente procesada:</strong></h6>
+            <ul>
+                <li>Es posible que su sesión expiro por tiempo de inactividad.</li>
+                <li>Existe un error no controlado al procesar la petición.</li>
+                <li>La página que intenta ingresar ya no existe.</li>
+            </ul>
+
+        </div>
+    </div>
+
+   
+
+

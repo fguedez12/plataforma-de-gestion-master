@@ -1,0 +1,72 @@
+﻿@model Menu
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Menu</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Url)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Url)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Icono)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Icono)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IdTag)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IdTag)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ControllerName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ControllerName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ActionName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ActionName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Orden)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Orden)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.MenuPanel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.MenuPanel.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

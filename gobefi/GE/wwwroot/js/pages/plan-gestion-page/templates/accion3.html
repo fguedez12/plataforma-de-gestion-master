@@ -1,0 +1,323 @@
+﻿<h1>Plan de Gestión Ambiental</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="card shadow p-3 mb-4 bg-white rounded">
+    <div class="card-header">
+        <h4>{{titleAccion}} Acción</h4>
+    </div>
+    <div class="card-body">
+        <form name="accion3Form" novalidate>
+            <div class="form-group" ng-show="accion.brechaPorUnidad">
+                <label class="form-label col-md-3"><span class="text-danger">* </span>Cobertura:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" ng-model="accion.cobertura" ng-disabled="modoVer || !escritura" type="radio" name="roCobertura" id="Edificio" value="Edificio">
+                    <label class="form-check-label" for="roCobertura">Edificio</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" ng-model="accion.cobertura" ng-disabled="modoVer || !escritura" type="radio" name="roCobertura" id="roPisos" value="Pisos">
+                    <label class="form-check-label" for="roPisos">Pisos</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" ng-model="accion.cobertura" ng-disabled="modoVer || !escritura" type="radio" name="roCobertura" id="roAreas" value="Areas">
+                    <label class="form-check-label" for="roAreas">Áreas</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label col-md-3"><span class="text-danger">* </span>Nivel medida:</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" ng-model="accion.nivelMedida" ng-disabled="modoVer || !escritura" type="radio" name="roNivelMedida" id="Implementacion" value="Implementacion">
+                    <label class="form-check-label" for="Implementacion">Implementación</label>
+                </div>
+            </div>
+            <div ng-show="accion.nivelMedida=='Ingenieria'  && !accion.brechaPorUnidad">
+                <div class="form-group">
+                    <label class="form-label"><span class="text-danger">* </span>Presupuesto para ingeniería de detalle:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">CLP$</span>
+                        </div>
+                        <input name="presupuestoIngenieria"
+                               ng-model="accion.presupuestoIngenieria"
+                               type="number"
+                               step="1"
+                               ng-pattern="/^[0-9]\d*$/"
+                               ng-class="{'is-invalid':accion4Form.presupuestoIngenieria.$invalid  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty),'is-valid':accion4Form.presupuestoIngenieria.$valid  }"
+                               ng-required="accion.nivelMedida=='Ingenieria' && !accion.brechaPorUnidad"
+                               class="form-control"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+
+                    <span ng-show="accion4Form.presupuestoIngenieria.$error.required  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle es requerido
+                    </span>
+                    <span ng-show="(accion4Form.presupuestoIngenieria.$error.pattern || accion4Form.presupuestoIngenieria.$error.number )  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle debe ser número entero mayor o igual a 0
+                    </span>
+                </div>
+                <div class="form-group form-check">
+                    <input name="presupuestoIngenieriaPedido"
+                           type="checkbox"
+                           class="form-check-input"
+                           ng-model="accion.presupuestoIngenieriaPedido"
+                           ng-disabled="modoVer || !escritura">
+                    <label class="form-check-label" for="presupuestoIngenieriaPedido">Presupuesto solicitado</label>
+                </div>
+            </div>
+            <div ng-show="accion.nivelMedida=='Implementacion'  && !accion.brechaPorUnidad">
+                <div class="form-group">
+                    <label class="form-label"><span class="text-danger">* </span>Costo de la Acción:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">CLP$</span>
+                        </div>
+                        <input name="presupuestoImplementacion"
+                               ng-model="accion.presupuestoImplementacion"
+                               type="number"
+                               ng-class="{'is-invalid':accion4Form.presupuestoImplementacion.$invalid  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty),'is-valid':accion4Form.presupuestoImplementacion.$valid  }"
+                               ng-pattern="/^[0-9]\d*$/"
+                               ng-required="accion.nivelMedida=='Implementacion'  && !accion.brechaPorUnidad"
+                               class="form-control"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+
+                    <span ng-show="accion4Form.presupuestoImplementacion.$error.required  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle es requerido
+                    </span>
+                    <span ng-show="(accion4Form.presupuestoImplementacion.$error.pattern || accion4Form.presupuestoImplementacion.$error.number )  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle debe ser número entero mayor o igual a 0
+                    </span>
+                </div>
+                <div class="form-group form-check">
+                    <input name="presupuestoImplementacionPedido"
+                           ng-model="accion.presupuestoImplementacionPedido"
+                           type="checkbox"
+                           class="form-check-input"
+                           ng-disabled="modoVer || !escritura">
+                    <label class="form-check-label" for="presupuestoImplementacionPedido">Presupuesto solicitado</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label" for="subtitulo">Subtítulo</label>
+                <input
+                    name="subtitulo"
+                    ng-model="accion.subtitulo"
+                    type="number"
+                    step="1"
+                    class="form-control"
+                    required
+                    min="0"
+                    max="100"
+                    ng-class="{'is-invalid': accion3Form.subtitulo.$invalid && (accion3Form.subtitulo.$touched || accion3Form.subtitulo.$dirty), 'is-valid': accion3Form.subtitulo.$valid}"
+                    ng-disabled="modoVer || !escritura">
+                <span ng-show="accion3Form.subtitulo.$error.required && (accion3Form.subtitulo.$touched || accion3Form.subtitulo.$dirty)" class="text-danger">
+                    El campo Subtítulo presupuestario es requerido.
+                </span>
+                <span ng-show="(accion3Form.subtitulo.$error.min || accion3Form.subtitulo.$error.max || accion3Form.subtitulo.$error.number) && (accion3Form.subtitulo.$touched || accion3Form.subtitulo.$dirty)" class="text-danger">
+                    El campo Subtítulo presupuestario debe ser un número entero entre 0 y 100.
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label" for="itemPresupuestario">Ítem presupuestario</label>
+                <input
+                    name="itemPresupuestario"
+                    ng-model="accion.itemPresupuestario"
+                    type="number"
+                    step="1"
+                    class="form-control"
+                    required
+                    min="0"
+                    max="100"
+                    ng-class="{'is-invalid': accion3Form.itemPresupuestario.$invalid && (accion3Form.itemPresupuestario.$touched || accion3Form.itemPresupuestario.$dirty), 'is-valid': accion3Form.itemPresupuestario.$valid}"
+                    ng-disabled="modoVer || !escritura">
+                <span ng-show="accion3Form.itemPresupuestario.$error.required && (accion3Form.itemPresupuestario.$touched || accion3Form.itemPresupuestario.$dirty)" class="text-danger">
+                    El campo Ítem presupuestario es requerido.
+                </span>
+                <span ng-show="(accion3Form.itemPresupuestario.$error.min || accion3Form.itemPresupuestario.$error.max || accion3Form.itemPresupuestario.$error.number) && (accion3Form.itemPresupuestario.$touched || accion3Form.itemPresupuestario.$dirty)" class="text-danger">
+                    El campo Ítem presupuestario debe ser un número entero entre 0 y 100.
+                </span>
+            </div>
+            <div class="form-group"></div>
+                <label class="form-check-label" for="asignacionPresupuestaria">Asignacion presupuestaria</label>
+                <input
+                    name="asignacionPresupuestaria"
+                    ng-model="accion.asignacionPresupuestaria"
+                    type="number"
+                    step="1"
+                    class="form-control"
+                    min="0"
+                    max="1000"
+                    ng-class="{'is-invalid': accion3Form.asignacionPresupuestaria.$invalid && (accion3Form.asignacionPresupuestaria.$touched || accion3Form.asignacionPresupuestaria.$dirty), 'is-valid': accion3Form.asignacionPresupuestaria.$valid}"
+                    ng-disabled="modoVer || !escritura">
+                <span ng-show="(accion3Form.asignacionPresupuestaria.$error.min || accion3Form.asignacionPresupuestaria.$error.max || accion3Form.asignacionPresupuestaria.$error.number) && (accion3Form.asignacionPresupuestaria.$touched || accion3Form.asignacionPresupuestaria.$dirty)" class="text-danger">
+                    El campo Asignacion presupuestaria debe ser un número entero entre 0 y 100.
+                </span>
+            </div>
+            
+            <!--<div ng-show="accion.nivelMedida=='Implementacion' && !accion.brechaPorUnidad">
+        <div class="form-group">
+            <label class="form-label"><span class="text-danger">* </span>Presupuesto para implementación:</label>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">CLP$</span>
+                </div>
+                <input name="presupuestoImplementacion"
+                       ng-model="accion.presupuestoImplementacion"
+                       type="number"
+                       ng-class="{'is-invalid':accion3Form.presupuestoImplementacion.$invalid  && (accion3Form.presupuestoImplementacion.$touched || accion3Form.presupuestoImplementacion.$dirty),'is-valid':accion3Form.presupuestoImplementacion.$valid  }"
+                       ng-pattern="/^[1-9]\d*$/"
+                       ng-required="accion.nivelMedida=='Implementacion'"
+                       class="form-control"
+                       ng-disabled="modoVer || !escritura" />
+            </div>
+
+            <span ng-show="accion3Form.presupuestoImplementacion.$error.required  && (accion3Form.presupuestoImplementacion.$touched || accion3Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                El campo Presupuesto para ingeniería de detalle es requerido
+            </span>
+            <span ng-show="(accion3Form.presupuestoImplementacion.$error.pattern || accion3Form.presupuestoImplementacion.$error.number )  && (accion3Form.presupuestoImplementacion.$touched || accion3Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                El campo Presupuesto para ingeniería de detalle debe ser número entero mayor a 0
+            </span>
+        </div>
+        <div class="form-group form-check">
+            <input name="presupuestoImplementacionPedido"
+                   ng-model="accion.presupuestoImplementacionPedido"
+                   type="checkbox"
+                   class="form-check-input"
+                   ng-disabled="modoVer || !escritura">
+            <label class="form-check-label" for="presupuestoImplementacionPedido">Pedido</label>
+        </div>
+    </div>-->
+            <div class="form-group" ng-show="accion.dimensionBrechaId==1 || accion.dimensionBrechaId==2">
+                <label for="responsableNombre" class="form-label"><span class="text-danger">* </span>Nombre y Apellido Responsable de la acción:</label>
+                <input name="responsableNombre"
+                       ng-model="accion.responsableNombre"
+                       type="text"
+                       ng-required="accion.dimensionBrechaId==1 || accion.dimensionBrechaId==2"
+                       class="form-control"
+                       ng-disabled="modoVer || !escritura">
+                <span ng-show="(accion3Form.responsableNombre.$error.pattern || accion3Form.responsableNombre.$error.required )  && (accion3Form.responsableNombre.$touched || accion3Form.responsableNombre.$dirty)" class="text-danger">
+                    El campo Nombre y Apellido Responsable de la acción es requerido
+                </span>
+            </div>
+            <div class="form-group" ng-show="accion.dimensionBrechaId==1 || accion.dimensionBrechaId==2">
+                <label for="responsableEmail" class="form-label">Email Responsable de la acción:</label>
+                <input name="responsableEmail"
+                       ng-model="accion.responsableEmail"
+                       type="email"
+                       ng-required="accion.dimensionBrechaId==1 || accion.dimensionBrechaId==2"
+                       class="form-control"
+                       ng-disabled="modoVer || !escritura">
+                <span ng-show="(accion3Form.responsableEmail.$error.pattern || accion3Form.responsableEmail.$error.required )  && (accion3Form.responsableEmail.$touched || accion3Form.responsableEmail.$dirty)" class="text-danger">
+                    El campo Email Responsable de la acción es requerido
+                </span>
+                <span ng-show="(accion3Form.responsableEmail.$error.pattern || accion3Form.responsableEmail.$error.email )  && (accion3Form.responsableEmail.$touched || accion3Form.responsableEmail.$dirty)" class="text-danger">
+                    Debe ingresar un email válido
+                </span>
+            </div>
+            <div ng-show="accion.adjuntoUrl && !accion.brechaPorUnidad && accion.piloto" class="form-group">
+                <label>Documento Adjunto:</label>
+                <a href="{{accion.linkToDownload}}" target="_blank">{{accion.adjuntoNombre}}</a>
+            </div>
+            <div ng-show="!accion.brechaPorUnidad && accion.piloto" class="form-group">
+                <label for="documentoAccion">Subir Medio de verificación:</label>
+                <input id="documentoAccion"
+                       name="documentoAccion"
+                       ng-disabled="modoVer || !escritura"
+                       type="file"
+                       class="form-control"
+                       ng-model="accion.documentoAccion"
+                       ng-change="changeFileDocumentoAccion()"
+                       ng-class="{'is-invalid':accion3Form.documentoAccion.$invalid  && (accion3Form.documentoAccion.$touched || accion3Form.documentoAccion.$dirty) }"
+                       valid-file
+                       accept=""
+                       file-max-size="20388608"
+                       ng-required="!accion.brechaPorUnidad && !accion.adjuntoUrl && accion.piloto" />
+                <span ng-show="accion3Form.documentoAccion.$invalid  && (accion3Form.documentoAccion.$touched || accion3Form.documentoAccion.$dirty)"
+                      class="text-danger">Debe adjuntar un documento</span>
+                <div ng-show="fileSizeError">
+                    <span class="text-danger">El archivo no debe superar los 20 MB.</span>
+                </div>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label class="form-label col-md-5"><span class="text-danger">* </span>¿La acción incluye a más servicios públicos?:</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               ng-model="accion.otroServicio"
+                               ng-click="rdOtroServicioSi()"
+                               ng-disabled="modoVer || !escritura"
+                               type="radio"
+                               name="masServicios"
+                               id="masServiciosSi"
+                               value="Si">
+                        <label class="form-check-label" for="Ingenieria">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input"
+                               ng-click="rdOtroServicioNo()"
+                               ng-disabled="modoVer || !escritura"
+                               ng-model="accion.otroServicio" type="radio" name="masServicios" id="masServiciosNo" value="No">
+                        <label class="form-check-label" for="Implementacion">No</label>
+                    </div>
+                </div>
+                <div ng-show="accion.otroServicio=='Si'">
+                    <div ng-show="escritura">
+                        <h5>Seleccionar Servicios</h5>
+                        <div style="max-height:200px;overflow:scroll">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Servicio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in serviciosUnselect"
+                                        style="cursor:pointer"
+                                        ng-click="!(modoVer || !escritura) && selServicio(item)"
+                                        ng-class="{'disabled-row': modoVer || !escritura}">
+                                        <td>
+                                            {{item.nombre}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr />
+                    </div>
+                    <h5>Servicios Seleccionadas</h5>
+                    <div style="max-height:200px;overflow:scroll">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Servicio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in accion.serviciosSelected"
+                                    style="cursor:pointer"
+                                    ng-click="!(modoVer || !escritura) && unSelServicio(item)"
+                                    ng-class="{'disabled-row': modoVer || !escritura}">
+                                    <td>
+                                        {{item.nombre}}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-secondary" ng-click="backToPlan()">Cancelar</button>
+        <button type="button" class="btn btn-secondary" ng-click="backToAccion2()">Atrás</button>
+        <button type="button"
+                class="btn btn-primary"
+                ng-click="goToS4()"
+                ng-disabled="modoVer || !escritura || accion3Form.$invalid || fileSizeError">
+            {{btnText}}
+        </button>
+    </div>
+</div>

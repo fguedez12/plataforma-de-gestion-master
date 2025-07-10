@@ -1,0 +1,79 @@
+﻿
+@{
+    @model Division;
+    ViewData["Title"] = "Index";
+    List<MenuModel> subMenus = (List<MenuModel>)ViewData["subMenus"];
+}
+
+<style type="text/css">
+    .grid-container {
+        display: grid;
+        grid-column-gap: 30px;
+        grid-template-columns: auto auto auto auto;
+        grid-auto-columns: max-content;
+        grid-auto-rows: max-content;
+        margin: 5px 5px 5px 5px;
+        padding: 10px;
+    }
+
+    .grid-item {
+        display: inline-grid;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .icon-img {
+        width: 100px;
+        height: 100px;
+        margin: 2px 2px 2px 2px;
+        padding: 10px 10px 0px 10px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <h2>Gestión de Unidad</h2>
+    </div>
+</div>
+<div class="card container">
+    <div class="grid-container">
+        @*@if (Model.ReportaPMG)
+        {
+            @foreach (var item in subMenus)
+            {
+                <div class="grid-item">
+                    <a asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <img title="@item.Title" class="icon-img" src="@item.Icono" />
+                        <br />
+                        @item.Title
+                    </a>
+                </div>
+            }
+        }
+
+        @if (!Model.ReportaPMG)
+        {
+            <h3>Modulo solo para unidades que reportan PMG</h3>
+        }*@
+
+        @foreach (var item in subMenus)
+        {
+            <div class="grid-item">
+                <a asp-controller="@item.ControllerName" asp-action="@item.ActionName" asp-route-id="@Model.Id">
+                    <img title="@item.Title" class="icon-img" src="@item.Icono" />
+                    <br />
+                    @item.Title
+                </a>
+            </div>
+        }
+        <div class="grid-item">
+            <a href="https://flotavehicular.minenergia.cl" target="_blank">
+                <img title="flota vehicular" class="icon-img" src="~/images/25-traslado.svg" />
+                <br />
+                Gestión de Vehiculos
+            </a>
+        </div>
+
+
+    </div>
+</div>

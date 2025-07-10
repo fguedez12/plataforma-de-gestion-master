@@ -1,0 +1,80 @@
+﻿@model EmpresaDistribuidoraModel
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<h2>Editar</h2>
+
+<h4>@Model.Nombre</h4>
+<hr />
+<div class="row">
+    <div class="col-md-10">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group col-4">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="EnergeticoId" class="control-label"></label>
+                <select asp-for="EnergeticoId" class="form-control" asp-items="ViewBag.Energeticos"></select>
+                <span asp-validation-for="EnergeticoId" class="text-danger"></span>
+            </div>
+            <div class="form-group col-12">
+                <label asp-for="Comunas" class="control-label"></label>
+                <div class="input-group">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">
+                            Asociados
+                        </div>
+
+                        <div class="card-body p-0">
+                            <select asp-for="Comunas" asp-items="ViewBag.ComunasAsociadas"  class="form-control" multiple></select>
+                        </div>
+                    </div>
+
+                    <div class="col-1 text-center btn-group-vertical">
+
+                        <a class="btn btn-danger" id="removeComuna"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a class="btn btn-info" id="addComuna"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+
+                    </div>
+                    
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">No asociados</div>
+                        <div class="card-body p-0">
+                            <select asp-items="ViewBag.ComunasNoAsociadas" id="ComunasNoAsociadas" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Guardar" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#addComuna').click(function () {
+            addSelectData($("select#Comunas"), $("select#ComunasNoAsociadas"));
+        });
+
+        $('#removeComuna').click(function () {
+            removeSelectData($("select#Comunas"), $("select#ComunasNoAsociadas"));
+        });
+
+        $("input[type=submit]").click(function () {
+            //$('select#Comunas option').removeAttr('selected');
+            //$('select#Comunas option').attr('selected', 'selected');
+            $('select#Comunas option').prop("selected", "selected");
+            $("form").submit();
+        });
+
+    });
+</script>

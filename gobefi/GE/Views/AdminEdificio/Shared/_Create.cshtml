@@ -1,0 +1,152 @@
+﻿@model EdificioModel
+
+@{
+    ViewData["Title"] = "";
+}
+
+<div ng-app="edificioApp">
+    <div ng-controller="edificioController">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="MensajeResultado" style="display: none;">
+            <label></label>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+
+        <div class="card" id="crearEdificio">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h4>Crear Edificio</h4>
+                        <hr />
+                        <div class="form-group">
+                            <label class="control-label">Buscar Dirección</label>
+                            <input class="form-control"
+                                   places-auto-complete size=80
+                                   ng-model="vm.address"
+                                   component-restrictions="{country:'cl'}"
+                                   types="{{types}}"
+                                   on-place-changed="changeLocation()" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-7 m-auto">
+                                <ng-map id="map1" map-type-control="true" zoom="15" center="{{initialPos}}" on-click="getpos($event)">
+                                    <marker centered="true" position="{{initialPos}}" title="Ubicación" animation="Animation.BOUNCE" draggable="true" on-dragend="getpos($event)"></marker>
+                                </ng-map>
+                            </div>
+                        </div>
+                        <input type="hidden" id="Lat" />
+                        <input type="hidden" id="Lng" />
+                        <div class="form-group">
+                            <label asp-for="Calle" class="control-label"></label>
+                            <input asp-for="Calle" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Numero" class="control-label"></label>
+                            <input asp-for="Numero" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Regiones</label>
+                            <select class="form-control" asp-for="RegionId" asp-items="ViewBag.Regiones"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Provincias</label>
+                            <select class="form-control" asp-for="ProvinciaId" disabled>
+                                <option>@Constants.Titles.SELECCIONE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ComunaId" class="control-label"></label>
+                            <select asp-for="ComunaId" class="form-control" disabled>
+                                <option>@Constants.Titles.SELECCIONE</option>
+                            </select>
+                        </div>
+                        <input type="hidden" id="hdnEdificioId" />
+                        <div class="form-group">
+                            @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Crear = true })
+                            @*<button onclick="addEdificio()" class="btn btn-default">Guardar</button>*@
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+
+
+    $("#crearEdificio #RegionId").change(function () {
+        $("#crearEdificio #ProvinciaId, #crearEdificio #ComunaId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() != "") {
+            loadSelectDataAsync($("#crearEdificio #ProvinciaId"), apiProvincia + "/getByRegionId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#crearEdificio #ProvinciaId option:first").attr("selected", "selected");
+
+                $("#crearEdificio #ComunaId").val("").attr("disabled", "disabled");
+            });
+        } else {
+            //loadSelectData($("#crearEdificio #ProvinciaId"), apiProvincia, "selected");
+            $("#crearEdificio #ProvinciaId, #crearEdificio #ComunaId").val("").attr("disabled", "disabled");
+        }
+
+
+    });
+
+    $("#crearEdificio #ProvinciaId").change(function () {
+        $("#crearEdificio #ComunaId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#crearEdificio #ComunaId"), apiComuna + "/getByProvinciaId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#crearEdificio #ComunaId option:first").attr("selected", "selected");
+            });
+        } else {
+            //loadSelectData($("#crearEdificio #ProvinciaId"), apiComuna, "selected");
+
+            $("#crearEdificio #ComunaId").val("").attr("disabled", "disabled");
+        }
+
+
+    });
+
+    $("#btnCrear").click(function () {
+        const item = {
+            Calle: $("#crearEdificio #Calle").val(),
+            Numero: $("#crearEdificio #Numero").val(),
+            ComunaId: $("#crearEdificio #ComunaId").val(),
+            Latitud: $("#crearEdificio #Lat").val(),
+            Longitud: $("#crearEdificio #Lng").val(),
+           
+        };
+
+        $.ajax({
+            type: "POST",
+            accepts: "application/json",
+            url: apiEdificio,
+            contentType: "application/json",
+            data: JSON.stringify(item),
+            error: function (jqXHR, textStatus, errorThrown) {
+                $("#MensajeResultado label").html("Error al crear nuevo edificio.")
+                $("#MensajeResultado").removeClass("alert-success").addClass("alert-error");
+
+                $("#MensajeResultado").show();
+            },
+            success: function (result) {
+                $("#crearEdificio #Calle").val("");
+                $("#crearEdificio #Numero").val("");
+                $("#crearEdificio #RegionId").val("");
+                $("#crearEdificio #ProvinciaId").val("").attr("disabled", "disabled");
+                $("#crearEdificio #ComunaId").val("").attr("disabled", "disabled");
+
+                $("#hdnEdificioId").val(result.id).trigger("change");
+
+                $("#MensajeResultado label").html("Edificio creado satisfactoriamente.");
+                $("#MensajeResultado").removeClass("alert-error").addClass("alert-success");
+                $("#MensajeResultado").show();
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,1312 @@
+﻿﻿<h1>Diseño Plan de gestión Ambiental – Etapa 2</h1>
+<hr />
+<style>
+    .action-buttons-group {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+    #nav-plan-gestion table.table td .action-buttons-group .btn {
+        margin: 0; /* Evitar doble margen si Bootstrap ya tiene y gap se encarga */
+    }
+    #nav-plan-gestion table.table td .action-buttons-group .btn:hover {
+        opacity: 0.85;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #nav-plan-gestion table.table td .action-buttons-group .btn:focus {
+        outline: 2px solid #007bff;
+        outline-offset: 1px;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+</style>
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+        <a class="nav-item nav-link active"
+           id="nav-revision-tab"
+           data-toggle="tab"
+           href="#nav-revision"
+           role="tab">
+            Revisión de la Red
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-brechas-tab"
+           data-toggle="tab"
+           href="#nav-brechas"
+           role="tab">
+            Brechas Ambientales
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-objetivos-tab"
+           data-toggle="tab"
+           href="#nav-objetivos"
+           role="tab">
+            Objetivos
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-acciones-tab"
+           data-toggle="tab"
+           href="#nav-acciones"
+           role="tab">
+            Acciones
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-tareas-tab"
+           data-toggle="tab"
+           href="#nav-tareas"
+           role="tab">
+            Tareas
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-indicadores-tab"
+           data-toggle="tab"
+           href="#nav-indicadores"
+           role="tab">
+            Indicadores
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-programa-tab"
+           data-toggle="tab"
+           href="#nav-programa"
+           role="tab">
+            Programa de trabajo
+        </a>
+    </div>
+</nav>
+<div class="tab-content" id="nav-plan-gestion">
+     <div class="tab-pane fade show active" id="nav-revision" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+           <form>
+            <h3>Opinión Técnica Favorable de Completitud y Oportunidad : {{pga.pgaRevisionRed ? 'Validado' : 'No validado'}}</h3>
+            <hr>
+                <div class="form-group">
+                    <label for="observacionRed">Observación de la Red:</label>
+                    <textarea ng-model="pga.pgaObservacionRed" name="observacionRed" class="form-control" cols="3" readonly></textarea>
+                </div>
+                <div class="mt-3">
+                    <div class="form-group">
+                        <label for="respuestaRed">Respuesta a Observaciones de la Red:{{justificacion}}</label>
+                        <textarea ng-model="pga.pgaRespuestaRed" name="respuestaRed" class="form-control" cols="3" ng-disabled="!escritura"></textarea>
+                    </div>
+                    <button ng-disabled="!escritura" class="btn btn-success" ng-click="savePgaInfo()">Guardar</button>
+                </div>
+           </form>
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-brechas" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <button ng-disabled="!escritura" class="btn btn-primary btn-sm" ng-click="newBrecha()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Brecha
+                </button>
+            </div>
+            <hr />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-dim" role="tablist">
+                    <a ng-repeat="item in data.dimensiones"
+                       class="nav-item nav-link {{item.nombre=='Energía' ? 'active':''}}"
+                       data-toggle="tab"
+                       href="#{{item.target}}"
+                       role="tab">
+                        {{item.nombre}}
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-dimensiones">
+                <div ng-repeat="item in data.dimensiones"
+                     class="tab-pane fade show {{item.nombre=='Energía' ? 'active':''}}" id="{{item.target}}" role="tabpanel">
+                    <div class="card shadow mb-4 bg-white rounded">
+                        <div class="card-body">
+                            <form ng-submit="saveObs(item)">
+                                <h4>Brechas Dimensión: {{item.nombre}}</h4>
+                                <hr />
+                                <div class="form-group d-flex">
+                                    <label class="control-label pt-3">Ingreso de observaciones:</label>
+                                    <div class="col ml-3" style="padding: 10px">
+                                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                            <input ng-disabled="!escritura"
+                                                   id="obsEnergia"
+                                                   type="checkbox"
+                                                   name="obsEnergia"
+                                                   ng-change="changeIngresoObs(this)"
+                                                   ng-model="item.ingresoObservacion">
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                                    </div>
+                                </div>
+                                <div ng-show="item.ingresoObservacion">
+                                    <div class="form-group">
+                                        <label class="form-label">Observación</label>
+                                        <textarea ng-model="item.observacion" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary" ng-disabled="!escritura">Guardar Observación</button>
+                                </div>
+
+                            </form>
+                            <hr />
+                            <nav>
+                                <div class="nav nav-tabs" role="tablist">
+                                    <a class="nav-item nav-link active"
+                                       data-toggle="tab"
+                                       href="#nav-{{item.nombreNormalizado}}-unidad"
+                                       role="tab">
+                                        Brecha por unidades
+                                    </a>
+                                    <a class="nav-item nav-link"
+                                       data-toggle="tab"
+                                       href="#nav-{{item.nombreNormalizado}}-servicios"
+                                       role="tab">
+                                        Brecha por servicio
+                                    </a>
+                                </div>
+                            </nav>
+                            <div class="tab-content" id="nav-brechas-energia">
+                                <div class="tab-pane fade show active" id="nav-{{item.nombreNormalizado}}-unidad" role="tabpanel">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha Creación</th>
+                                                <th>Título</th>
+                                                <th style="min-width:250px">Opciones de edición</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in brechas | filter: {dimensionBrechaId : item.id,tipoBrecha : 2}">
+                                                <td>
+                                                    {{item.createdAt | date:'dd-MM-yyyy'}}
+                                                </td>
+                                                <td>
+                                                    {{item.titulo}}
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons-group">
+                                                        <button type="button"
+                                                                ng-click="abrirModalVerBrecha(item)"
+                                                                class="btn btn-info action-button">
+                                                            <span class="fa fa-eye"></span>
+                                                            Ver
+                                                        </button>
+                                                        <button type="button"
+                                                                ng-click="abrirModalEditarBrecha(item)"
+                                                                ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                                class="btn btn-warning action-button">
+                                                            <span class="fa fa-pencil-square-o"></span>
+                                                            Editar
+                                                        </button>
+                                                        <button type="button"
+                                                                ng-click="delete(item)"
+                                                                ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                                class="btn btn-danger action-button">
+                                                            <span class="fa fa-trash-o"></span>
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade show" id="nav-{{item.nombreNormalizado}}-servicios" role="tabpanel">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha Creación</th>
+                                                <th>Título</th>
+                                                <th>Descripción</th>
+                                                <th>Opciones de edición</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in brechas | filter: {dimensionBrechaId : item.id,tipoBrecha : 1}">
+                                                <td>
+                                                    {{item.createdAt | date:'dd-MM-yyyy'}}
+                                                </td>
+                                                <td>
+                                                    {{item.titulo}}
+                                                </td>
+                                                <td>
+                                                    {{item.descripcion}}
+                                                </td>
+
+                                                <td>
+                                                    <div class="action-buttons-group">
+                                                        <button type="button"
+                                                                ng-click="abrirModalVerBrecha(item)"
+                                                                class="btn btn-info action-button">
+                                                            <span class="fa fa-eye"></span>
+                                                            Ver
+                                                        </button>
+                                                        <button type="button"
+                                                                ng-click="abrirModalEditarBrecha(item)"
+                                                                ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                                class="btn btn-warning action-button">
+                                                            <span class="fa fa-pencil-square-o"></span>Editar
+                                                        </button>
+                                                        <button type="button"
+                                                                ng-click="delete(item)"
+                                                                ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                                class="btn btn-danger action-button">
+                                                            <span class="fa fa-trash-o"></span>Eliminar
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-objetivos" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <button ng-disabled="!escritura" class="btn btn-primary btn-sm" ng-click="newObjetivo()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Objetivo
+                </button>
+            </div>
+            <hr />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-dim-o" role="tablist">
+                    <a ng-repeat="item in data.dimensiones"
+                       class="nav-item nav-link {{item.nombre=='Energía' ? 'active':''}}"
+                       data-toggle="tab"
+                       href="#{{item.target}}-objetivos"
+                       role="tab">
+                        {{item.nombre}}
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-dimensiones-objetivos">
+                <div ng-repeat="item in data.dimensiones"
+                     class="tab-pane fade show {{item.nombre=='Energía' ? 'active':''}}" id="{{item.target}}-objetivos" role="tabpanel">
+                    <div class="card shadow mb-4 bg-white rounded">
+                        <div class="card-body">
+                            <form ng-submit="saveObs(item)">
+                                <h4>Objetivos Dimensión: {{item.nombre}}</h4>
+                                <hr />
+                                <div class="form-group d-flex">
+                                    <label class="control-label pt-3">Ingreso de observaciones:</label>
+                                    <div class="col ml-3" style="padding: 10px">
+                                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                            <input ng-disabled="!escritura"
+                                                   id="obsEnergiaObjetivos"
+                                                   type="checkbox"
+                                                   name="obsEnergiaObjetivos"
+                                                   ng-change="changeIngresoObsObjetivos(this)"
+                                                   ng-model="item.ingresoObservacionObjetivos">
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                                    </div>
+                                </div>
+                                <div ng-show="item.ingresoObservacionObjetivos">
+                                    <div class="form-group">
+                                        <label class="form-label">Observación</label>
+                                        <textarea ng-model="item.observacionObjetivos" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary" ng-disabled="!escritura">Guardar Observación</button>
+                                </div>
+
+                            </form>
+                            <hr />
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Creación</th>
+                                        <th>Título</th>
+                                        <th style="min-width:250px">Opciones de edición</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in objetivos | filter: {dimensionBrechaId : item.id}">
+                                        <td>
+                                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{item.titulo}}
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons-group">
+                                                <button type="button"
+                                                        ng-click="abrirModalVerObjetivo(item)"
+                                                        class="btn btn-info action-button">
+                                                    <span class="fa fa-eye"></span>
+                                                    Ver
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="abrirModalEditarObjetivo(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-warning action-button">
+                                                    <span class="fa fa-pencil-square-o"></span>
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="deleteObjetivo(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-danger action-button">
+                                                    <span class="fa fa-trash-o"></span>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-acciones" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <button ng-disabled="!escritura" class="btn btn-primary btn-sm" ng-click="newAccion()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Acción
+                </button>
+            </div>
+            <hr />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-dim-o" role="tablist">
+                    <a ng-repeat="item in data.dimensiones"
+                       class="nav-item nav-link {{item.nombre=='Energía' ? 'active':''}}"
+                       data-toggle="tab"
+                       href="#{{item.target}}-acciones"
+                       role="tab">
+                        {{item.nombre}}
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-dimensiones-acciones">
+                <div ng-repeat="item in data.dimensiones"
+                     class="tab-pane fade show {{item.nombre=='Energía' ? 'active':''}}" id="{{item.target}}-acciones" role="tabpanel">
+                    <div class="card shadow mb-4 bg-white rounded">
+                        <div class="card-body">
+                            <form ng-submit="saveObs(item)">
+                                <h4>Acciones Dimensión: {{item.nombre}}</h4>
+                                <hr />
+                                <div class="form-group d-flex">
+                                    <label class="control-label pt-3">Ingreso de observaciones:</label>
+                                    <div class="col ml-3" style="padding: 10px">
+                                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                            <input ng-disabled="!escritura"
+                                                   id="obsEnergiaAcciones"
+                                                   type="checkbox"
+                                                   name="obsEnergiaAcciones"
+                                                   ng-change="changeIngresoObsAcciones(this)"
+                                                   ng-model="item.ingresoObservacionAcciones">
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                                    </div>
+                                </div>
+                                <div ng-show="item.ingresoObservacionAcciones">
+                                    <div class="form-group">
+                                        <label class="form-label">Observación</label>
+                                        <textarea ng-model="item.observacionAcciones" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary" ng-disabled="!escritura">Guardar Observación</button>
+                                </div>
+
+                            </form>
+                            <hr />
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fecha Creación</th>
+                                        <th>Medida</th>
+                                        <th style="min-width:250px">Opciones de edición</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in acciones | filter: {dimensionBrechaId : item.id}">
+                                        <td>{{item.id}}</td>
+                                        <td>
+                                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{ item.medida | truncate: 80}}
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons-group">
+                                                <button type="button"
+                                                        ng-click="abrirModalVerAccion(item)"
+                                                        class="btn btn-info action-button">
+                                                    <span class="fa fa-eye"></span>
+                                                    Ver
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="abrirModalEditarAccion(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-warning action-button">
+                                                    <span class="fa fa-pencil-square-o"></span>
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="deleteAccion(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-danger action-button">
+                                                    <span class="fa fa-trash-o"></span>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="tab-pane fade show" id="nav-tareas" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <button ng-disabled="!escritura" class="btn btn-primary btn-sm" ng-click="newTarea()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Tarea
+                </button>
+            </div>
+            <hr />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-dim-o" role="tablist">
+                    <a ng-repeat="item in data.dimensiones"
+                       class="nav-item nav-link {{item.nombre=='Energía' ? 'active':''}}"
+                       data-toggle="tab"
+                       href="#{{item.target}}-tareas"
+                       role="tab">
+                        {{item.nombre}}
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-dimensiones-tareas">
+                <div ng-repeat="item in data.dimensiones"
+                     class="tab-pane fade show {{item.nombre=='Energía' ? 'active':''}}" id="{{item.target}}-tareas" role="tabpanel">
+                    <div class="card shadow mb-4 bg-white rounded">
+                        <div class="card-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th>Fecha de Inicio</th>
+                                        <th>Fecha de Fin</th>
+                                        <th>Responsable</th>
+                                        <th style="min-width:250px">Opciones de edición</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in tareas | filter: {dimensionBrechaId : item.id}">
+                                        <td>
+                                            {{ item.nombre | truncate: 80}}
+                                        </td>
+                                        <td>
+                                            {{item.fechaInicio | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{item.fechaFin | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{ item.responsable | truncate: 80}}
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons-group">
+                                                <button type="button"
+                                                        ng-click="abrirModalVerTarea(item)"
+                                                        class="btn btn-info action-button">
+                                                    <span class="fa fa-eye"></span>
+                                                    Ver
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="abrirModalEditarTarea(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-warning action-button">
+                                                    <span class="fa fa-pencil-square-o"></span>
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="deleteTarea(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-danger action-button">
+                                                    <span class="fa fa-trash-o"></span>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-indicadores" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <button ng-disabled="!escritura" class="btn btn-primary btn-sm" ng-click="newIndicador()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Indicador
+                </button>
+            </div>
+            <hr />
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab-dim-o" role="tablist">
+                    <a ng-repeat="item in data.dimensiones"
+                       class="nav-item nav-link {{item.nombre=='Energía' ? 'active':''}}"
+                       data-toggle="tab"
+                       href="#{{item.target}}-indicadores"
+                       role="tab">
+                        {{item.nombre}}
+                    </a>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-dimensiones-indicadores">
+                <div ng-repeat="item in data.dimensiones"
+                     class="tab-pane fade show {{item.nombre=='Energía' ? 'active':''}}" id="{{item.target}}-indicadores" role="tabpanel">
+                    <div class="card shadow mb-4 bg-white rounded">
+                        <div class="card-body">
+                            <form ng-submit="saveObs(item)">
+                                <h4>Acciones Dimensión: {{item.nombre}}</h4>
+                                <hr />
+                                <div class="form-group d-flex">
+                                    <label class="control-label pt-3">Ingreso de observaciones:</label>
+                                    <div class="col ml-3" style="padding: 10px">
+                                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                            <input ng-disabled="!escritura"
+                                                   id="obsEnergiaAcciones"
+                                                   type="checkbox"
+                                                   name="obsEnergiaAcciones"
+                                                   ng-change="changeIngresoObsIndicadores(this)"
+                                                   ng-model="item.ingresoObservacionIndicadores">
+                                            <span class="slider round"></span>
+                                        </label>
+                                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                                    </div>
+                                </div>
+                                <div ng-show="item.ingresoObservacionIndicadores">
+                                    <div class="form-group">
+                                        <label class="form-label">Observación</label>
+                                        <textarea ng-model="item.observacionIndicadores" class="form-control" rows="3"></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-secondary" ng-disabled="!escritura">Guardar Observación</button>
+                                </div>
+
+                            </form>
+                            <hr />
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Creación</th>
+                                        <th>Nombre</th>
+                                        <th style="min-width:250px">Opciones de edición</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in indicadores | filter: {dimensionBrechaId : item.id}">
+                                        <td>
+                                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{item.nombre}}
+                                        </td>
+                                        <td>
+                                            <div class="action-buttons-group">
+                                                <button type="button"
+                                                        ng-click="abrirModalVerIndicador(item)"
+                                                        class="btn btn-info action-button">
+                                                    <span class="fa fa-eye"></span>
+                                                    Ver
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="abrirModalEditarIndicador(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-warning action-button">
+                                                    <span class="fa fa-pencil-square-o"></span>
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        ng-click="deleteIndicador(item)"
+                                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                                        class="btn btn-danger action-button">
+                                                    <span class="fa fa-trash-o"></span>
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-programa" role="tabpanel">
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="mt-3">
+                <!-- <button ng-disabled="!escritura || programas.length>0" class="btn btn-primary btn-sm" ng-click="newPrograma()">
+                    <span class="fa fa-plus"></span>
+                    Agregar Programa
+                </button> -->
+            </div>
+            <hr />
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Fecha Creación</th>
+                        <th>Nombre</th>
+                        <th style="min-width:250px">Opciones de edición</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in programas">
+                        <td>
+                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                        </td>
+                        <td>
+                            {{item.nombre}}
+                        </td>
+                        <td>
+                            <div class="action-buttons-group">
+                                <button type="button"
+                                        ng-click="abrirModalVerPrograma(item)"
+                                        class="btn btn-info action-button">
+                                    <span class="fa fa-eye"></span>
+                                    Ver
+                                </button>
+                                <!-- <button type="button"
+                                        ng-click="abrirModalEditarPrograma(item)"
+                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                        class="btn btn-warning action-button">
+                                    <span class="fa fa-pencil-square-o"></span>
+                                    Editar
+                                </button>
+                                <button type="button"
+                                        ng-click="deletePrograma(item)"
+                                        ng-show="escritura && (esAnioActualOPosterior(item.createdAt) || $root.isAdmin)"
+                                        class="btn btn-danger action-button">
+                                    <span class="fa fa-trash-o"></span>
+                                    Eliminar
+                                </button> -->
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}} Brecha</h5>
+                <button type="button" class="close" aria-label="Close" ng-click="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="brechaForm" ng-submit="submitForm()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="dimBrecha" class="form-label"><span class="text-danger">* </span>Dimensión:</label>
+                        <select id="dimBrecha"
+                                name="dimBrecha"
+                                ng-model="brecha.dimensionId"
+                                ng-class="{'is-invalid':brechaForm.dimBrecha.$invalid  && (brechaForm.dimBrecha.$touched || brechaForm.dimBrecha.$dirty),'is-valid':brechaForm.dimBrecha.$valid  }"
+                                class="form-control"
+                                ng-disabled="modoVer || !escritura"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in data.dimensiones" ng-value={{item.id}}>{{item.nombre}}</option>
+                        </select>
+                        <span ng-show="brechaForm.dimBrecha.$invalid  && (brechaForm.dimBrecha.$touched || brechaForm.dimBrecha.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoBrecha" class="form-label"><span class="text-danger">* </span>Tipo:</label>
+                        <select id="tipoBrecha"
+                                name="tipoBrecha"
+                                ng-model="brecha.tipoBrecha"
+                                ng-class="{'is-invalid':brechaForm.tipoBrecha.$invalid  && (brechaForm.tipoBrecha.$touched || brechaForm.tipoBrecha.$dirty),'is-valid':brechaForm.tipoBrecha.$valid  }"
+                                class="form-control"
+                                ng-change="chancheTipoBrecha()"
+                                ng-disabled="modoVer || !escritura"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-value="1">Brecha por servicio</option>
+                            <option ng-value="2">Brecha por unidades</option>
+                        </select>
+                        <span ng-show="brechaForm.tipoBrecha.$invalid  && (brechaForm.tipoBrecha.$touched || brechaForm.tipoBrecha.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Título:</label>
+                        <input type="text" class="form-control" name="titulo"
+                               ng-model="brecha.titulo"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':brechaForm.titulo.$invalid  && (brechaForm.titulo.$touched || brechaForm.titulo.$dirty),'is-valid':brechaForm.titulo.$valid  }" />
+                        <span ng-show="brechaForm.titulo.$error.required  && (brechaForm.titulo.$touched || brechaForm.titulo.$dirty)" class="text-danger">
+                            El campo Título es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span class="text-danger">* </span>Descripción</label>
+                        <textarea ng-model="brecha.descripcion"
+                                  name="descripcion"
+                                  class="form-control"
+                                  ng-disabled="modoVer || !escritura"
+                                  ng-class="{'is-invalid':brechaForm.descripcion.$invalid  && (brechaForm.descripcion.$touched || brechaForm.descripcion.$dirty),'is-valid':brechaForm.descripcion.$valid  }"
+                                  required
+                                  rows="3">
+                        </textarea>
+                        <span ng-show="brechaForm.descripcion.$error.required  && (brechaForm.descripcion.$touched || brechaForm.descripcion.$dirty)" class="text-danger">
+                            El campo Descripción es requerido
+                        </span>
+                    </div>
+                    <div ng-show="brecha.tipoBrecha==2">
+                        <hr />
+                        <div ng-show="escritura">
+                            <h5>Seleccionar Unidades</h5>
+                            <input type="text" class="form-control" placeholder="buscar..." ng-model="searchText" ng-change="filterUnidad()" ng-disabled="modoVer || !escritura" />
+                            <div style="max-height:200px;overflow:scroll">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Unidad</th>
+                                            <th ng-show="brecha.dimensionId==1">Indicador</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="item in unidades" style="cursor:pointer" ng-click="(!modoVer && escritura) && selUnidad(item)">
+                                            <td>
+                                                {{item.direccion}}
+                                            </td>
+                                            <td ng-show="brecha.dimensionId==1">
+                                                {{item.indicadorEnegia ? item.indicadorEnegia : 'Sin medición'}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <hr />
+                        </div>
+
+                        <h5>Unidades Seleccionadas</h5>
+                        <div style="max-height:200px;overflow:scroll">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Unidad</th>
+                                        <th ng-show="brecha.dimensionId==1">Indicador</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in unidadesSelected" style="cursor:pointer" ng-click="(!modoVer && escritura) && unSelUnidad(item)">
+                                        <td>
+                                            {{item.direccion}}
+                                        </td>
+                                        <td ng-show="brecha.dimensionId==1">
+                                            {{item.indicadorEnegia ? item.indicadorEnegia : 'Sin medición'}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModal()">Cancelar</button>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            ng-show="escritura"
+                            ng-disabled="modoVer || brechaForm.$invalid || (brecha.tipoBrecha==2 && unidadesSelected.length==0) ">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<!-- Modal Objetivos -->
+<div class="modal fade" id="modal-form-objetivos" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitleObjetivo}} Objetivo</h5>
+                <button type="button" class="close" aria-label="Close" ng-click="closeModalObjetivo()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="objetivoForm" ng-submit="submitFormObjetivo()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="dimensionBrechaId" class="form-label"><span class="text-danger">* </span>Dimensión:</label>
+                        <select id="dimensionBrechaId"
+                                name="dimensionBrechaId"
+                                ng-model="objetivo.dimensionBrechaId"
+                                ng-class="{'is-invalid':objetivoForm.dimensionBrechaId.$invalid  && (objetivoForm.dimensionBrechaId.$touched || objetivoForm.dimensionBrechaId.$dirty),'is-valid':objetivoForm.dimensionBrechaId.$valid  }"
+                                class="form-control"
+                                ng-disabled="modoVer || !escritura"
+                                ng-change="changeDimObjetivo()"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in data.dimensiones" ng-value={{item.id}}>{{item.nombre}}</option>
+                        </select>
+                        <span ng-show="objetivoForm.dimensionBrechaId.$invalid  && (objetivoForm.dimensionBrechaId.$touched || objetivoForm.dimensionBrechaId.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Título:</label>
+                        <input type="text" class="form-control" name="titulo"
+                               ng-model="objetivo.titulo"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':objetivoForm.titulo.$invalid  && (objetivoForm.titulo.$touched || objetivoForm.titulo.$dirty),'is-valid':objetivoForm.titulo.$valid  }" />
+                        <span ng-show="objetivoForm.titulo.$error.required  && (objetivoForm.titulo.$touched || objetivoForm.titulo.$dirty)" class="text-danger">
+                            El campo Título es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span class="text-danger">* </span>Ingrese Objetivo (máximo 100 caracteres):</label>
+                        <textarea ng-model="objetivo.descripcion"
+                                  name="descripcion"
+                                  class="form-control"
+                                  ng-disabled="modoVer || !escritura"
+                                  ng-class="{'is-invalid':objetivoForm.descripcion.$invalid  && (objetivoForm.descripcion.$touched || objetivoForm.descripcion.$dirty),'is-valid':objetivoForm.descripcion.$valid  }"
+                                  required
+                                  maxlength="100"
+                                  rows="3">
+                        </textarea>
+                        <span ng-show="objetivoForm.descripcion.$error.required  && (objetivoForm.descripcion.$touched || objetivoForm.descripcion.$dirty)" class="text-danger">
+                            El campo Descripción es requerido
+                        </span>
+                    </div>
+                    <hr />
+                    <div ng-show="escritura">
+                        <h5>Seleccionar Brechas</h5>
+                        <div style="max-height:200px;overflow:scroll">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Creación</th>
+                                        <th>Título</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in brechasUnSelected" style="cursor:pointer" ng-click="selBrecha(item)">
+                                        <td>
+                                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{item.titulo}}
+                                        </td>
+                                        <td>
+                                            {{item.descripcion}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr />
+                        <h5>Brechas Seleccionadas</h5>
+                        <div style="max-height:200px;overflow:scroll">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha Creación</th>
+                                        <th>Título</th>
+                                        <th>Descripción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in brechasSelected" style="cursor:pointer" ng-click="unSelBrecha(item)">
+                                        <td>
+                                            {{item.createdAt | date:'dd-MM-yyyy'}}
+                                        </td>
+                                        <td>
+                                            {{item.titulo}}
+                                        </td>
+                                        <td>
+                                            {{item.descripcion}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModalObjetivo()">Cancelar</button>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            ng-show="escritura"
+                            ng-disabled="modoVer || objetivoForm.$invalid || brechasSelected.length==0">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Tareas -->
+<div class="modal fade" id="modal-form-tareas" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitleTarea}} Tarea</h5>
+                <button type="button" class="close" aria-label="Close" ng-click="closeModalTarea()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="tareaForm" ng-submit="submitFormTarea()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="dimensionBrechaId" class="form-label"><span class="text-danger">* </span>Dimensión:</label>
+                        <select id="dimensionBrechaId"
+                                name="dimensionBrechaId"
+                                ng-model="tarea.dimensionBrechaId"
+                                ng-class="{'is-invalid':tareaForm.dimensionBrechaId.$invalid  && (tareaForm.dimensionBrechaId.$touched || tareaForm.dimensionBrechaId.$dirty),'is-valid':tareaForm.dimensionBrechaId.$valid  }"
+                                class="form-control"
+                                ng-change="changeDimTarea()"
+                                ng-disabled="modoVer || !escritura"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in data.dimensiones" ng-value={{item.id}}>{{item.nombre}}</option>
+                        </select>
+                        <span ng-show="tareaForm.dimensionBrechaId.$invalid  && (tareaForm.dimensionBrechaId.$touched || tareaForm.dimensionBrechaId.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="accionTarea" class="form-label"><span class="text-danger">* </span>Acción:</label>
+                        <select id="accionTarea"
+                                name="accionTarea"
+                                ng-model="tarea.accionId"
+                                ng-class="{'is-invalid':tareaForm.accionTarea.$invalid  && (tareaForm.accionTarea.$touched || tareaForm.accionTarea.$dirty),'is-valid':tareaForm.accionTarea.$valid  }"
+                                class="form-control"
+                                ng-disabled="modoVer || !escritura || !tarea.dimensionBrechaId"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in accionesTareas" ng-value={{item.id}}>
+                                Id: {{item.id}} - {{item.medida | truncate: 50}}{{item.medida === 'Otra Medida' && item.medidaDescripcion ? ' - ' + (item.medidaDescripcion | truncate: 50) : ''}}
+                            </option>
+                        </select>
+                        <span ng-show="tareaForm.accionTarea.$invalid  && (tareaForm.accionTarea.$touched || tareaForm.accionTarea.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Tarea:</label>
+                        <input type="text" class="form-control" name="nombre"
+                               ng-model="tarea.nombre"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':tareaForm.nombre.$invalid  && (tareaForm.nombre.$touched || tareaForm.nombre.$dirty),'is-valid':tareaForm.nombre.$valid  }" />
+                        <span ng-show="tareaForm.nombre.$error.required  && (tareaForm.nombre.$touched || tareaForm.nombre.$dirty)" class="text-danger">
+                            El campo Tarea es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Fecha inicio:</label>
+                        <input type="date" class="form-control" name="fechaInicio"
+                               ng-model="tarea.fechaInicio"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-change="validarFechas()"
+                               ng-class="{'is-invalid':tareaForm.fechaInicio.$invalid  && (tareaForm.fechaInicio.$touched || tareaForm.fechaInicio.$dirty) || fechaValidationError,'is-valid':tareaForm.fechaInicio.$valid && !fechaValidationError}" />
+                        <span ng-show="tareaForm.fechaInicio.$error.required  && (tareaForm.fechaInicio.$touched || tareaForm.fechaInicio.$dirty)" class="text-danger">
+                            El campo Fecha inicio es requerido
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Fecha fin:</label>
+                        <input type="date" class="form-control" name="fechaFin"
+                               ng-model="tarea.fechaFin"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-change="validarFechas()"
+                               ng-class="{'is-invalid':tareaForm.fechaFin.$invalid  && (tareaForm.fechaFin.$touched || tareaForm.fechaFin.$dirty) || fechaValidationError,'is-valid':tareaForm.fechaFin.$valid && !fechaValidationError}" />
+                        <span ng-show="tareaForm.fechaFin.$error.required  && (tareaForm.fechaFin.$touched || tareaForm.fechaFin.$dirty)" class="text-danger">
+                            El campo Fecha fin es requerido
+                        </span>
+                        <span ng-show="fechaValidationError" class="text-danger">
+                            {{fechaValidationError}}
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Responsable:</label>
+                        <input type="text" class="form-control" name="responsable"
+                               ng-model="tarea.responsable"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':tareaForm.responsable.$invalid  && (tareaForm.responsable.$touched || tareaForm.responsable.$dirty),'is-valid':tareaForm.responsable.$valid  }" />
+                        <span ng-show="tareaForm.responsable.$error.required  && (tareaForm.responsable.$touched || tareaForm.responsable.$dirty)" class="text-danger">
+                            El campo Responsable es requerido
+                        </span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Estado de avance:</label>
+                        <select class="form-control" name="estadoAvance"
+                                ng-model="tarea.estadoAvance"
+                                ng-disabled="isEstadoAvanceDisabled()"
+                                required
+                                ng-class="{'is-invalid':tareaForm.estadoAvance.$invalid  && (tareaForm.estadoAvance.$touched || tareaForm.estadoAvance.$dirty),'is-valid':tareaForm.estadoAvance.$valid  }">
+                            <option value="">--Seleccione--</option>
+                            <option value="No implementado">No implementado</option>
+                            <option value="Implementado">Implementado</option>
+                        </select>
+                        <span ng-show="tareaForm.estadoAvance.$error.required  && (tareaForm.estadoAvance.$touched || tareaForm.estadoAvance.$dirty)" class="text-danger">
+                            El campo Estado de avance es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Observaciones:</label>
+                        <textarea ng-model="tarea.observaciones"
+                                  name="observaciones"
+                                  class="form-control"
+                                  ng-disabled="modoVer || !escritura"
+                                  ng-class="{'is-invalid':tareaForm.observaciones.$invalid  && (tareaForm.observaciones.$touched || tareaForm.observaciones.$dirty),'is-valid':tareaForm.observaciones.$valid  }"
+                                  rows="3">
+                        </textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" ng-click="closeModalTarea()">Cancelar</button>
+                        <button type="submit"
+                                class="btn btn-primary"
+                                ng-show="escritura"
+                                ng-disabled="modoVer || tareaForm.$invalid || fechaValidationError">
+                            Guardar
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Indicadores -->
+<div class="modal fade" id="modal-form-indicadores" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitleIndicador}} Indicador</h5>
+                <button type="button" class="close" aria-label="Close" ng-click="closeModalIndicador()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="indicadorForm" ng-submit="submitFormIndicador()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="dimensionBrechaId" class="form-label"><span class="text-danger">* </span>Dimensión:</label>
+                        <select id="dimensionBrechaId"
+                                name="dimensionBrechaId"
+                                ng-model="indicador.dimensionBrechaId"
+                                ng-class="{'is-invalid':indicadorForm.dimensionBrechaId.$invalid  && (indicadorForm.dimensionBrechaId.$touched || indicadorForm.dimensionBrechaId.$dirty),'is-valid':indicadorForm.dimensionBrechaId.$valid  }"
+                                class="form-control"
+                                ng-change="changeDimIndicador()"
+                                ng-disabled="modoVer || !escritura"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in data.dimensiones" ng-value={{item.id}}>{{item.nombre}}</option>
+                        </select>
+                        <span ng-show="indicadorForm.dimensionBrechaId.$invalid  && (indicadorForm.dimensionBrechaId.$touched || indicadorForm.dimensionBrechaId.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label for="objetivoIndicador" class="form-label"><span class="text-danger">* </span>Objetivo:</label>
+                        <select id="objetivoIndicador"
+                                name="objetivoIndicador"
+                                ng-model="indicador.objetivoId"
+                                ng-class="{'is-invalid':indicadorForm.objetivoIndicador.$invalid  && (indicadorForm.objetivoIndicador.$touched || indicadorForm.objetivoIndicador.$dirty),'is-valid':indicadorForm.objetivoIndicador.$valid  }"
+                                class="form-control"
+                                ng-disabled="modoVer || !escritura || !indicador.dimensionBrechaId"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-repeat="item in objetivosIndicadores" ng-value={{item.id}}>{{item.titulo}}</option>
+                        </select>
+                        <span ng-show="indicadorForm.objetivoIndicador.$invalid  && (indicadorForm.objetivoIndicador.$touched || indicadorForm.objetivoIndicador.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Nombre Indicador:</label>
+                        <input type="text" class="form-control" name="nombre"
+                               ng-model="indicador.nombre"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':indicadorForm.nombre.$invalid  && (indicadorForm.nombre.$touched || indicadorForm.nombre.$dirty),'is-valid':indicadorForm.nombre.$valid  }" />
+                        <span ng-show="indicadorForm.nombre.$error.required  && (indicadorForm.nombre.$touched || indicadorForm.nombre.$dirty)" class="text-danger">
+                            El campo Nombre Indicador es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span class="text-danger">* </span>Descripción de indicador Anual:</label>
+                        <textarea ng-model="indicador.descripcion"
+                                  name="descripcion"
+                                  class="form-control"
+                                  ng-disabled="modoVer || !escritura"
+                                  ng-class="{'is-invalid':indicadorForm.descripcion.$invalid  && (indicadorForm.descripcion.$touched || indicadorForm.descripcion.$dirty),'is-valid':indicadorForm.descripcion.$valid  }"
+                                  required
+                                  rows="3">
+                        </textarea>
+                        <span ng-show="indicadorForm.descripcion.$error.required  && (indicadorForm.descripcion.$touched || indicadorForm.descripcion.$dirty)" class="text-danger">
+                            El campo Descripción es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="numerador">Nombre numerador:</label>
+                        <input type="text" class="form-control" name="numerador"
+                               ng-model="indicador.numerador"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="denominador">Nombre denominador:</label>
+                        <input type="text" class="form-control" name="denominador"
+                               ng-model="indicador.denominador"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label" for="unidadMedida">Unidad de Medida:</label>
+                        <input type="text" class="form-control" name="unidadMedida"
+                               ng-model="indicador.unidadMedida"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+                    <!-- <span class="text-danger">Periodicidad Anual</span>
+                    <div class="form-group">
+                        <label class="control-label" for="valor">Valor indicador propuesto para el año 2024:</label>
+                        <input type="number" class="form-control" name="valor"
+                               ng-model="indicador.valor"
+                               ng-disabled="!escritura"
+                               ng-class="{'is-invalid':indicadorForm.valor.$invalid  && (indicadorForm.valor.$touched || indicadorForm.valor.$dirty),'is-valid':indicadorForm.valor.$valid  }"
+                               ng-pattern="/^\d+(\.\d{1,2})?$/"
+                               min="0" />
+                        <div ng-show="indicadorForm.valor.$error.pattern">
+                            <span class="text-danger">El valor debe ser mayor o igual a 0 y puede tener hasta dos decimales.</span>
+                        </div>
+                    </div> -->
+                    <!-- <div class="form-group">
+                        <label class="control-label" for="respladoMonitoreo"><span class="text-danger">* </span>Respaldo del monitoreo (o fuente de información del indicador):</label>
+                        <input type="text" class="form-control" name="respladoMonitoreo"
+                               ng-model="indicador.respladoMonitoreo"
+                               ng-class="{'is-invalid':indicadorForm.respladoMonitoreo.$invalid  && (indicadorForm.respladoMonitoreo.$touched || indicadorForm.respladoMonitoreo.$dirty),'is-valid':indicadorForm.respladoMonitoreo.$valid  }"
+                               ng-disabled="!escritura"
+                               required />
+                        <div ng-show="indicadorForm.respladoMonitoreo.$error.required && (indicadorForm.respladoMonitoreo.$touched || indicadorForm.respladoMonitoreo.$dirty)">
+                            <span class="text-danger">El Campo Respaldo del monitoreo es requerido </span>
+                        </div>
+                    </div> -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" ng-click="closeModalIndicador()">Cancelar</button>
+                        <button type="submit"
+                                class="btn btn-primary"
+                                ng-show="escritura"
+                                ng-disabled="modoVer || indicadorForm.$invalid">
+                            Guardar
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Modal Programa -->
+<div class="modal fade" id="modal-form-programa" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitlePrograma}} Programa</h5>
+                <button type="button" class="close" aria-label="Close" ng-click="closeModalPrograma()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="programaForm" ng-submit="submitFormPrograma()" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Nombre:</label>
+                        <input type="text" class="form-control" name="nombre"
+                               ng-model="programa.nombre"
+                               ng-disabled="modoVer || !escritura"
+                               required
+                               ng-class="{'is-invalid':programaForm.nombre.$invalid  && (programaForm.nombre.$touched || programaForm.nombre.$dirty),'is-valid':programaForm.nombre.$valid  }" />
+                        <span ng-show="programaForm.nombre.$error.required  && (programaForm.nombre.$touched || programaForm.nombre.$dirty)" class="text-danger">
+                            El campo Nombre es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><span class="text-danger">* </span>Descripción:</label>
+                        <textarea ng-model="programa.descripcion"
+                                  name="descripcion"
+                                  class="form-control"
+                                  ng-disabled="modoVer || !escritura"
+                                  ng-class="{'is-invalid':programaForm.descripcion.$invalid  && (programaForm.descripcion.$touched || programaForm.descripcion.$dirty),'is-valid':programaForm.descripcion.$valid  }"
+                                  required
+                                  rows="3">
+                        </textarea>
+                        <span ng-show="programaForm.descripcion.$error.required  && (programaForm.descripcion.$touched || programaForm.descripcion.$dirty)" class="text-danger">
+                            El campo Descripción es requerido
+                        </span>
+                    </div>
+                    <div ng-show="programa.adjuntoUrl" class="form-group">
+                        <label>Documento Adjunto:</label>
+                        <a href="{{linkToDownload}}" target="_blank">{{programa.adjuntoNombre}}</a>
+                    </div>
+                    <div class="form-group">
+                        <label for="archivo">Subir archivo:</label>
+                        <input id="archivo"
+                               name="archivo"
+                               ng-disabled="modoVer || !escritura"
+                               type="file"
+                               class="form-control"
+                               ng-model="programa.archivo"
+                               ng-change="changeFilePrograma()"
+                               ng-class="{'is-invalid':programaForm.archivo.$invalid  && (programaForm.archivo.$touched || programaForm.archivo.$dirty) }"
+                               valid-file
+                               accept=""
+                               ng-required="!editModePrograma" />
+                        <span ng-show="programaForm.archivo.$invalid  && (programaForm.archivo.$touched || programaForm.archivo.$dirty)"
+                              class="text-danger">Debe adjuntar un archivo</span>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" ng-click="closeModalPrograma()">Cancelar</button>
+                        <button type="submit"
+                                class="btn btn-primary"
+                                ng-show="escritura"
+                                ng-disabled="modoVer || programaForm.$invalid">
+                            Guardar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

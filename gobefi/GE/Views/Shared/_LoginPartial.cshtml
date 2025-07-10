@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<Usuario> SignInManager
+@inject UserManager<Usuario> UserManager
+
+@{
+
+    Usuario usu = UserManager.GetUserAsync(User).Result;
+
+    string nombreCompleto = $"{usu.Nombres} {usu.Apellidos}";
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+<form asp-area="" asp-controller="Account" asp-action="Logout" method="get" id="logoutForm" class="navbar-right">
+    <ul class="navbar-nav ml-md-auto">
+        <li class="nav-item">
+            <a class="nav-link" asp-area="" asp-controller="Manage" asp-action="Index" title="Administrar">Bienvenido @nombreCompleto</a>
+        </li>
+        <li class="nav-item">
+            <button type="submit" class="btn btn-primary navbar-link"><i class="fa fa-sign-out" aria-hidden="true"></i> Salir</button>
+        </li>
+    </ul>
+</form>
+}

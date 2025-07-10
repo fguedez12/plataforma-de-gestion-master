@@ -1,0 +1,20 @@
+﻿<div class="row">
+    <div class="alert alert-primary col-md-12 " role="alert">
+        <div class="row">
+            <img ng-if="$ctrl.inmueble.tipoInmueble==1" src="/images/Complejo_letra.svg" style="width:50px" />
+            <img ng-if="$ctrl.inmueble.tipoInmueble==2" src="/images/Edificio_Letra.svg" style="width:50px" />
+            <div class="ml-4">
+                <h5 class="text-dark ">
+                    {{$ctrl.inmueble.calle}}, {{$ctrl.inmueble.numero}}
+                </h5>
+                <p class="text-dark">
+                    {{$ctrl.inmueble.comuna}}, {{$ctrl.inmueble.region}}
+                </p>
+            </div>
+            <div class="ml-5">
+                <h5>{{$ctrl.inmueble.nombre}}</h5>
+            </div>
+
+        </div>
+    </div>
+</div>

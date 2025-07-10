@@ -1,0 +1,57 @@
+﻿<h1>Información Agregada:</h1>
+<h3>{{selectedServicioNombre}}</h3>
+<hr />
+<div class="card container p-4">
+    <div class="from-group">
+        <label>Total N° colaboradores del servicio:</label>
+        <label>{{agregada.totalColaboradoresServicio}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total N° Otros colaboradores:</label>
+        <label>{{agregada.totalOtrosColaboradores}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total colaboradores:</label>
+        <label>{{agregada.totalColaboradores}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total unidades del servicio:</label>
+        <label>{{agregada.totalUnidades}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total unidades del alcance RT4:</label>
+        <label>{{agregada.totalUnidadesPmg}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total unidades del alcance RT5-RT10 2023:</label>
+        <label>{{agregada.totalRestoItems}}</label>
+    </div>
+    <div class="from-group">
+        <label>Total unidades del Indicador de EE:</label>
+        <label>{{agregada.totalUnidadesEe}}</label>
+    </div>
+</div>
+<div class="card container p-4 mt-2">
+    <form name="colaboradoresForm" ng-submit="submitForm()">
+        <div class="mr-5">
+            <label>NO Modifica colaboradores</label>
+            <label class="switch ml-2 mr-2" style="margin-bottom: -0.5rem!important;">
+                <input type="checkbox" ng-model="agregada.modificacioAlcance" ng-disabled="isConsulta" ng-change="changeModificaColaboradores()">
+                <span class="slider round disable-check"></span>
+            </label>
+            <label>Modifica colaboradores</label>
+
+        </div>
+        <div class="from-group mt-3">
+            <label>
+                ¿El servicio desea especificar el universo de colaboradores del servicio sobre el cuál se evaluará el porcentaje de cumplimiento de concientización? Esto se puede dar por cambio de dirección de unidades durante el año, ya que si la nueva unidad a usar se carga el próximo año podrían quedar sin contabilización un número relevante de colaboradores, o bien, porque el servicio pueda haber pedido una modificación de alcance en la formulación del sistema estado verde.
+            </label>
+            <div class="d-flex mt-2" ng-show="agregada.modificacioAlcance && !isConsulta">
+                <label>Total colaboradores afectos a concientización:</label>
+                <input class="form-control col-md-2 ml-2" type="number" ng-model="agregada.colaboradoresModAlcance" min="0" />
+
+            </div>
+            <button type="submit" class="btn btn-primary ml-2">Guardar</button>
+        </div>
+    </form>
+</div>

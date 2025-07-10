@@ -1,0 +1,106 @@
+﻿@model UsuarioCambioClaveModel
+
+@{
+
+}
+
+
+
+<div class="card">
+    <div class="card-body">
+        
+        <div id="msgClaveExitoso">
+            
+        </div>
+        
+
+        <h2>Cambio de clave</h2>
+        
+        <ul>
+            <li><span class="badge badge-info">Debe contener al menos un caracter que no sea alfanumérico. </span> </li>
+            <li><span class="badge badge-info">Debe contener al menos un caracter en mayúscula.</span></li>
+            <li><span class="badge badge-info">Debe ser mínimo de 6 caracteres.</span></li>
+        </ul>
+
+        <hr />
+
+        <form id="frmCambioClave">
+            <div id="divErrs" class="text-danger" >
+                <ul>
+                </ul>
+            </div>
+
+
+            <input type="hidden" asp-for="Id" />
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label>Email</label>
+                <h3 class="form-control" >@Model.CambioEmail</h3>
+                <input type="hidden" asp-for="CambioEmail" />
+            </div>
+            <div class="form-group">
+                <label asp-for="NuevaClave"></label>
+                <input asp-for="NuevaClave" class="form-control" />
+                <span asp-validation-for="NuevaClave" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmarClave"></label>
+                <input asp-for="ConfirmarClave" class="form-control" />
+                <span asp-validation-for="ConfirmarClave" class="text-danger"></span>
+            </div>
+            <button type="submit" id="btnActulizarPwd" class="btn btn-primary"  data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Guardando...">Actualizar contraseña</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    let $frmCambioClave = $("#frmCambioClave");
+
+    $frmCambioClave.submit(function (e){
+        e.preventDefault();
+        
+        CambioClaveAsync();
+
+    });
+
+    async function CambioClaveAsync(){
+        $("#divErrs ul").html("");
+        let response;
+        try {
+
+            $("#btnActulizarPwd").button("loading");
+
+            response = await $.post({
+                url: "@Url.Content("~/AdminUsuario/CambiarClave")",
+                data: $frmCambioClave.serialize()
+            });
+
+
+            $("#msgClaveExitoso").html('<div class="alert alert-success fade show"><button type="button" class="close close-alert" data-dismiss="alert" aria-hidden="true">×</button>Cambio de clave realizado con exito.</div>');
+	        $("#msgClaveExitoso .alert").delay(200).addClass("in").fadeOut(10000);
+
+        } catch (e) {
+            //console.log(e.responseJSON);
+
+            for (var clave in e.responseJSON){
+                // Controlando que json realmente tenga esa propiedad
+                if (e.responseJSON.hasOwnProperty(clave)) {
+                    // Mostrando en pantalla la clave junto a su valor
+                    //$("#" + clave).next().html(e.responseJSON[clave]);
+                    $("#divErrs ul").append("<li>" + e.responseJSON[clave] + "</li>");
+
+                    //console.log("La clave es " + clave + " y el valor es " + e.responseJSON[clave]);
+                    
+                } else {
+                    
+                }
+            }
+        } finally {
+            $("#btnActulizarPwd").button("reset");
+        }
+
+    }
+
+</script>

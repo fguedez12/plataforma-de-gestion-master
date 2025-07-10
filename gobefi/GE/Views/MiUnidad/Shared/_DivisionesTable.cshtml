@@ -1,0 +1,15 @@
+﻿@model IEnumerable<DivisionListModel>
+
+<table class="table table-striped table-hover">
+    <tbody>
+        @foreach (var division in Model)
+        {
+            @if (division.Selected)
+            {
+                <tr class="clickable-row" data-href="@Url.Content("~/MiUnidad/Ver")/@division.Id" division-id="@division.Id" servicio-id="@division.ServicioId" institucion-id="@division.InstitucionId">
+                    <td>@division.Nombre</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

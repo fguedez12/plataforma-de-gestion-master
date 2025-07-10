@@ -1,0 +1,48 @@
+<!-- <ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button menu="first">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title class="title-web">
+      Mi flota vehicular
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-icon slot="start" [name]="icon"></ion-icon>
+          <ion-label class="title-web">
+            {{modo}}
+          </ion-label>
+          <ion-toggle id="themeToggle" slot="end"></ion-toggle>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-searchbar style="width: 265px;"
+      placeholder="Buscar por patente"
+      inputmode="text"
+      (ionChange)="onSearchChange($event)"
+      [debounce]="250"
+      showCancelButton="focus"
+      ></ion-searchbar>
+    </ion-buttons>
+   
+  </ion-toolbar>
+</ion-header> -->
+<app-header-page [title]="title">
+  <ion-buttons slot="end">
+    <ion-searchbar style="width: 265px;"
+    placeholder="Buscar por patente"
+    inputmode="text"
+    (ionChange)="onSearchChange($event)"
+    [debounce]="250"
+    showCancelButton="focus"
+    ></ion-searchbar>
+  </ion-buttons>
+</app-header-page>
+<app-side-menu 
+  (nuevoVehiculo)="nuevoVehiculo($event)" 
+  (filtros)="filtros($event)"
+  [pltWeb]="pltWeb">
+</app-side-menu>
+<ion-content color="light">
+  <app-vehiculos [vehiculos]="vehiculos" [pltWeb]="pltWeb" #listadoVehiculos></app-vehiculos>
+</ion-content>
+<app-footer-page></app-footer-page>

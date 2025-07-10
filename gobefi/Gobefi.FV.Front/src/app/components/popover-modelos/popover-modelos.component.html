@@ -1,0 +1,11 @@
+<ion-searchbar placeholder="Ingrese Marca o Modelo" 
+inputmode="text" type="text"  
+[debounce]="350"
+(ionChange)="changeSearchModelo($event)" 
+showCancelButton="always">
+</ion-searchbar>
+<ion-list>
+    <ion-item class="item-text-wrap" style="cursor: pointer;" (click)="selectVehiculo(modelo)" *ngFor="let modelo of modelos">
+      <ion-label text-wrap>{{modelo.marca}}, {{modelo.modelo}}</ion-label>
+    </ion-item>
+</ion-list>

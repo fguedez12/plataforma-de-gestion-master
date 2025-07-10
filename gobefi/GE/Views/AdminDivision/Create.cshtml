@@ -1,0 +1,751 @@
+﻿@model DivisionCreateModel
+@inject UserManager<Usuario> UserManager
+@{
+    ViewData["Title"] = "Crear";
+
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isGestor = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORSERVICIO).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+    // Define the HTML content for the details section
+    string detailsHtml = $@"
+        <strong>Detalles Asignación Marcas</strong><hr class=""my-1"">
+        Estas marcas NO son editables por el usuario.<br>
+        Para unidades creadas antes del presente año, se conservará el valor del año pasado.<br>
+        Para unidades creadas este año, el valor de estas marcas dependerá de:
+        <ul class='text-start ps-3'>
+            <li>“Se incluye para reporte consumo energía del PMG” estará en “ON”, si en pregunta “Tiene acceso a las facturas de tus consumos” se respondió “si” y si es que en módulo Información > Alcance la unidad tiene año de inicio para gestión de energía igual a {DateTime.Now.Year}.</li>
+            <li>“Se incluye para Indicador EE del PMG” estará en “ON”, si la unidad tiene acceso a las facturas y si en pregunta “Tiene acceso a las facturas de tus consumos”, no se activó “comparte medidor” ni para electricidad ni para gas.</li>
+            <li>“Se incluye para reporte de gestión ambiental del PMG” estará en “ON”, si en módulo Información > Alcance la unidad tiene año de inicio para resto ítemes igual a {DateTime.Now.Year}.</li>
+        </ul>";
+}
+
+<style>
+    /* Style for the popup content - Restored absolute positioning, increased z-index */
+    .details-popup-content {
+        position: absolute; /* Position relative to parent <details> */
+        display: none; /* Hidden by default, shown when details is open */
+        top: 1.5em; /* Position below the summary */
+        left: 0; /* Align with the start of the summary */
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 5px;
+        background-color: #f9f9f9;
+        width: 500px;
+        max-width: 90vw;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        text-align: left;
+        white-space: normal; /* Allow wrapping inside popup */
+        z-index: 1051; /* Increased z-index significantly */
+    }
+    /* Style for the <details> element itself - now relative */
+    details.inline-details-popup {
+        position: relative; /* Context for the absolute popup content */
+        display: inline-block; /* Keep it inline with text */
+    }
+    /* Show content when details is open */
+    details.inline-details-popup[open] > .details-popup-content {
+        display: block;
+    }
+</style>
+
+<h2>Crear nueva Unidad</h2>
+
+<br />
+
+@if (!String.IsNullOrEmpty(ViewBag.Mensaje))
+{
+    var statusMessageClass = ViewBag.Mensaje.StartsWith("Error") ? "danger" : "success";
+    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        @ViewBag.Mensaje
+    </div>
+    <br />
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h4>Seleccionar Edificio</h4>
+                <hr />
+
+                <div class="form-group">
+                    <label class="control-label">Region</label>
+                    <select class="form-control" id="SelEdiRegionId" asp-items="ViewBag.Regiones"></select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Provincia</label>
+                    <select class="form-control" id="SelEdiProvinciaId" disabled>
+                        <option>@Constants.Titles.SELECCIONE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Comuna</label>
+                    <select class="form-control" id="SelEdiComunaId" disabled>
+                        <option>@Constants.Titles.SELECCIONE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EdificioId" class="control-label">Edificio</label>
+                    <select asp-for="EdificioId" class="form-control" id="SelEdiEdificioId" disabled>
+                        <option>@Constants.Titles.SELECCIONE</option>
+                    </select>
+                </div>
+
+
+                <a href="#crearEdificio" data-toggle="collapse">Crear Edificio</a>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="crearEdificio" class="collapse">
+    <br />
+
+    @await Html.PartialAsync("../AdminEdificio/Shared/_Create", new EdificioModel())
+</div>
+
+<br />
+
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <input asp-for="EdificioId" type="hidden" />
+
+    <div class="card">
+        <div class="card-body">
+            <h4>Crear Unidad</h4>
+            <hr />
+            <div class="form-group">
+                <label class="control-label">Institución</label>
+                <select class="form-control" id="InstitucionId" asp-items="ViewBag.Instituciones"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServicioId" class="control-label"></label>
+                <select asp-for="ServicioId" class="form-control" onchange="fillVehiculos(this,'lstVehiculos')" disabled>
+                    <option>@Constants.Titles.SELECCIONE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NombreUnidad" class="control-label"></label>
+                <input asp-for="NombreUnidad" class="form-control" />
+                <span asp-validation-for="NombreUnidad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoDeUsoId" class="control-label"></label>
+                <select asp-for="TipoDeUsoId" class="form-control" asp-items="ViewBag.TiposDeUso"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pisos" class="control-label"></label>
+                <input asp-for="Pisos" class="form-control" />
+                <span asp-validation-for="Pisos" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Superficie" class="control-label"></label>
+                <input asp-for="Superficie" class="form-control" />
+                <span asp-validation-for="Superficie" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoPropiedadId" class="control-label"></label>
+                <select asp-for="TipoPropiedadId" class="form-control" asp-items="ViewBag.TiposDePropiedad"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NroRol" class="control-label"></label>
+                <input asp-for="NroRol" class="form-control" />
+                <span asp-validation-for="NroRol" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="col" style="padding: 15px">
+                    <span class="mr-5" style="font-size: 1.2rem;">No posee Rol</span>
+                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                        <input id="cb-sinrol" type="checkbox" asp-for="SinRol">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <div id="div-justifica" class="form-group">
+                <label asp-for="JustificaRol" class="control-label"></label>
+                <input type="text" asp-for="JustificaRol" class="form-control" />
+                <span asp-validation-for="JustificaRol" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AnioConstruccion" class="control-label"></label>
+                <select asp-for="AnioConstruccion" class="form-control" asp-items="ViewBag.AniosDeConstruccion"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NroFuncionarios" class="control-label"></label>
+                <input asp-for="NroFuncionarios" class="form-control" />
+                <span asp-validation-for="NroFuncionarios" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NroOtrosColaboradores" class="control-label"></label>
+                <input asp-for="NroOtrosColaboradores" class="form-control" />
+                <span asp-validation-for="NroOtrosColaboradores" class="text-danger"></span>
+            </div>
+            @*@if (!_isGestor)  se restringe la creacion de nuevas unidades PMG hasta nuevo aviso se habilita solo para administradores HL 2020-05-05  *@
+            @*@if (_isAdmin)
+        {*@
+
+            @*Se agrega campo para definir si el gestor tiene acceso a las facturas HL 2021-01-27*@
+            <div class="card container mb-4 pt-2 d-flex flex-row">
+                <div class="col-5">
+                    <div class="form-group">
+                        <label asp-for="AccesoFactura" class="control-label"></label>
+                        <select class="form-control" asp-for="AccesoFactura">
+                            <option value="0">--Seleccione--</option>
+                            <option value="1">Si</option>
+                            <option value="2">No, Otro servicio público</option>
+                            <option value="3">No, Otra organización (especificar)</option>
+                        </select>
+                        <span asp-validation-for="AccesoFactura" class="text-danger"></span>
+                    </div>
+                    <div id="div_resp_pub" hidden>
+                        <div class="form-group">
+                            <label asp-for="InstitucionResponsableId" class="control-label"></label>
+                            <select class="form-control" asp-for="InstitucionResponsableId" asp-items="ViewBag.InstitucionesResponsable">
+                                <option>@Constants.Titles.SELECCIONE</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="ServicioResponsableId"></label>
+                            <select class="form-control" asp-for="ServicioResponsableId" disabled>
+                                <option>@Constants.Titles.SELECCIONE</option>
+                            </select>
+                            <span asp-validation-for="ServicioResponsableId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="div_responsable_otra" hidden>
+                        <label class="control-label" asp-for="OrganizacionResponsable"></label>
+                        <input asp-for="OrganizacionResponsable" class="form-control" />
+                        <span asp-validation-for="OrganizacionResponsable" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-7">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Consumo</th>
+                                <th>Comparte Medidor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Electricidad:</td>
+                                <td class="text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" asp-for="TieneMedidorElectricidad">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                        <input type="checkbox" asp-for="ComparteMedidorElectricidad">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Gas:</td>
+                                <td class="text-center">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" asp-for="TieneMedidorGas">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                        <input type="checkbox" asp-for="ComparteMedidorGasCanieria">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card container mb-4 pt-2 d-flex flex-row">
+                <div class="col-5">
+                    <div class="form-group">
+                        <label asp-for="AccesoFacturaAgua" class="control-label"></label>
+                        <select class="form-control" asp-for="AccesoFacturaAgua">
+                            <option value="0">--Seleccione--</option>
+                            <option value="1">Si</option>
+                            <option value="2">No, Otro servicio público</option>
+                            <option value="3">No, Otra organización (especificar)</option>
+                        </select>
+                        <span asp-validation-for="AccesoFacturaAgua" class="text-danger"></span>
+                    </div>
+                    <div id="div_resp_pub_agua" hidden>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="InstitucionResponsableAguaId"></label>
+                            <select class="form-control" asp-for="InstitucionResponsableAguaId" asp-items="ViewBag.InstitucionesResponsable"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="ServicioResponsableAguaId"></label>
+                            <select class="form-control" asp-for="ServicioResponsableAguaId" disabled>
+                                <option>@Constants.Titles.SELECCIONE</option>
+                            </select>
+                            <span asp-validation-for="ServicioResponsableAguaId" class="text-danger"></span>
+                            <input type="hidden" asp-for="ServicioResponsableAguaId" id="hfServicio_agua" />
+                        </div>
+                    </div>
+                    <div class="form-group" id="div_responsable_agua_otra" hidden>
+                        <label class="control-label" asp-for="OrganizacionResponsableAgua"></label>
+                        <input asp-for="OrganizacionResponsableAgua" class="form-control" />
+                        <span asp-validation-for="OrganizacionResponsableAgua" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-7">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Comparte Medidor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Agua:</td>
+                                <td class="text-center">
+                                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                        <input type="checkbox" asp-for="ComparteMedidorAgua">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+            <div class="card container mb-4">
+                <br />
+                <h5 class="card-title">
+                    Asignación de vehiculos
+                </h5>
+                <div class="form-group">
+                    <label>¿Esta unidad tiene disponible un vehículo propio del servicio para su uso?</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="DisponeVehiculo" name="disponeVehiculo" id="disponeVehiculoSi" value="true">
+                        <label class="form-check-label" asp-for="DisponeVehiculo">
+                            Si, esta unidad utiliza vehículos (seleccionar vehículos en cuadro)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="DisponeVehiculo" name="disponeVehiculo" id="disponeVehiculoNo" value="false">
+                        <label class="form-check-label" asp-for="DisponeVehiculo">
+                            No, esta unidad no utiliza vehículos.
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="sel_vehiculos">
+                    <label>Seleccione los vehiculos</label>
+                    <select id="lstVehiculos" data-placeholder="Seleccione las patentes..." multiple class="form-control chosen-select" asp-for="VehiculosIds">
+                    </select>
+                </div>
+            </div>
+            @*<div class="card container mb-4 pb-4">
+                <br />
+                <h5 class="card-title">
+                    Climatización / Calefacción
+                </h5>
+                <div class="alert alert-warning">
+                    <p>Importante: en plataforma se está preguntando por sistemas de calefacción/climatización cuyo consumo de energía provenga de la información de consumo que se declara en plataforma. Los sistemas de clima (centralizado) cuyo consumo no está en las facturaciones de la unidad, sino que se pagan en un gasto común aparte, no deben ser considerados en la plataforma (se debe indicar “No” en esta pregunta).</p>
+                </div>
+                <div class="form-group">
+                    <label>¿Esta unidad en el consumo de electricidad o gas natural reportado en módulo consumos, considera un sistema de climatización/Calefacción?</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="DisponeCalefaccion" name="disponeCalefaccion" id="disponeCalefaccion" value="true">
+                        <label class="form-check-label" for="disponeCalefaccion">
+                            Si
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="DisponeCalefaccion" name="disponeCalefaccion" id="disponeCalefaccion" value="false">
+                        <label class="form-check-label" for="disponeCalefaccion">
+                            No
+                        </label>
+                    </div>
+                </div>
+                <div id="sel_clima">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="AireAcondicionadoElectricidad" id="AireAcondicionadoElectricidad">
+                        <label class="form-check-label" for="AireAcondicionadoElectricidad">
+                            Sistema de aire acondicionado que consume electricidad
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" asp-for="CalefaccionGas" id="CalefaccionGas">
+                        <label class="form-check-label" for="CalefaccionGas">
+                            Sistema de calefacción que consume gas natural
+                        </label>
+                    </div>
+                </div>
+            </div>*@
+            <div class="card container mb-4 p-4">
+                <div class="form-group">
+                    <label>¿La unidad hace gestión de bienes muebles para el presente período PMG?</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="GestionBienes" name="GestionBienes" id="GestionBienesSi" value="true">
+                        <label class="form-check-label" asp-for="GestionBienes">
+                            Si
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" asp-for="GestionBienes" name="GestionBienes" id="GestionBienesNo" value="false">
+                        <label class="form-check-label" asp-for="GestionBienes">
+                            No
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="card container mb-4 p-4">
+                <div class="pt-2"> @* Removed white-space and text-overflow styles *@
+                     <span>Estas 3 marcas NO son editables por el usuario. Revisa&nbsp;</span>
+                     <details class="inline-details-popup"> @* Use details directly, styled as relative/inline-block *@
+                         <summary style="cursor:pointer; text-decoration: underline; display: inline;">acá</summary> @* Standard summary trigger, no JS needed *@
+                         <span class="details-popup-content"> @* Absolutely positioned content *@
+                             @Html.Raw(detailsHtml)
+                         </span>
+                     </details>
+                     <span>&nbsp;el detalle de cómo se asignan sus valores.</span>
+                 </div>
+                @if (_isAdmin)
+                {
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">Se incluye  para reporte consumo energía del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="ReportaPMG">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">"Se incluye para Indicador EE del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="IndicadorEE">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">Se incluye para reporte de gestión ambiental del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="ReportaEV">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                }
+                @if (_isGestor || _isConsulta)
+                {
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">Se incluye  para reporte consumo energía del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="ReportaPMG" disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">"Se incluye para Indicador EE del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="IndicadorEE" disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col" style="padding: 15px">
+                            <span class="mr-5" style="font-size: 1.2rem;">Se incluye para reporte de gestión ambiental del PMG</span>
+                            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                <input type="checkbox" asp-for="ReportaEV" disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                }
+        </div>
+            
+            @*<div class="mb-3">
+                <h4>Electricidad</h4>
+                <p class="h6 text-center mb-0">
+                    Con respecto al consumo de electricidad.
+                </p>
+                <hr class="mt-1" />
+                <div class="row container">
+                    <div class="col-4">
+                        <span class="ge ge-energetico-electricidad active"></span>
+                    </div>
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" asp-for="ComparteMedidorElectricidad">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <h4>
+                    Gas de Cañería
+                </h4>
+                <p class="h6 text-center mb-0">
+                    En caso que se consuma Gas de Cañería (GN / GLP).
+                </p>
+                <hr class="mt-1" />
+                <div class="row container">
+                    <div class="col-4">
+                        <span class="ge ge-energetico-gn active"></span>
+                    </div>
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" asp-for="ComparteMedidorGasCanieria">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>*@
+
+            <div class="form-group">
+                @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Guardar = true, Volver = true })
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="modalPMG" class="modal" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document" >
+        <div class="modal-content">
+            
+            <div class="modal-body">
+                <p>No se pueden crear Unidades de servicios que reportan PMG</p>
+            </div>
+            <div class="modal-footer">
+                
+                <button id="btnpmg" type="button" class="btn btn-secondary">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/AdminDivision/JSComun.js" asp-append-version="true"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#sel_vehiculos").attr('hidden', true);
+        $("#sel_clima").attr('hidden', true);
+        $(".chosen-select").chosen({ no_results_text: "No se encuentra la patente" });
+        $('input[type=radio][name=disponeVehiculo]').change(function () {
+            if (this.value == 'true') {
+                $("#sel_vehiculos").removeAttr('hidden');
+            }
+            else if (this.value == 'false') {
+                $("#sel_vehiculos").attr('hidden', true);
+            }
+        });
+
+        const disponeCalifaccion = $("input[name='disponeCalefaccion']:checked").val();
+        //console.log(disponeCalifaccion);
+        if (disponeCalifaccion == 'true') {
+            $("#sel_clima").removeAttr('hidden');
+        }
+
+        $('input[type=radio][name=disponeCalefaccion]').change(function () {
+            if (this.value == 'true') {
+                $("#sel_clima").removeAttr('hidden');
+            }
+            else if (this.value == 'false') {
+                $("#sel_clima").attr('hidden', true);
+            }
+        });
+
+        toogleDiv();
+        toogleDivAgua();
+        if ($('#cb-sinrol').prop('checked')) {
+            $('#div-justifica').show();  
+        } else {
+            $('#div-justifica').hide();  
+        }
+    });
+     $("body").on("click", "#btnActions-btnVolver", function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminDivision")";
+     });
+
+     $("body").on("click", "#cb-sinrol", function (e) {
+         if ($('#cb-sinrol').prop('checked')) {
+             $('#div-justifica').show();
+         } else {
+             $('#div-justifica').hide();
+         }
+     });
+
+    $("#SelEdiRegionId").change(function () {
+        $("#SelEdiProvinciaId, #SelEdiComunaId, #SelEdiEdificioId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() != "") {
+            loadSelectDataAsync($("#SelEdiProvinciaId"), apiProvincia + "/getByRegionId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#SelEdiProvinciaId option:first").attr("selected", "selected");
+
+                $("#SelEdiComunaId, #SelEdiEdificioId").val("").attr("disabled", "disabled");
+            });
+        } else {
+            $("#SelEdiProvinciaId, #SelEdiComunaId, #SelEdiEdificioId").val("").attr("disabled", "disabled");
+        }
+    });
+
+    $("#SelEdiProvinciaId").change(function () {
+        $("#SelEdiComunaId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#SelEdiComunaId"), apiComuna + "/getByProvinciaId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#SelEdiComunaId option:first").attr("selected", "selected");
+
+                $("#SelEdiEdificioId").val("").attr("disabled", "disabled");
+            });
+        } else {
+            $("#SelEdiComunaId, #SelEdiEdificioId").val("").attr("disabled", "disabled");
+        }
+    });
+
+    $("#SelEdiComunaId").change(function () {
+        $("#SelEdiEdificioId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#SelEdiEdificioId"), apiEdificio + "/getByComunaId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#SelEdiEdificioId option:first").attr("selected", "selected");
+
+                $("#SelEdiEdificioId option:first").attr("selected", "selected");
+            });
+        } else {
+            $("#SelEdiEdificioId").val("").attr("disabled", "disabled");
+        }
+    });
+
+    $("select#SelEdiEdificioId").change(function () {
+
+        $("input#EdificioId").val($(this).val());
+
+    });
+
+    $("#InstitucionId").change(function () {
+        $("#ServicioId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#ServicioId"), apiServicios + "/getByInstitucionId/" + $(this).val(), "", "", true, true).then(function () {
+                $("#ServicioId option:first").attr("selected", "selected");
+            });
+
+        } else {
+            $("#ServicioId").val("").attr("disabled", "disabled");
+        }
+
+    });
+
+    $("#ServicioId").change(function () {
+
+        //if ($(this).val() != "") {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: "/api/Servicios/" + $(this).val()
+        //    }).done(function (response) {
+        //        console.log(response);
+        //        if (response.reportaPMG) {
+
+        //            $("#modalPMG").modal("show");
+        //        }
+
+        //    });
+        //}
+    });
+    $("#btnpmg").click(function () {
+        $("#modalPMG").modal("hide");
+        $("#ServicioId").val($("#ServicioId option:first").val());
+    });
+
+    $("#hdnEdificioId").change(function () {
+        ObtenerNuevoEdificio(apiEdificio, $(this).val()).then();
+    });
+    $("#AccesoFactura").change(function () {
+
+        toogleDiv();
+    });
+    $("#AccesoFacturaAgua").change(function () {
+
+        toogleDivAgua();
+    });
+
+    $("#InstitucionResponsableId").change(function () {
+        $("#ServicioResponsableId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#ServicioResponsableId"), apiServicios + "/getByInstitucionIdAsync/" + $(this).val(), "", "", true, true).then(function () {
+                $("#ServicioResponsableId option:first").attr("selected", "selected");
+            });
+
+        } else {
+            $("#ServicioResponsableId").val("").attr("disabled", "disabled");
+        }
+
+    });
+
+    $("#InstitucionResponsableAguaId").change(function () {
+        $("#ServicioResponsableAguaId").html("<option value=''>-- SELECCIONE --</option>");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#ServicioResponsableAguaId"), apiServicios + "/getByInstitucionIdAsync/" + $(this).val(), "", "", true, true).then(function () {
+                $("#ServicioResponsableAguaId option:first").attr("selected", "selected");
+            });
+
+        } else {
+            $("#ServicioResponsableAguaId").val("").attr("disabled", "disabled");
+        }
+
+    });
+
+    function toogleDiv() {
+        var sel = $("#AccesoFactura").val();
+        if (sel === "2") {
+            $("#div_resp_pub").removeAttr("hidden");
+        } else {
+            $("#div_resp_pub").attr("hidden", "hidden");
+        }
+        if (sel === "3") {
+            $("#div_responsable_otra").removeAttr("hidden");
+        } else {
+            $("#div_responsable_otra").attr("hidden", "hidden");
+        }
+    };
+
+    function toogleDivAgua() {
+        var sel = $("#AccesoFacturaAgua").val();
+        if (sel === "2") {
+            $("#div_resp_pub_agua").removeAttr("hidden");
+        } else {
+            $("#div_resp_pub_agua").attr("hidden", "hidden");
+        }
+        if (sel === "3") {
+            $("#div_responsable_agua_otra").removeAttr("hidden");
+        } else {
+            $("#div_responsable_agua_otra").attr("hidden", "hidden");
+        }
+    };
+
+
+</script>

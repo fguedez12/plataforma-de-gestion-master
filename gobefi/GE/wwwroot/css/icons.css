@@ -1,0 +1,324 @@
+﻿
+.ge {
+    width: 80px;
+    height: 80px;
+    display: block;
+    float: left;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ge-edificio.active {
+    background: no-repeat;
+    background-image: url("../images/mi_edificio.svg");
+}
+
+.ge-edificio {
+    background: no-repeat;
+    background-image: url("../images/mi_edificio-inactivo.svg");
+}
+
+.ge-edificio:hover {
+    background: no-repeat;
+    background-image: url("../images/mi_edificio.svg");
+}
+
+.ge-unidad.active {
+    background: no-repeat;
+    background-image: url("../images/mi_unidad.svg");
+}
+
+.ge-unidad:hover {
+    background: no-repeat;
+    background-image: url("../images/mi_unidad.svg");
+}
+
+.ge-unidad {
+    background: no-repeat;
+    background-image: url("../images/mi_unidad-inactivo.svg");
+}
+
+.ge-configuracion.active {
+    background: no-repeat;
+    background-image: url("../images/configuracion.svg");
+}
+
+.ge-configuracion {
+    background: no-repeat;
+    background-image: url("../images/configuracion-inactivo.svg");
+}
+
+.ge-configuracion:hover {
+    background: no-repeat;
+    background-image: url("../images/configuracion.svg");
+}
+
+.ge-consumos.active {
+    background: no-repeat;
+    background-image: url("../images/consumos.svg");
+}
+
+.ge-consumos {
+    background: no-repeat;
+    background-image: url("../images/consumos-inactivo.svg");
+}
+
+.ge-consumos:hover {
+    background: no-repeat;
+    background-image: url("../images/consumos.svg");
+}
+
+.ge-generacion.active {
+    background: no-repeat;
+    background-image: url("../images/generacion.svg");
+}
+
+.ge-generacion {
+    background: no-repeat;
+    background-image: url("../images/generacion-inactivo.svg");
+}
+
+.ge-generacion:hover {
+    background: no-repeat;
+    background-image: url("../images/generacion.svg");
+}
+
+.ge-proyectos.active {
+    background: no-repeat;
+    background-image: url("../images/proyectos.svg");
+}
+
+.ge-proyectos {
+    background: no-repeat;
+    background-image: url("../images/proyectos-inactivo.svg");
+}
+
+.ge-proyectos:hover {
+    background: no-repeat;
+    background-image: url("../images/proyectos.svg");
+}
+
+.ge-reportes.active {
+    background: no-repeat;
+    background-image: url("../images/reportes.svg");
+}
+
+.ge-reportes {
+    background: no-repeat;
+    background-image: url("../images/reportes-inactivo.svg");
+}
+
+.ge-reportes:hover {
+    background: no-repeat;
+    background-image: url("../images/reportes.svg");
+}
+
+.ge-energetico-biomasa {
+    background: no-repeat;
+    background-image: url("../images/energetico_biomasa-inactive.svg");
+}
+
+.ge-energetico-carbon {
+    background: no-repeat;
+    background-image: url("../images/energetico_carbon-inactive.svg");
+}
+
+.ge-energetico-calor {
+    background: no-repeat;
+    background-image: url("../images/energetico_calor-inactive.svg");
+}
+
+.ge-energetico-diesel {
+    background: no-repeat;
+    background-image: url("../images/energetico_diesel-inactive.svg");
+}
+
+.ge-energetico-electricidad {
+    background: no-repeat;
+    background-image: url("../images/energetico_electricidad-inactive.svg");
+}
+
+.ge-energetico-gasolina {
+    background: no-repeat;
+    background-image: url("../images/energetico_gasolina-inactive.svg");
+}
+
+.ge-energetico-glp {
+    background: no-repeat;
+    background-image: url("../images/energetico_glp-inactive.svg");
+}
+
+.ge-energetico-gn {
+    background: no-repeat;
+    background-image: url("../images/energetico_gn-inactive.svg");
+}
+
+.ge-energetico-IFO080K {
+    background: no-repeat;
+    background-image: url("../images/energetico_IFO080K-inactive.svg");
+}
+
+.ge-energetico-kerosene {
+    background: no-repeat;
+    background-image: url("../images/energetico_kerosene-inactive.svg");
+}
+
+.ge-energetico-lena {
+    background: no-repeat;
+    background-image: url("../images/energetico_lena-inactive.svg");
+}
+
+.ge-energetico-pellet {
+    background: no-repeat;
+    background-image: url("../images/energetico_pellet-inactive.svg");
+}
+
+.ge-energetico-petroleo56 {
+    background: no-repeat;
+    background-image: url("../images/energetico_petroleo56-inactive.svg");
+}
+
+.ge-energetico-biomasa.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_biomasa.svg");
+}
+
+.ge-energetico-carbon.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_carbon.svg");
+}
+
+.ge-energetico-calor.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_calor.svg");
+}
+
+.ge-energetico-diesel.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_diesel.svg");
+}
+
+.ge-energetico-electricidad.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_electricidad.svg");
+}
+
+.ge-energetico-gasolina.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_gasolina.svg");
+}
+
+.ge-energetico-glp.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_glp.svg");
+}
+
+.ge-energetico-gn.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_gn.svg");
+}
+
+.ge-energetico-IFO080K.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_IFO080K.svg");
+}
+
+.ge-energetico-kerosene.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_kerosene.svg");
+}
+
+.ge-energetico-lena.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_lena.svg");
+}
+
+.ge-energetico-pellet.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_pellet.svg");
+}
+
+.ge-energetico-petroleo56.active {
+    background: no-repeat;
+    background-image: url("../images/energetico_petroleo56.svg");
+}
+
+.ge-cimientos {
+    background: no-repeat;
+    background-image: url("../images/cimientos.svg");
+}
+
+.ge-fotografias {
+    background: no-repeat;
+    background-image: url("../images/fotografias.svg");
+}
+
+.ge-muros {
+    background: no-repeat;
+    background-image: url("../images/muros.svg");
+}
+
+.ge-paso1 {
+    background: no-repeat;
+    background-image: url("../images/paso1.svg");
+}
+
+.ge-paso2 {
+    background: no-repeat;
+    background-image: url("../images/paso2.svg");
+}
+
+.ge-paso3 {
+    background: no-repeat;
+    background-image: url("../images/paso3.svg");
+}
+
+.ge-paso4 {
+    background: no-repeat;
+    background-image: url("../images/paso4.svg");
+}
+
+.ge-pisos {
+    background: no-repeat;
+    background-image: url("../images/pisos.svg");
+}
+
+.ge-planos_electricos {
+    background: no-repeat;
+    background-image: url("../images/planos_electricos-inactive.svg");
+}
+
+.ge-planos_estructurales {
+    background: no-repeat;
+    background-image: url("../images/planos_estructurales-inactive.svg");
+}
+
+.ge-planos_electricos.active {
+    background: no-repeat;
+    background-image: url("../images/planos_electricos.svg");
+}
+
+.ge-planos_estructurales.active {
+    background: no-repeat;
+    background-image: url("../images/planos_estructurales.svg");
+}
+
+.ge-puertas {
+    background: no-repeat;
+    background-image: url("../images/puertas.svg");
+}
+
+.ge-techos {
+    background: no-repeat;
+    background-image: url("../images/techos.svg");
+}
+
+.ge-ventanas {
+    background: no-repeat;
+    background-image: url("../images/ventanas.svg");
+}
+
+.ge-help {
+    background: no-repeat;
+    background-image: url("../images/help.svg");
+}

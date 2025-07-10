@@ -1,0 +1,305 @@
+﻿<hr />
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+
+            <a class="nav-item nav-link active"
+               id="nav-energia-tab"
+               data-toggle="tab"
+               href="#nav-energia"
+               role="tab">
+                Energia
+            </a>
+            <a class="nav-link"
+               id="nav-potencia-tab"
+               data-toggle="tab"
+               href="#nav-potencia"
+               role="tab">
+                Potencia
+            </a>
+
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent-me">
+    <div class="tab-pane fade show active" id="nav-energia" role="tabpanel">
+        <div class="mt-5">
+            <p>Consultar por último:</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeDay" ng-click="setActiveDay()">Día</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeWeek" ng-click="setActiveWeek()">Semana</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeMonth" ng-click="setActiveMonth()">Mes</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeYear" ng-click="setActiveYear()">Año</button>
+        </div>
+        <hr />
+        <div>
+            <div id="filtros-avanzados">
+                <button class="btn btn-link mb-3" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    <b> Consulta avanzada</b>
+                </button>
+                <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#filtros-avanzados">
+                    <div class="row row align-items-center">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label> Desde</label>
+                                <input type="date" class="form-control" ng-model="desde" />
+                            </div>
+                            <div class="form-group">
+                                <label> Hasta</label>
+                                <input type="date" class="form-control" ng-model="hasta" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="ml-auto mr-auto w-25">
+                                <button class="btn btn-primary" ng-click="showMedidores()">
+                                    Medidores
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-2">
+                            Frecuencia
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-check form-check-inline">
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="15m" ng-model="chkFrecuencia">
+                                    <label class="form-check-label" for="15m">
+                                        15 min.
+                                    </label>
+                                </div>
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1h" ng-model="chkFrecuencia">
+                                    <label class="form-check-label" for="1h">
+                                        Horario
+                                    </label>
+                                </div>
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1d" ng-model="chkFrecuencia">
+                                    <label class="form-check-label" for="1d">
+                                        Diario
+                                    </label>
+                                </div>
+                                <!--<div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1w" ng-model="chkFrecuencia">
+                                    <label class="form-check-label" for="1w">
+                                        Semanal
+                                    </label>
+                                </div>-->
+                                <div class="form-group">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1M" ng-model="chkFrecuencia">
+                                    <label class="form-check-label" for="1m">
+                                        Mensual
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="text-center" ng-show="loading">
+            <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
+                <span>Cargando...</span>
+            </div>
+        </div>
+
+        <canvas id="myChart" width="300" height="150" ng-hide="loading"></canvas>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalMedidores" tabindex="-1" role="dialog" aria-labelledby="modalMedidores" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary">Graficar Medidores</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row align-content-center">
+                            <div class="col-md-6">
+                                <h5 class="text-primary">Todos Los Medidores</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="switch float-right" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="checkAll" checked ng-click="toogleAllMedidores()" />
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                        </div>
+                        <hr />
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="medidor in medidores">
+                                    <td>{{medidor.name}}</td>
+                                    <td>
+                                        <label class="switch float-right" style="margin-bottom: -0.5rem!important;">
+                                            <input type="checkbox" ng-model="medidor.checked" ng-click="toogleMedidor(medidor)" />
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" ng-click="consultaAvanzada()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane" id="nav-potencia" role="tabpanel">
+        <div class="mt-5">
+            <p>Consultar por último:</p>
+        </div>
+        <div>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeDayPot" ng-click="setActiveDayPot()">Día</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeWeekPot" ng-click="setActiveWeekPot()">Semana</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeMonthPot" ng-click="setActiveMonthPot()">Mes</button>
+            <button class="btn btn-outline-primary btn-sel" ng-class="activeYearPot" ng-click="setActiveYearPot()">Año</button>
+        </div>
+        <hr />
+        <div>
+            <div id="filtros-avanzados-pot">
+                <button class="btn btn-link mb-3" data-toggle="collapse" data-target="#collapseOnePot" aria-expanded="true" aria-controls="collapseOnePot">
+                    <b> Consulta avanzada</b>
+                </button>
+                <div id="collapseOnePot" class="collapse" aria-labelledby="headingOne" data-parent="#filtros-avanzados-pot">
+                    <div class="row row align-items-center">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label> Desde</label>
+                                <input type="date" class="form-control" ng-model="desdePot" />
+                            </div>
+                            <div class="form-group">
+                                <label> Hasta</label>
+                                <input type="date" class="form-control" ng-model="hastaPot" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="ml-auto mr-auto w-25">
+                                <button class="btn btn-primary" ng-click="showMedidoresPot()">
+                                    Medidores
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-2">
+                            Frecuencia
+                        </div>
+                        <div class="col-md-10">
+                            <div class="form-check form-check-inline">
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuenciapot" value="15m" ng-model="chkFrecuenciaPot">
+                                    <label class="form-check-label" for="15m">
+                                        15 min.
+                                    </label>
+                                </div>
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuenciapot" value="1h" ng-model="chkFrecuenciaPot">
+                                    <label class="form-check-label" for="1h">
+                                        Horario
+                                    </label>
+                                </div>
+                                <div class="form-group mr-3">
+                                    <input class="form-check-input" type="radio" name="frecuenciapot" value="1d" ng-model="chkFrecuenciaPot">
+                                    <label class="form-check-label" for="1d">
+                                        Diario
+                                    </label>
+                                </div>
+                                <!--<div class="form-group mr-3">
+                                <input class="form-check-input" type="radio" name="frecuencia" value="1w" ng-model="chkFrecuencia">
+                                <label class="form-check-label" for="1w">
+                                    Semanal
+                                </label>
+                            </div>-->
+                                <div class="form-group">
+                                    <input class="form-check-input" type="radio" name="frecuencia" value="1M" ng-model="chkFrecuenciaPot">
+                                    <label class="form-check-label" for="1m">
+                                        Mensual
+                                    </label>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="text-center" ng-show="loadingPot">
+            <div class="spinner-border text-primary" role="status" style="width: 5rem; height: 5rem;">
+                <span>Cargando...</span>
+            </div>
+        </div>
+
+        <canvas id="myChartPot" width="300" height="150" ng-hide="loadingPot"></canvas>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalMedidoresPot" tabindex="-1" role="dialog" aria-labelledby="modalMedidoresPot" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary">Graficar Medidores</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row align-content-center">
+                            <div class="col-md-6">
+                                <h5 class="text-primary">Todos Los Medidores</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="switch float-right" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="checkAllPot" checked ng-click="toogleAllMedidoresPot()" />
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                        </div>
+                        <hr />
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="medidor in medidoresPot">
+                                    <td>{{medidor.name}}</td>
+                                    <td>
+                                        <label class="switch float-right" style="margin-bottom: -0.5rem!important;">
+                                            <input type="checkbox" ng-model="medidor.checked" ng-click="toogleMedidor(medidor)" />
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" ng-click="consultaAvanzadaPot()">Consultar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<style>
+    .btn-sel {
+        min-width: 150px;
+    }
+</style>

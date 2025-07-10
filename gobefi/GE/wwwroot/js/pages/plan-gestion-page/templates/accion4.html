@@ -1,0 +1,116 @@
+﻿<h1>Plan de Gestión Ambiental</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="card shadow p-3 mb-4 bg-white rounded">
+    <div class="card-header">
+        <h4>{{titleAccion}} Acción</h4>
+    </div>
+    <div class="card-body">
+        <form name="accion4Form" novalidate>
+            <div ng-show="accion.nivelMedida=='Ingenieria'">
+                <div class="form-group">
+                    <label class="form-label"><span class="text-danger">* </span>Presupuesto para ingeniería de detalle:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">CLP$</span>
+                        </div>
+                        <input name="presupuestoIngenieria"
+                               ng-model="accion.presupuestoIngenieria"
+                               type="number"
+                               step="1"
+                               ng-pattern="/^[0-9]\d*$/"
+                               ng-class="{'is-invalid':accion4Form.presupuestoIngenieria.$invalid  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty),'is-valid':accion4Form.presupuestoIngenieria.$valid  }"
+                               ng-required="accion.nivelMedida=='Ingenieria'"
+                               class="form-control"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+
+                    <span ng-show="accion4Form.presupuestoIngenieria.$error.required  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle es requerido
+                    </span>
+                    <span ng-show="(accion4Form.presupuestoIngenieria.$error.pattern || accion4Form.presupuestoIngenieria.$error.number )  && (accion4Form.presupuestoIngenieria.$touched || accion4Form.presupuestoIngenieria.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle debe ser número entero mayor o igual a 0
+                    </span>
+                </div>
+                <div class="form-group form-check">
+                    <input name="presupuestoIngenieriaPedido"
+                           type="checkbox"
+                           class="form-check-input"
+                           ng-model="accion.presupuestoIngenieriaPedido"
+                           ng-disabled="modoVer || !escritura">
+                    <label class="form-check-label" for="presupuestoIngenieriaPedido">Presupuesto solicitado</label>
+                </div>
+            </div>
+            <div ng-show="accion.nivelMedida=='Implementacion'">
+                <div class="form-group">
+                    <label class="form-label"><span class="text-danger">* </span>Presupuesto para implementación:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">CLP$</span>
+                        </div>
+                        <input name="presupuestoImplementacion"
+                               ng-model="accion.presupuestoImplementacion"
+                               type="number"
+                               ng-class="{'is-invalid':accion4Form.presupuestoImplementacion.$invalid  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty),'is-valid':accion4Form.presupuestoImplementacion.$valid  }"
+                               ng-pattern="/^[0-9]\d*$/"
+                               ng-required="accion.nivelMedida=='Implementacion'"
+                               class="form-control"
+                               ng-disabled="modoVer || !escritura" />
+                    </div>
+
+                    <span ng-show="accion4Form.presupuestoImplementacion.$error.required  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle es requerido
+                    </span>
+                    <span ng-show="(accion4Form.presupuestoImplementacion.$error.pattern || accion4Form.presupuestoImplementacion.$error.number )  && (accion4Form.presupuestoImplementacion.$touched || accion4Form.presupuestoImplementacion.$dirty)" class="text-danger">
+                        El campo Presupuesto para ingeniería de detalle debe ser número entero mayor o igual a 0
+                    </span>
+                </div>
+                <div class="form-group form-check">
+                    <input name="presupuestoImplementacionPedido"
+                           ng-model="accion.presupuestoImplementacionPedido"
+                           type="checkbox"
+                           class="form-check-input"
+                           ng-disabled="modoVer || !escritura">
+                    <label class="form-check-label" for="presupuestoImplementacionPedido">Presupuesto solicitado</label>
+                </div>
+            </div>
+            <div ng-show="accion.adjuntoUrl && accion.piloto" class="form-group">
+                <label>Documento Adjunto:</label>
+                <a href="{{accion.linkToDownload}}" target="_blank">{{accion.adjuntoNombre}}</a>
+            </div>
+            <div class="form-group" ng-show="accion.piloto">
+                <label for="documentoAccion">Subir Medio de verificación:</label>
+                <input id="documentoAccion"
+                       name="documentoAccion"
+                       ng-disabled="modoVer || !escritura"
+                       type="file"
+                       class="form-control"
+                       ng-model="accion.documentoAccion"
+                       ng-change="changeFileDocumentoAccion()"
+                       ng-class="{'is-invalid':accion4Form.documentoAccion.$invalid  && (accion4Form.documentoAccion.$touched || accion4Form.documentoAccion.$dirty) }"
+                       valid-file
+                       accept=""
+                       file-max-size="20388608"
+                       ng-required="!accion.adjuntoUrl && accion.piloto" />
+                <span ng-show="accion4Form.documentoAccion.$invalid  && (accion4Form.documentoAccion.$touched || accion4Form.documentoAccion.$dirty)"
+                      class="text-danger">Debe adjuntar un documento</span>
+                <div ng-show="fileSizeError">
+                    <span class="text-danger">El archivo no debe superar los 20 MB.</span>
+                </div>
+            </div>
+
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-secondary" ng-click="backToPlan()">Cancelar</button>
+        <button type="button" class="btn btn-secondary" ng-click="backToAccion3()">Atrás</button>
+        <button type="button"
+                class="btn btn-primary"
+                ng-show="escritura"
+                ng-click="saveAccion()"
+                ng-disabled="modoVer || accion4Form.$invalid || isLoadingSaveAccion || fileSizeError">
+            Guardar
+        </button>
+    </div>
+</div>

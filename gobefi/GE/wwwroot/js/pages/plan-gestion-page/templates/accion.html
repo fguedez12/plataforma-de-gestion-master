@@ -1,0 +1,116 @@
+﻿<h1>Plan de Gestión Ambiental</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="card shadow p-3 mb-4 bg-white rounded">
+    <div class="card-header">
+        <h4>{{titleAccion}} Acción</h4>
+    </div>
+    <div class="card-body">
+        <form name="accionForm" ng-submit="submitFormAcciones()" novalidate>
+            <div class="form-group">
+                <label for="dimAccion" class="form-label"><span class="text-danger">* </span>Dimensión:</label>
+                <select id="dimAccion"
+                        name="dimAccion"
+                        ng-model="accion.dimensionBrechaId"
+                        ng-class="{'is-invalid':accionForm.dimAccion.$invalid  && (accionForm.dimAccion.$touched || accionForm.dimAccion.$dirty),'is-valid':accionForm.dimAccion.$valid  }"
+                        class="form-control"
+                        ng-change="changeDimAccion()"
+                        ng-disabled="modoVer || !escritura"
+                        required>
+                    <option value="">--Seleccione--</option>
+                    <option ng-repeat="item in data.dimensiones" ng-value={{item.id}}>{{item.nombre}}</option>
+                </select>
+                <span ng-show="accionForm.dimAccion.$invalid  && (accionForm.dimAccion.$touched || accionForm.dimAccion.$dirty)" class="text-danger">
+                    Debe elegir una opción
+                </span>
+            </div>
+            <div class="form-group">
+                <label for="objetivoAccion" class="form-label"><span class="text-danger">* </span>Objetivo:</label>
+                <select id="objetivoAccion"
+                        name="objetivoAccion"
+                        ng-model="accion.objetivoId"
+                        ng-class="{'is-invalid':accionForm.objetivoAccion.$invalid  && (accionForm.objetivoAccion.$touched || accionForm.objetivoAccion.$dirty),'is-valid':accionForm.objetivoAccion.$valid  }"
+                        class="form-control"
+                        ng-change="changeObjetovoAccion()" ;
+                        ng-disabled="modoVer || !escritura || !accion.dimensionBrechaId"
+                        required>
+                    <option value="">--Seleccione--</option>
+                    <option ng-repeat="item in objetivosAcciones" ng-value={{item.id}}>{{item.titulo}}</option>
+                </select>
+                <span ng-show="accionForm.objetivoAccion.$invalid  && (accionForm.objetivoAccion.$touched || accionForm.objetivoAccion.$dirty)" class="text-danger">
+                    Debe elegir una opción
+                </span>
+            </div>
+            <div class="form-group">
+                <label for="medida" class="form-label"><span class="text-danger">* </span>Acción:</label>
+                <ul class="list-group" style="max-height:250px;overflow:scroll" ng-show="accion.dimensionBrechaId">
+                    <li class="list-group-item list-group-item-action"
+                        ng-click="!(modoVer || !escritura) && selectMedida(item)"
+                        style="cursor:pointer"
+                        ng-class="{'active':item.selected, 'disabled': modoVer || !escritura}"
+                        ng-repeat="item in medidas">{{item.nombre}}</li>
+                    <li class="list-group-item list-group-item-action"
+                        ng-click="!(modoVer || !escritura) && otraMedida()"
+                        style="cursor:pointer"
+                        ng-class="{'active':otraMedidaSelected, 'disabled': modoVer || !escritura}">
+                        Otra Acción
+                    </li>
+                </ul>
+                <span ng-show="accionForm.objetivoAccion.$invalid  && (accionForm.objetivoAccion.$touched || accionForm.objetivoAccion.$dirty)" class="text-danger">
+                    Debe elegir una opción
+                </span>
+            </div>
+            <div class="form-group" ng-show="accion.medidaId==999">
+                <label class="form-label"><span class="text-danger">* </span>Otra Acción:</label>
+                <input ng-model="accion.otraMedida"
+                       type="text"
+                       name="otraMedida"
+                       class="form-control"
+                       ng-disabled="modoVer || !escritura"
+                       ng-class="{'is-invalid':accionForm.otraMedida.$invalid  && (accionForm.otraMedida.$touched || accionForm.otraMedida.$dirty),'is-valid':accionForm.otraMedida.$valid  }"
+                       ng-required="accion.medidaId==0"
+                       maxlength="100" />
+                <span ng-show="accionForm.otraMedida.$error.required  && (accionForm.otraMedida.$touched || accionForm.otraMedida.$dirty)" class="text-danger">
+                    El campo Otra medida es requerido
+                </span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">información adicional (opcional):</label>
+                <textarea ng-model="accion.medidaDescripcion"
+                          name="medidaDescripcion"
+                          class="form-control"
+                          ng-disabled="modoVer || !escritura"
+                          ng-class="{'is-invalid':accionForm.medidaDescripcion.$invalid  && (accionForm.medidaDescripcion.$touched || accionForm.medidaDescripcion.$dirty),'is-valid':accionForm.medidaDescripcion.$valid  }"
+                          maxlength="100"
+                          rows="3">
+                </textarea>
+            </div>
+            <!-- <div class="form-group d-flex">
+                <label class="control-label pt-3">¿Esta acción constituye el proyecto piloto 2024?:</label>
+                <div class="col ml-3" style="padding: 10px">
+                    <span class="mr-2" style="font-size: 1rem;">No es piloto</span>
+                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                        <input ng-disabled="modoVer || !escritura"
+                               id="piloto"
+                               type="checkbox"
+                               name="piloto"
+                               ng-model="accion.piloto">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="ml-2" style="font-size: 1rem;">Si es piloto</span>
+                </div>
+            </div> -->
+        </form>
+
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-secondary" ng-click="backToPlan()">Cancelar</button>
+        <button type="button"
+                class="btn btn-primary"
+                ng-click="goToS2()"
+                ng-disabled="modoVer || !escritura || accionForm.$invalid || (accion.medidaId == null)">
+            Siguiente
+        </button>
+    </div>
+</div>

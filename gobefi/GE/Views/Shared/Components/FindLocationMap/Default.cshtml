@@ -1,0 +1,88 @@
+﻿<div class="card" ng-controller="findLocationController">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Buscar Dirección</label>
+                    <input id="input-places"
+                           class="form-control"
+                           places-auto-complete size=80
+                           ng-model="adress"
+                           component-restrictions="{country:'cl'}"
+                           types="{{types}}"
+                           on-place-changed="changeLocation()" />
+                </div>
+                <div class="row">
+                    <div class="col-md-12 m-auto">
+                        <ng-map id="map1" map-type-control="true" zoom="15" center="{{initialPos}}" on-click="getpos($event)">
+                            <marker centered="true" position="{{initialPos}}" title="Ubicación" animation="Animation.BOUNCE" draggable="true" on-dragend="getpos($event)"></marker>
+                        </ng-map>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" style="margin-top:20px;">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Calle</label>
+                    <div class="col-sm-9">
+                        <input type="text" ng-model="direccion.calle" class="form-control" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Número</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="direccion.numero" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="RegionId" class="col-sm-3 col-form-label">Región</label>
+                    <div class="col-sm-9">
+                        <select id="RegionId" class="custom-select" name="RegionId"
+                                ng-model="direccion.regionId"
+                                ng-options="region.id as region.nombre for region in data.regiones"
+                                ng-change="changeRegion()"
+                                ng-disabled="true">
+                            <option value="">--Seleccione la región--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="ProvinciaId" class="col-sm-3 col-form-label">Provincia</label>
+                    <div class="col-sm-9">
+                        <select id="ProvinciaId" class="custom-select" name="ProvinciaId"
+                                ng-model="direccion.provinciaId"
+                                ng-options="provincia.id as provincia.nombre for provincia in data.provincias"
+                                ng-disabled="true"
+                                ng-change="changeProvincia()">
+                            <option value="">--Seleccione la provincia--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="ComunaId" class="col-sm-3 col-form-label">Comuna</label>
+                    <div class="col-sm-9">
+                        <select id="ComunaId" class="custom-select" name="ComunaId"
+                                ng-model="direccion.comunaId"
+                                ng-options="comuna.id as comuna.nombre for comuna in data.comunas"
+                                ng-disabled="true">
+                            <option value="">--Seleccione la comuna--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Latitud</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="direccion.latitud" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Longitud</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="direccion.longitud" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

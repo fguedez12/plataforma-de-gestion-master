@@ -1,0 +1,22 @@
+<ion-fab *ngIf="escritura" vertical="top" style="top: 60px" horizontal="end" slot="fixed" class="menu-mobil">
+    <ion-fab-button (click)="showModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
+<ion-fab vertical="top" style="top: 130px" horizontal="end" slot="fixed" class="menu-mobil">
+  <ion-fab-button (click)="showFilters()">
+    <ion-icon name="filter-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+  <ion-fab *ngIf="escritura" vertical="top" horizontal="end" slot="fixed"  class="side-menu menu-web" >
+    <ion-button (click)="showModal()" shape="round">
+      Nuevo Vehiculo  
+    </ion-button>
+  </ion-fab>
+  <ion-fab vertical="top" horizontal="end" slot="fixed"  class="side-menu-actions menu-web">
+    <ion-button style="width : 177px" shape="round" color="tertiary"  (click)="showFilters()">
+      Filtros
+    </ion-button>
+  </ion-fab>
+
+

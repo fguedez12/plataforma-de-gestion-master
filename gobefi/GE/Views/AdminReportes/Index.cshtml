@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Reporte>
+
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<h2>Index</h2>
+
+<p>
+    @if (permisos.Escritura)
+    {
+        <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear Nuevo</a>
+    }
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (item.Id).ToString(), Permisos = permisos }))
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

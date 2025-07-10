@@ -1,0 +1,378 @@
+﻿@model DivisionVerModel
+@{
+    Layout = null;
+
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+    bool isAdmin = (bool)ViewData["isAdmin"];
+
+    string reportaPmg = Model.ReportaPMG ? "checked" : "";
+
+    string electricidadCompartido = Model.ComparteMedidorElectricidad ? "checked" : "";
+    string gasCompartido = Model.ComparteMedidorGasCanieria ? "checked" : "";
+    string aguaCompartido = Model.ComparteMedidorAgua ? "checked" : "";
+    string indicadaEfiEnergetico = Model.ComparteMedidorGasCanieria ? "checked" : "";
+
+}
+
+<div class="form-group row">
+    <label asp-for="Direccion" class="col-3"></label>
+    <label class="col-9">
+        @Model.Direccion
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="Nombre" class="col-3"></label>
+    <label class="col-9">
+        @Model.Nombre
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="Pisos" class="col-3"></label>
+    <label class="col-9">
+        @Model.Pisos
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="Superficie" class="col-3"></label>
+    <label class="col-9">
+        @Model.Superficie
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="TipoUsoId" class="col-3"></label>
+    <label class="col-9">
+        @Model.TipoUso.Nombre
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="TipoPropiedadId" class="col-3"></label>
+    <label class="col-9">
+        @Model.TipoPropiedad.Nombre
+    </label>
+</div>
+<div class="form-group row">
+    <label asp-for="AnyoConstruccion" class="col-3"></label>
+    <label class="col-9">
+        @Model.AnyoConstruccion
+    </label>
+</div>
+<div class="form-group row">
+    <label class="col-3">N° colaboradores del servicio</label>
+    <label class="col-9">
+        @Model.Funcionarios
+    </label>
+</div>
+<div class="form-group row">
+    <label class="col-3">N° Otros colaboradores</label>
+    <label class="col-9">
+        @Model.NroOtrosColaboradores
+    </label>
+</div>
+<div class="form-group row">
+    <label class="col-3">N° de Rol</label>
+    <label class="col-9">
+        @Model.NroRol
+    </label>
+</div>
+<div class="form-group row">
+    <label class="col-3">Reporta PMG</label>
+    <input type="checkbox" class="form-check-input col-7" checked="@Model.ReportaPMG" disabled="disabled">
+</div>
+<div class="form-group row">
+    <label class="col-3">Indicador EE</label>
+    <input type="checkbox" class="form-check-input col-7" checked="@Model.IndicadorEE" disabled="disabled">
+</div>
+<div class="form-group row">
+    <label class="col-3">Reporta Estado Verde</label>
+    <input type="checkbox" class="form-check-input col-7" checked="@Model.ReportaEV" disabled="disabled">
+</div>
+<div class="card container mb-4 pt-2 d-flex flex-row">
+    <div class="col-5">
+        <div class="form-group">
+            <label asp-for="AccesoFactura" class="control-label"></label>
+            <select class="form-control" asp-for="AccesoFactura" disabled>
+                <option value="0">--Seleccione--</option>
+                <option value="1">Si</option>
+                <option value="2">No, Otro servicio público</option>
+                <option value="3">No, Otra organización (especificar)</option>
+            </select>
+            <span asp-validation-for="AccesoFactura" class="text-danger"></span>
+        </div>
+        <div id="div_resp_pub" hidden>
+            <div class="form-group">
+                <label class="control-label" asp-for="InstitucionResponsableId"></label>
+                <select class="form-control" asp-for="InstitucionResponsableId" asp-items="ViewBag.InstitucionesResponsable" disabled></select>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="ServicioResponsableId"></label>
+                <select class="form-control" asp-for="ServicioResponsableId" disabled>
+                    <option>@Constants.Titles.SELECCIONE</option>
+                </select>
+                <span asp-validation-for="ServicioResponsableId" class="text-danger"></span>
+                <input type="hidden" asp-for="ServicioResponsableId" id="hfServicio" readonly />
+            </div>
+        </div>
+        <div class="form-group" id="div_responsable_otra" hidden>
+            <label class="control-label" asp-for="OrganizacionResponsable"></label>
+            <input asp-for="OrganizacionResponsable" class="form-control" readonly />
+            <span asp-validation-for="OrganizacionResponsable" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-7">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Consumo</th>
+                    <th>Comparte Medidor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Electricidad:</td>
+                    <td class="text-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="TieneMedidorElectricidad" disabled>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" @electricidadCompartido disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Gas:</td>
+                    <td class="text-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" asp-for="TieneMedidorGas" disabled>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" @gasCompartido disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+<div class="card container mb-4 pt-2 d-flex flex-row">
+    <div class="col-5">
+        <div class="form-group">
+            <label asp-for="AccesoFacturaAgua" class="control-label"></label>
+            <select class="form-control" asp-for="AccesoFacturaAgua" disabled>
+                <option value="0">--Seleccione--</option>
+                <option value="1">Si</option>
+                <option value="2">No, Otro servicio público</option>
+                <option value="3">No, Otra organización (especificar)</option>
+            </select>
+            <span asp-validation-for="AccesoFacturaAgua" class="text-danger"></span>
+        </div>
+        <div id="div_resp_pub_agua" hidden>
+            <div class="form-group">
+                <label class="control-label" asp-for="InstitucionResponsableAguaId"></label>
+                <select class="form-control" asp-for="InstitucionResponsableAguaId" asp-items="ViewBag.InstitucionesResponsable"></select>
+            </div>
+            <div class="form-group">
+                <label class="control-label" asp-for="ServicioResponsableAguaId"></label>
+                <select class="form-control" asp-for="ServicioResponsableAguaId" disabled>
+                    <option>@Constants.Titles.SELECCIONE</option>
+                </select>
+                <span asp-validation-for="ServicioResponsableAguaId" class="text-danger"></span>
+                <input type="hidden" asp-for="ServicioResponsableAguaId" id="hfServicio_agua" />
+            </div>
+        </div>
+        <div class="form-group" id="div_responsable_agua_otra" hidden>
+            <label class="control-label" asp-for="OrganizacionResponsableAgua"></label>
+            <input asp-for="OrganizacionResponsableAgua" class="form-control" />
+            <span asp-validation-for="OrganizacionResponsableAgua" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-7">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Comparte Medidor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Agua:</td>
+                    <td class="text-center">
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" @aguaCompartido disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+<div class="card container mb-4">
+    <br />
+    <h5 class="card-title">
+        Asignación de vehiculos
+    </h5>
+    <div class="form-group">
+        <label>¿Esta unidad tiene disponible un vehículo propio del servicio para su uso?</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="DisponeVehiculo" name="disponeVehiculo" id="disponeVehiculoSi" value="true" disabled>
+            <label class="form-check-label" asp-for="DisponeVehiculo">
+                Si, esta unidad utiliza vehículos (seleccionar vehículos en cuadro)
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="DisponeVehiculo" name="disponeVehiculo" id="disponeVehiculoNo" value="false" disabled>
+            <label class="form-check-label" asp-for="DisponeVehiculo">
+                No, esta unidad no utiliza vehículos.
+            </label>
+        </div>
+    </div>
+    <div class="form-group" id="sel_vehiculos">
+        <label>Vehiculos asignados</label>
+        <input type="text" class="form-control" asp-for="Patentes" readonly />
+    </div>
+</div>
+@*<div class="card container mb-4 pb-4">
+    <br />
+    <h5 class="card-title">
+        Climatización / Calefacción
+    </h5>
+    <div class="alert alert-warning">
+        <p>Importante: en plataforma se está preguntando por sistemas de calefacción/climatización cuyo consumo de energía provenga de la información de consumo que se declara en plataforma. Los sistemas de clima (centralizado) cuyo consumo no está en las facturaciones de la unidad, sino que se pagan en un gasto común aparte, no deben ser considerados en la plataforma (se debe indicar “No” en esta pregunta).</p>
+    </div>
+    <div class="form-group">
+        <label>¿Esta unidad en el consumo de electricidad o gas natural reportado en módulo consumos, considera un sistema de climatización/Calefacción?</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="DisponeCalefaccion" name="disponeCalefaccion" id="disponeCalefaccion" value="true" disabled>
+            <label class="form-check-label" for="disponeCalefaccion">
+                Si
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" asp-for="DisponeCalefaccion" name="disponeCalefaccion" id="disponeCalefaccion" value="false" disabled>
+            <label class="form-check-label" for="disponeCalefaccion">
+                No
+            </label>
+        </div>
+    </div>
+    <div id="sel_clima">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="AireAcondicionadoElectricidad" id="AireAcondicionadoElectricidad" disabled>
+            <label class="form-check-label" for="AireAcondicionadoElectricidad">
+                Sistema de aire acondicionado que consume electricidad
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" asp-for="CalefaccionGas" id="CalefaccionGas" disabled>
+            <label class="form-check-label" for="CalefaccionGas">
+                Sistema de calefacción que consume gas natural
+            </label>
+        </div>
+    </div>
+
+</div>*@
+@*<div class="form-group row">
+        <label class="col-3">Acceso a factura</label>
+        <label class="col-9">
+            @Model.AccesoFacturaString
+        </label>
+    </div>
+    @if (Model.AccesoFactura == 2 || Model.AccesoFactura == 3)
+    {
+
+        <div class="form-group row">
+            <label class="col-3">Responsable</label>
+            <label class="col-9">
+                @Model.Responsable
+            </label>
+        </div>
+    }*@
+
+@*<div class="mb-3">
+    <h4>Electricidad</h4>
+    <p class="h6 text-center mb-0">
+        Con respecto al consumo de electricidad.
+    </p>
+    <hr class="mt-1" />
+    <div class="row container">
+        <div class="col-4">
+            <span class="ge ge-energetico-electricidad active"></span>
+        </div>
+        <div class="col" style="padding: 15px">
+            <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                <input type="checkbox" @electricidadCompartido disabled>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <h4>
+        Gas de Cañería
+    </h4>
+    <p class="h6 text-center mb-0">
+        En caso que se consuma Gas de Cañería (GN / GLP).
+    </p>
+    <hr class="mt-1" />
+    <div class="row container">
+        <div class="col-4">
+            <span class="ge ge-energetico-gn active"></span>
+        </div>
+        <div class="col" style="padding: 15px">
+            <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                <input type="checkbox" @indicadaEfiEnergetico disabled>
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </div>
+</div>*@
+
+
+
+<div class="form-group">
+
+    @*@if (permisos.Escritura && (isAdmin ? true : !Model.Servicio.ReportaPMG))*@
+    @*@if ((permisos.Escritura && !Model.ReportaPMG) || isAdmin)
+    {
+        <button class="btn btn-info" id="btnEditarDivision"
+                data-target="@Model.Id" title="Editar">
+            <span class="@Constants.Icons.EDITAR" aria-hidden="true"></span> Editar
+        </button>
+    }*@
+
+    @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#btnActions-btnVolver").click(function (e) {
+            e.preventDefault();
+            window.location = "@Url.Action("Ver","MiUnidad")" + "/" + localStorage.getItem("divisionId");
+        });
+
+        $("#btnEditarDivision").click(function () {
+            $("#btnActions-btnVolver").remove();
+            editInformation($(this), true);
+        });
+
+
+    });
+</script>

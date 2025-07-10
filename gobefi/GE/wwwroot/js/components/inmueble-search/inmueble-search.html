@@ -1,0 +1,51 @@
+﻿<div>
+    <div class="card mt-2">
+        <div class="card-header">
+            <h3>Inmuebles encontrados</h3>
+        </div>
+        <div class="card-body">
+            <div ng-show="$ctrl.inmuebleListSearch.length==0">
+                <h5 class="text-muted">
+                    No se encontraron registros
+                </h5>
+            </div>
+            <div ng-show="$ctrl.loading">
+                <img src='/images/reload.gif' style="width:100px; height:100px">
+            </div>
+            <div ng-show="$ctrl.inmuebleListSearch.length>0">
+                <h5 class="text-muted">
+                    Elije tu inmueble
+                </h5>
+                <div class="alert alert-primary inmueble"
+                     role="alert"
+                     ng-repeat="inmueble in $ctrl.inmuebleListSearch"
+                     ng-click="$ctrl.selInmueble(inmueble)"
+                    >
+                    <div class="row">
+                        <img ng-if="inmueble.tipoInmueble==1" src="/images/Complejo_letra.svg" style="width:50px" />
+                        <img ng-if="inmueble.tipoInmueble==2" src="/images/Edificio_Letra.svg" style="width:50px" />
+                        <div class="ml-4">
+                            <h5 class="text-dark ">
+                                {{inmueble.calle}}, {{inmueble.numero}}
+                            </h5>
+                            <p class="text-dark">
+                                {{inmueble.comuna}}, {{inmueble.region}}
+                            </p>
+                        </div>
+                        <div class="ml-5">
+                            <h5>{{inmueble.nombre}}</h5>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div ng-show="$ctrl.inmuebleListSearch.length==0 && $ctrl.inmuebleSearched">
+                <hr />
+                <p>Si no encuentras tu inmueble puedes...</p>
+                <button ng-click="$ctrl.newInmueble()" class="btn btn-lg btn-primary"><i class="fa fa-plus mr-2"></i>Crear nuevo inmueble</button>
+            </div>
+
+        </div>
+    </div>
+</div>

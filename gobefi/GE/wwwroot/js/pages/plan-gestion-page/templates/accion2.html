@@ -1,0 +1,75 @@
+﻿﻿<h1>Plan de Gestión Ambiental</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="card shadow p-3 mb-4 bg-white rounded">
+    <div class="card-header">
+        <h4>{{titleAccion}} Acción</h4>
+    </div>
+    <div class="card-body">
+        <form name="accion2Form" novalidate>
+            <div ng-show="escritura">
+                <h5>Seleccionar Unidades</h5>
+                <div style="max-height:200px;overflow:scroll">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Unidad</th>
+                                <th>Indicador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in unidadesDeAccionUnselect"
+                                ng-style="{'cursor': (modoVer || !escritura) ? 'default' : 'pointer'}"
+                                ng-click="(!modoVer && escritura) && selUnidadAccion(item)"
+                                ng-class="{'disabled-row': modoVer || !escritura}">
+                                <td>
+                                    {{item.direccion}}
+                                </td>
+                                <td>
+                                    1000
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr />
+            </div>
+
+            <h5>Unidades Seleccionadas</h5>
+            <div style="max-height:200px;overflow:scroll">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Unidad</th>
+                            <th>Indicador</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in accion.unidadesDeAccionSelect"
+                            ng-style="{'cursor': (modoVer || !escritura) ? 'default' : 'pointer'}"
+                            ng-click="(!modoVer && escritura) && unSelUnidadAccion(item)"
+                            ng-class="{'disabled-row': modoVer || !escritura}">
+                            <td>
+                                {{item.direccion}}
+                            </td>
+                            <td>
+                                1000
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-secondary" ng-click="backToPlan()">Cancelar</button>
+        <button type="button" class="btn btn-secondary" ng-click="backToAccion()">Atrás</button>
+        <button type="button"
+                class="btn btn-primary"
+                ng-click="goToS3()"
+                ng-disabled="modoVer || !escritura || !accion.unidadesDeAccionSelect || accion.unidadesDeAccionSelect.length == 0">
+            Siguiente
+        </button>
+    </div>
+</div>

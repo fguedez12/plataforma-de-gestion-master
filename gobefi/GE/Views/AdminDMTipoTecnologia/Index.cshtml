@@ -1,0 +1,55 @@
+﻿@model IEnumerable<GobEfi.Web.Data.Entities.TipoTecnologia>
+
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+<div class="row">
+    <div class="col-12">
+        <h2>Tipos de Tecnologías</h2>
+        <p>
+            @if (permisos != null && permisos.Escritura)
+            {
+                <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+            }
+            <button type="button" class="btn btn-primary" id="filter">
+                <span class="fa fa-filter"></span> Filtros
+            </button>
+            <a asp-controller="AdminDM" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @if (permisos != null)
+                        {
+                            @(await Component.InvokeAsync<ActionsViewComponent>(
+                                new IActionList
+                                {
+                                    Id = (item.Id).ToString(),
+                                    Permisos = permisos
+                                }
+                            ))
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,70 @@
+﻿@model IActionList
+
+@if (Model.IsAdmin)
+{
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info" title="Editar"><span class="@Constants.Icons.EDITAR"></span></a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" title="Eliminar"><span class="@Constants.Icons.ELIMINAR"></span></a>
+}
+else
+{
+    @if (Model.Permisos.PermisoPorAccion)
+    {
+        @if (Model.Acciones.Editar)
+        {
+            @if (Model.PMG)
+            {
+                @if (Model.Ajustes.EditUnidadPMG)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info" title="Editar"><span class="@Constants.Icons.EDITAR"></span></a>
+                }
+                else
+                {
+                    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary" title="Detalle"><span class="@Constants.Icons.VER"></span></a>
+                }
+
+            }
+            else
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info" title="Editar"><span class="@Constants.Icons.EDITAR"></span></a>
+            }
+
+        }
+        @if (Model.Acciones.Detalle)
+        {
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary" title="Detalle"><span class="@Constants.Icons.VER"></span></a>
+        }
+        @if (Model.Acciones.Eliminar)
+        {
+            @if (Model.PMG)
+            {
+                @if (Model.Ajustes.DeleteUnidadPMG)
+                {
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" title="Eliminar"><span class="@Constants.Icons.ELIMINAR"></span></a>
+                }
+            }
+            else
+            {
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" title="Eliminar"><span class="@Constants.Icons.ELIMINAR"></span></a>
+            }
+
+        }
+    }
+    else
+    {
+        @if (Model.Permisos.Escritura)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-info" title="Editar"><span class="@Constants.Icons.EDITAR"></span></a>
+        }
+        @if (Model.Permisos.Lectura && !Model.Permisos.Escritura)
+        {
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary" title="Detalle"><span class="@Constants.Icons.VER"></span></a>
+        }
+        @if (Model.Permisos.Escritura)
+        {
+            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" title="Eliminar"><span class="@Constants.Icons.ELIMINAR"></span></a>
+        }
+    }
+}
+
+
+

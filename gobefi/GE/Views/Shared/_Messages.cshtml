@@ -1,0 +1,20 @@
+﻿@{
+    string text = (string)TempData["FlashMessage.Text"];
+    string cssClass = null;
+    if (!string.IsNullOrWhiteSpace(text))
+    {
+        EnumTipoMensaje type = (EnumTipoMensaje)TempData["FlashMessage.Type"];
+        cssClass = type.ToString().ToLower();
+    }
+}
+@if (!string.IsNullOrWhiteSpace(text))
+{
+    <div class="alert alert-@cssClass" role="alert">
+        <p>
+            @text
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </p>
+    </div>
+}

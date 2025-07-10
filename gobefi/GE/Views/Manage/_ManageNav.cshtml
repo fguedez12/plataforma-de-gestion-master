@@ -1,0 +1,17 @@
+﻿@using GobEfi.Web.Views.Manage
+@inject SignInManager<Usuario> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+
+
+    <ul class="nav flex-column nav-pills">
+        <li class="nav-item"><a asp-action="Index" class="nav-link @ManageNavPages.IndexNavClass(ViewContext)">Datos personales</a></li>
+        <li class="nav-item"><a asp-action="ChangePassword" class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)">Contraseña</a></li>
+        <li class="nav-item"><a asp-action="Certificados" class="nav-link @ManageNavPages.CertificadosNavClass(ViewContext) ">Certificados</a></li>
+        @if (hasExternalLogins)
+        {
+            <li class="nav-item"><a asp-action="ExternalLogins" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)">External logins</a></li>
+        }
+    </ul>
+

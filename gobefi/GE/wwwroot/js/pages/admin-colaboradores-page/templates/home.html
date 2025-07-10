@@ -1,0 +1,1187 @@
+﻿﻿<h1>Traslado de Personas</h1>
+<hr />
+<h4>Servicio: {{selectedServicioNombre}}</h4>
+<hr />
+<div class="form-group">
+    <label for="yearSelect">Año</label>
+    <select
+        class="form-control"
+        id="yearSelect"
+        ng-model="year"
+        ng-options="y as y for y in years"
+        ng-change="loadData()">
+    </select>
+</div>
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+        <a class="nav-item nav-link active"
+           id="nav-encuesta-tab"
+           data-toggle="tab"
+           href="#nav-encuesta"
+           role="tab">
+            Encuestas Origen-Destino
+        </a>
+        <a class="nav-item nav-link"
+           id="nav-vuelos-tab"
+           data-toggle="tab"
+           href="#nav-vuelos"
+           role="tab">
+            Viajes avión
+        </a>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabColaboradores-encuesta">
+
+    <div class="tab-pane fade show active" id="nav-encuesta" role="tabpanel">
+        <div class="card container mb-4">
+            <br />
+            <form>
+                <div class="form-group col-6">
+                    <label class="form-label">Total colaboradores encuestados</label>
+                    <input  ng-disabled="isConsulta" type="number" class="form-control" ng-model="totalEncuestados" />
+                </div>
+            </form>
+        </div>
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab-me2" role="tablist">
+                <a class="nav-item nav-link active"
+                   id="nav-vp-tab"
+                   data-toggle="tab"
+                   href="#nav-vp"
+                   role="tab">
+                    Vehículo Propio
+                </a>
+                <a class="nav-item nav-link"
+                   id="nav-vc-tab"
+                   data-toggle="tab"
+                   href="#nav-vc"
+                   ng-click="setValidations()"
+                   role="tab">
+                    Vehículo Compartido
+                </a>
+                <a class="nav-item nav-link"
+                   id="nav-transportep-tab"
+                   data-toggle="tab"
+                   href="#nav-transportep"
+                   role="tab">
+                    Transporte público
+                </a>
+                <a class="nav-item nav-link"
+                   id="nav-bicicleta-tab"
+                   data-toggle="tab"
+                   href="#nav-bicicleta"
+                   role="tab">
+                    Bicicleta
+                </a>
+                <a class="nav-item nav-link"
+                   id="nav-motocicleta-tab"
+                   data-toggle="tab"
+                   href="#nav-motocicleta"
+                   role="tab">
+                    Motocicleta
+                </a>
+                <a class="nav-item nav-link"
+                   id="nav-otras-tab"
+                   data-toggle="tab"
+                   href="#nav-otras"
+                   role="tab">
+                    Otras formas
+                </a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabColaboradores-vp">
+            <div class="tab-pane fade show active" id="nav-vp" role="tabpanel">
+                <div class="card container mb-4" style="max-height:600px;overflow-y:auto">
+                    <form name="vehiculoPropioForm" novalidate>
+                        <br />
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h5>Vehículo Propio</h5>
+                            </div>
+                            <div>
+                                <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveVp()">Guardar</button>
+                            </div>
+                        </div>
+
+                        <h5 class="card-title">
+                            Cantidad total de personas
+                        </h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="5" class="text-center">número de usuarios en vehículos</th>
+                                </tr>
+                            </thead>
+                            <thead>
+
+                                <tr>
+                                    <th style="white-space: nowrap;">Tipo vehículo</th>
+                                    <th class="text-center">1</th>
+                                    <th class="text-center">2</th>
+                                    <th class="text-center">3</th>
+                                    <th class="text-center">4</th>
+                                    <th class="text-center">Más de 4</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Híbrido</td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c1HibP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c2HibP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero " min="0" ng-model="vp.c3HibP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero " min="0" ng-model="vp.c4HibP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero " min="0" ng-model="vp.c4mHibP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Hidrógeno</td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c1HidP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c2HidP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c3HidP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4HidP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4mHidP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Eléctrico</td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c1ElP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c2ElP" />
+                                    </td>
+                                    <td>
+                                        <input  ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c3ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta"  type="number" class="form-control entero" min="0" ng-model="vp.c4ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4mElP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Diesel</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c1DisP" />
+                                    </td>      
+                                    <td>       
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c2DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c3DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4mDisP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Gasolina</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c1GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c2GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c3GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vp.c4mGasP" />
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        <h5 class="card-title">
+                            Distancia aproximada de ida total a la semana (KM)
+                        </h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="5" class="text-center">número de usuarios en vehículos</th>
+                                </tr>
+                            </thead>
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">Tipo vehículo</th>
+                                    <th class="text-center">1</th>
+                                    <th class="text-center">2</th>
+                                    <th class="text-center">3</th>
+                                    <th class="text-center">4</th>
+                                    <th class="text-center">Más de 4</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Híbrido</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d1HibP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d2HibP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d3HibP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4HibP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4mHibP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Hidrógeno</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d1HidP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d2HidP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d3HidP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4HidP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4mHidP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Eléctrico</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d1ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d2ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d3ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4ElP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4mElP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Diesel</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d1DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d2DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d3DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4DisP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4mDisP" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Gasolina</td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d1GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d2GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d3GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4GasP" />
+                                    </td>
+                                    <td>
+                                        <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vp.d4mGasP" />
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        <h5 class="card-title">
+                            Distancia aproximada total del período (KM)
+                        </h5>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th colspan="5" class="text-center">número de usuarios en vehículos</th>
+                                </tr>
+                            </thead>
+                            <thead>
+                                <tr>
+                                    <th style="white-space: nowrap;">Tipo vehículo</th>
+                                    <th class="text-center">1</th>
+                                    <th class="text-center">2</th>
+                                    <th class="text-center">3</th>
+                                    <th class="text-center">4</th>
+                                    <th class="text-center">Más de 4</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Híbrido</td>
+                                    <td>{{vp.d1HibP*104}}</td>
+                                    <td>{{vp.d2HibP*104}}</td>
+                                    <td>{{vp.d3HibP*104}}</td>
+                                    <td>{{vp.d4HibP*104}}</td>
+                                    <td>{{vp.d4mHibP*104}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Hidrógeno</td>
+                                    <td>{{vp.d1HidP*104}}</td>
+                                    <td>{{vp.d2HidP*104}}</td>
+                                    <td>{{vp.d3HidP*104}}</td>
+                                    <td>{{vp.d4HidP*104}}</td>
+                                    <td>{{vp.d4mHidP*104}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Eléctrico</td>
+                                    <td>{{vp.d1ElP*104}}</td>
+                                    <td>{{vp.d2ElP*104}}</td>
+                                    <td>{{vp.d3ElP*104}}</td>
+                                    <td>{{vp.d4ElP*104}}</td>
+                                    <td>{{vp.d4mElP*104}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Diesel</td>
+                                    <td>{{vp.d1DisP*104}}</td>
+                                    <td>{{vp.d2DisP*104}}</td>
+                                    <td>{{vp.d3DisP*104}}</td>
+                                    <td>{{vp.d4DisP*104}}</td>
+                                    <td>{{vp.d4mDisP*104}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Convencional Gasolina</td>
+                                    <td>{{vp.d1GasP*104}}</td>
+                                    <td>{{vp.d2GasP*104}}</td>
+                                    <td>{{vp.d3GasP*104}}</td>
+                                    <td>{{vp.d4GasP*104}}</td>
+                                    <td>{{vp.d4mGasP*104}}</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </form>
+
+                </div>
+            </div>
+            <div class="tab-pane fade show" id="nav-vc" role="tabpanel">
+                <div class="card container mb-4" style="max-height:600px;overflow-y:auto">
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Vehículo Compartido</h5>
+                        </div>
+                        <div>
+                            <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveVc()">Guardar</button>
+                        </div>
+                    </div>
+                    <h5 class="card-title">
+                        Cantidad total de personas
+                    </h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Tipo vehículo</th>
+                                <th class="text-center">1</th>
+                                <th class="text-center">2</th>
+                                <th class="text-center">3</th>
+                                <th class="text-center">4</th>
+                                <th class="text-center">Más de 4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Híbrido</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c1HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c2HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c3HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4mHibC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Hidrógeno</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c1HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c2HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c3HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4mHidC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eléctrico</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c1ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c2ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c3ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4mElC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Diesel</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c1DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c2DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c3DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4mDisC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Gasolina</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c1GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c2GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c3GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="vc.c4mGasC" />
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                    <h5 class="card-title">
+                        Distancia aproximada de ida total a la semana (KM)
+                    </h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Tipo vehículo</th>
+                                <th class="text-center">1</th>
+                                <th class="text-center">2</th>
+                                <th class="text-center">3</th>
+                                <th class="text-center">4</th>
+                                <th class="text-center">Más de 4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Híbrido</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d1HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d2HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d3HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4HibC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4mHibC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Hidrógeno</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d1HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d2HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d3HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4HidC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4mHidC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Eléctrico</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d1ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d2ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d3ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4ElC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4mElC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Diesel</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d1DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d2DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d3DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4DisC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4mDisC" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Gasolina</td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d1GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d2GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d3GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4GasC" />
+                                </td>
+                                <td>
+                                    <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="vc.d4mGasC" />
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                    <h5 class="card-title">
+                        Distancia aproximada total del período (KM)
+                    </h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Tipo vehículo</th>
+                                <th class="text-center">1</th>
+                                <th class="text-center">2</th>
+                                <th class="text-center">3</th>
+                                <th class="text-center">4</th>
+                                <th class="text-center">Más de 4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Híbrido</td>
+                                <td>{{vc.d1HibC*104}}</td>
+                                <td>{{vc.d2HibC*104}}</td>
+                                <td>{{vc.d3HibC*104}}</td>
+                                <td>{{vc.d4HibC*104}}</td>
+                                <td>{{vc.d4mHibC*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Hidrógeno</td>
+                                <td>{{vc.d1HidC*104}}</td>
+                                <td>{{vc.d2HidC*104}}</td>
+                                <td>{{vc.d3HidC*104}}</td>
+                                <td>{{vc.d4HidC*104}}</td>
+                                <td>{{vc.d4mHidC*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Eléctrico</td>
+                                <td>{{vc.d1ElC*104}}</td>
+                                <td>{{vc.d2ElC*104}}</td>
+                                <td>{{vc.d3ElC*104}}</td>
+                                <td>{{vc.d4ElC*104}}</td>
+                                <td>{{vc.d4mElC*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Diesel</td>
+                                <td>{{vc.d1DisC*104}}</td>
+                                <td>{{vc.d2DisC*104}}</td>
+                                <td>{{vc.d3DisC*104}}</td>
+                                <td>{{vc.d4DisC*104}}</td>
+                                <td>{{vc.d4mDisC*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Convencional Gasolina</td>
+                                <td>{{vc.d1GasC*104}}</td>
+                                <td>{{vc.d2GasC*104}}</td>
+                                <td>{{vc.d3GasC*104}}</td>
+                                <td>{{vc.d4GasC*104}}</td>
+                                <td>{{vc.d4mGasC*104}}</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade show" id="nav-transportep" role="tabpanel">
+                <div class="card container mb-4" style="max-height:750px;overflow-y:auto">
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Transporte público</h5>
+                        </div>
+                        <div>
+                            <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveTp()">Guardar</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Tipo vehículo</th>
+                                <th class="text-center">Cantidad total de personas</th>
+                                <th class="text-center">Distancia aproximada de ida total a la semana (KM)</th>
+                                <th class="text-center">Distancia aproximada total del período (KM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bus interurbano</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cBusIu" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dBusIu" /></td>
+                                <td> {{tp.dBusIu*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Bus local</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cBusL" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dBusL" /></td>
+                                <td> {{tp.dBusL*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Bus Transantiago</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cBusTs" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dBusTs" /></td>
+                                <td> {{tp.dBusTs*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Metro RM</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cMetro" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dMetro" /></td>
+                                <td> {{tp.dMetro*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>MetroTren eléctrico</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cMetroT" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dMetroT" /></td>
+                                <td> {{tp.dMetroT*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>MetroTren a combustible</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cMetroTc" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dMetroTc" /></td>
+                                <td> {{tp.dMetroTc*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Tpte. Público eléctrico Aysén</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cTpeA" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dTpeA" /></td>
+                                <td> {{tp.dTpeA*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Tpte. Público eléctrico Magallanes</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="tp.cTpeM" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="tp.dTpeM" /></td>
+                                <td> {{tp.dTpeM*104}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade show" id="nav-bicicleta" role="tabpanel">
+                <div class="card container mb-4" style="max-height:750px;overflow-y:auto">
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Bicicleta convencional (tracción humana)</h5>
+                        </div>
+                        <div>
+                            <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveBici()">Guardar</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Período de uso</th>
+                                <th class="text-center">Cantidad total de personas</th>
+                                <th class="text-center">Distancia aproximada de ida total a la semana (KM)</th>
+                                <th class="text-center">Distancia aproximada total del período (KM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Todo el año</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="bici.cBiciTa" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="bici.dBiciTa" /></td>
+                                <td> {{bici.dBiciTa*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Estacional (primavera - verano)</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="bici.cBiciEs" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="bici.dBiciEs" /></td>
+                                <td> {{bici.dBiciEs*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Algunos días de la semana</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="bici.cBiciAd" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="bici.dBiciAd" /></td>
+                                <td> {{bici.dBiciAd*104}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade show" id="nav-motocicleta" role="tabpanel">
+                <div class="card container mb-4" style="max-height:750px;overflow-y:auto">
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Motocicleta</h5>
+                        </div>
+                        <div>
+                            <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveMoto()">Guardar</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Tipo vehículo</th>
+                                <th class="text-center">Cantidad total de personas</th>
+                                <th class="text-center">Distancia aproximada de ida total a la semana (KM)</th>
+                                <th class="text-center">Distancia aproximada total del período (KM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Eléctrica</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="moto.cMotoEl" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="moto.dMotoEl" /></td>
+                                <td> {{moto.dMotoEl*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Gasolina</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="moto.cMotoGas" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="moto.dMotoGas" /></td>
+                                <td> {{moto.dMotoGas*104}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane fade show" id="nav-otras" role="tabpanel">
+                <div class="card container mb-4" style="max-height:750px;overflow-y:auto">
+                    <br />
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>Otras formas</h5>
+                        </div>
+                        <div>
+                            <button ng-show="!isConsulta" class="btn btn-primary" ng-click="saveOtra()">Guardar</button>
+                        </div>
+                    </div>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">Forma</th>
+                                <th class="text-center">Cantidad total de personas</th>
+                                <th class="text-center">Distancia aproximada de ida total a la semana (KM)</th>
+                                <th class="text-center">Distancia aproximada total del período (KM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Taxi</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="otra.cTaxi" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="otra.dTaxi" /></td>
+                                <td> {{otra.dTaxi*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Colectivo</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="otra.cColectivo" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="otra.dColectivo" /></td>
+                                <td> {{otra.dColectivo*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Caminando</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="otra.cCaminando" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="otra.dCaminando" /></td>
+                                <td> {{otra.dCaminando*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Scooter eléctrico</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="otra.cScooterEl" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="otra.dScooterEl" /></td>
+                                <td> {{otra.dScooterEl*104}}</td>
+                            </tr>
+                            <tr>
+                                <td>Bicicleta eléctrica</td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control entero" min="0" ng-model="otra.cBiciEl" /></td>
+                                <td> <input ng-disabled="isConsulta" type="number" class="form-control decimal" min="0" step="0.1" ng-model="otra.dBiciEl" /></td>
+                                <td> {{otra.dBiciEl*104}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="tab-pane fade show" id="nav-vuelos" role="tabpanel">
+        <div class="mt-3">
+            <p>
+                Los colaboradores de las unidades definidas para el alcance del período PMG, tienen viajes en avión para el período
+            </p>
+            <label>No tienen</label>
+            <label class="switch" style="margin-bottom: -0.5rem!important;">
+                <input type="checkbox" ng-model="noDeclaraVuelos" ng-disabled="isConsulta" ng-change="changeNoDeclaraVuelos()">
+                <span class="slider round disable-check"></span>
+            </label>
+            <label>Si tienen</label>
+
+        </div>
+        <hr />
+        <div class="mt-3">
+            <button ng-show="!isConsulta" class="btn btn-primary btn-sm" ng-click="newVuelo()">
+                Agregar
+            </button>
+        </div>
+        <hr />
+        <div ng-show="viajes.length>0 && !loadingTable">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Aeropuerto Origen</th>
+                            <th>Aeropuerto Destino</th>
+                            <th>N° Viajes totales</th>
+                            <th>Distancia Total Estimada (km)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="viaje in viajes">
+                            <td>
+                                {{viaje.aeropuertoOrigen}}
+                            </td>
+                            <td>
+                                {{viaje.aeropuertoDestino}}
+                            </td>
+                            <td>
+                                {{viaje.numeroViajes}}
+                            </td>
+                            <td>
+                                {{viaje.distanciaTotal}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(viaje.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="delete(viaje.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPage()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': page==arrPage}" ng-repeat="arrPage in arrayPages">
+                        <button class="page-link" ng-click="setPage(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPage()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="viajes.length==0 && !loadingTable">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTable">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+                <button type="button" class="close" ng-click="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button> 
+            </div>
+            <form name="vuelosForm" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="periodo" class="form-label">Periodo:</label>
+                        <input type="text"
+                               id="periodo"
+                               name="periodo"
+                               class="form-control"
+                               ng-model="viaje.periodo"
+                               ng-init="viaje.periodo = year.toString()"
+                               readonly
+                               required>
+                        <span ng-show="vuelosForm.periodo.$invalid  && (vuelosForm.periodo.$touched || vuelosForm.periodo.$dirty)"
+                              class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="paisOrigenId">País Origen:</label>
+                        <select id="paisOrigenId"
+                                name="paisOrigenId"
+                                class="form-control"
+                                ng-model="viaje.paisOrigenId"
+                                ng-options="pais.id as pais.nombre  for pais in paises"
+                                ng-disabled="isConsulta"
+                                ng-change="changePaisOrigen()"
+                                ng-class="{'is-invalid':vuelosForm.paisOrigenId.$invalid  && (vuelosForm.paisOrigenId.$touched || vuelosForm.paisOrigenId.$dirty) }"
+                                required>
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="vuelosForm.paisOrigenId.$invalid  && (vuelosForm.paisOrigenId.$touched || vuelosForm.paisOrigenId.$dirty)"
+                              class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="aeropuertoOrigenId">Aeropuerto Origen:</label>
+                        <select id="aeropuertoOrigenId"
+                                name="aeropuertoOrigenId"
+                                class="form-control"
+                                ng-model="viaje.aeropuertoOrigenId"
+                                ng-options="aeropuerto.id as aeropuerto.nombre  for aeropuerto in aeropuertos"
+                                ng-disabled="isConsulta"
+                                ng-class="{'is-invalid':vuelosForm.aeropuertoOrigenId.$invalid  && (vuelosForm.aeropuertoOrigenId.$touched || vuelosForm.aeropuertoOrigenId.$dirty) }"
+                                required>
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="vuelosForm.aeropuertoOrigenId.$invalid  && (vuelosForm.aeropuertoOrigenId.$touched || vuelosForm.aeropuertoOrigenId.$dirty)"
+                              class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="paisDestinoId">País Destino:</label>
+                        <select id="paisDestinoId"
+                                name="paisDestinoId"
+                                class="form-control"
+                                ng-model="viaje.paisDestinoId"
+                                ng-options="pais.id as pais.nombre  for pais in paises"
+                                ng-disabled="isConsulta"
+                                ng-change="changePaisDestino()"
+                                ng-class="{'is-invalid':vuelosForm.paisDestinoId.$invalid  && (vuelosForm.paisDestinoId.$touched || vuelosForm.paisDestinoId.$dirty) }"
+                                required>
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="vuelosForm.paisDestinoId.$invalid  && (vuelosForm.paisDestinoId.$touched || vuelosForm.paisDestinoId.$dirty)"
+                              class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="aeropuertoDestinoId">Aeropuerto Destino:</label>
+                        <select id="aeropuertoDestinoId"
+                                name="aeropuertoDestinoId"
+                                class="form-control"
+                                ng-model="viaje.aeropuertoDestinoId"
+                                ng-options="aeropuerto.id as aeropuerto.nombre  for aeropuerto in aeropuertosDestino"
+                                ng-disabled="isConsulta"
+                                ng-class="{'is-invalid':vuelosForm.aeropuertoDestinoId.$invalid  && (vuelosForm.aeropuertoDestinoId.$touched || vuelosForm.aeropuertoDestinoId.$dirty) }"
+                                required>
+                            <option value="">--Seleccione--</option>
+                        </select>
+                        <span ng-show="vuelosForm.aeropuertoDestinoId.$invalid  && (vuelosForm.aeropuertoDestinoId.$touched || vuelosForm.aeropuertoDestinoId.$dirty)"
+                              class="text-danger">
+                            Debe seleccionar una opción
+                        </span>
+                    </div>
+                    <!--<div class="form-group">
+                        <label class="form-label" for="ciudadOrigen">Ciudad Origen:</label>
+                        <input id="ciudadOrigen"
+                               name="ciudadOrigen"
+                               places-auto-complete size=80
+                               types="{{types}}"
+                               ng-class="{'is-invalid':vuelosForm.ciudadOrigen.$invalid  && (vuelosForm.ciudadOrigen.$touched || vuelosForm.ciudadOrigen.$dirty) }"
+                               type="text"
+                               class="form-control"
+                               on-place-changed="changeLocationOrigen()"
+                               ng-model="viaje.ciudadOrigen"
+                               ng-disabled="bloqOD"
+                               required />
+                        <span ng-show="vuelosForm.ciudadOrigen.$invalid  && (vuelosForm.ciudadOrigen.$touched || vuelosForm.ciudadOrigen.$dirty)"
+                              class="text-danger">
+                            El campo Ciudad Origen es requerido
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="ciudadDestino">Ciudad Destino final:</label>
+                        <input id="ciudadDestino"
+                               name="ciudadDestino"
+                               places-auto-complete size=80
+                               types="{{types}}"
+                               ng-class="{'is-invalid':vuelosForm.ciudadDestino.$invalid  && (vuelosForm.ciudadDestino.$touched || vuelosForm.ciudadDestino.$dirty) }"
+                               type="text"
+                               class="form-control"
+                               on-place-changed="changeLocationDestino()"
+                               ng-model="viaje.ciudadDestino"
+                               ng-disabled="bloqOD"
+                               required />
+                        <span ng-show="vuelosForm.ciudadDestino.$invalid  && (vuelosForm.ciudadDestino.$touched || vuelosForm.ciudadDestino.$dirty)"
+                              class="text-danger">
+                            El campo Ciudad Destino es requerido
+                        </span>
+                    </div>
+                    <button ng-show="editMode && !isConsulta"
+                            class="btn btn-sm btn-secondary mb-2"
+                            ng-click="editOD()">
+                        Editar origen destino
+                    </button>
+                    <div class="form-group">
+                        <label class="form-label" for="distancia">Distancia:</label>
+                        <input id="distancia"
+                               name="distancia"
+                               type="number"
+                               class="form-control"
+                               ng-model="viaje.distancia"
+                               ng-disabled="isConsulta"
+                               step="1"
+                               readonly />
+                    </div>-->
+                    <div class="form-group">
+                        <label class="form-label" for="cuidadDestino">N° de viajes solo ida / solo retorno:</label>
+                        <input id="nViajesSoloIdaRetorno"
+                               name="nViajesSoloIdaRetorno"
+                               type="number"
+                               class="form-control"
+                               ng-model="viaje.nViajesSoloIdaRetorno"
+                               step="1"
+                               ng-change="changeNViajes()"
+                               ng-disabled="isConsulta" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="cuidadDestino">N° de viajes Ida-vuelta:</label>
+                        <input id="nViajesIdaVuelta"
+                               name="nViajesIdaVuelta"
+                               type="number"
+                               class="form-control"
+                               ng-model="viaje.nViajesIdaVuelta"
+                               ng-change="changeNViajes()"
+                               step="1"
+                               ng-disabled="isConsulta" />
+                    </div>
+                    <!--<div class="form-group">
+                        <label class="form-label" for="cuidadDestino">N° de viajes Totales:</label>
+                        <input id="nViajesTotales"
+                               name="nViajesTotales"
+                               type="number"
+                               class="form-control"
+                               ng-model="viaje.nViajesTotales"
+                               readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="cuidadDestino">Distancia estimada (km):</label>
+                        <input id="distanciaEstimada"
+                               name="distanciaEstimada"
+                               type="text"
+                               class="form-control"
+                               ng-model="viaje.distanciaEstimada"
+                               readonly />
+                    </div>-->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModal()">Cancelar</button>
+                    <button ng-show="!isConsulta" type="button" class="btn btn-primary" ng-click="submitFormViajes()" ng-disabled="vuelosForm.$invalid || viajes.distancia==0">Guardar</button>
+                    <!--<button type="button" class="btn btn-secondary" ng-click="testValid()">Test</button>-->
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

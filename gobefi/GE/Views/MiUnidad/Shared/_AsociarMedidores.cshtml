@@ -1,0 +1,70 @@
+﻿@model ICollection<MedidorParaAsociar>
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<script>
+    $("input[name='switchAsociarMedidor']").change(function () {
+        
+        const datos = {
+            medidorId : $(this).closest("tr").attr("id"),
+            divisionId : localStorage.getItem("divisionId"),
+            activo : this.checked
+        }
+        
+        SwitchMedidorDivision(datos).then();
+
+    });
+
+    async function SwitchMedidorDivision(datos) {
+        let response;
+        try {
+
+            response = await $.post({
+                url: "@Url.Action("SwitchMedidorDivision", "MiUnidad")",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(datos),
+                
+            });
+
+            BuscarMedidoresAsociados();
+
+        } catch (e) {
+            console.log(e);
+        }
+
+    }
+</script>
+
+    <table class="table table-borderless" style="color: #007bff;" id="medidoresParaAsociar">
+        <thead style="color:#4787d2; background-color:white;font-size:1rem;border-bottom:1pt solid black;">
+            <tr>
+                <th class="text-center">N° de Medidor</th>
+                @*<th class="text-center">Tipo de Medidor</th>*@
+                <th class="text-center">Desactivado/Asociado</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (MedidorParaAsociar item in Model)
+            {
+                <tr id="@item.Id">
+                    <td>@item.NumeroMedidor</td>
+                    @*<td>@item.TipoMedidor</td>*@
+
+                    @{ 
+
+                        var asociado = item.Asociado ? "checked" : "";
+                    }
+
+                    <td class="text-center">
+                        <label class="switch">
+                            <input type="checkbox" name="switchAsociarMedidor" @asociado >
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

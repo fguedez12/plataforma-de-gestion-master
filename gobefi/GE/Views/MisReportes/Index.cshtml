@@ -1,0 +1,128 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    ViewData["Title"] = "Reportes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    ICollection<ReporteModel> reportes = (ICollection<ReporteModel>)ViewData["reportes"];
+}
+
+<script src="~/js/MisReportes.js" asp-append-version="true"></script>
+
+@*@( await Component.InvokeAsync<BodyHeaderViewComponent>(new BodyHeader { Nombre = "Reportes" }) )*@
+
+<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#bh-Filters" aria-expanded="false"
+    aria-controls="bh-Filters">
+    <span class="fa fa-filter"></span> Filtros
+</button>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <h4>Reportes</h4>
+
+        <p class="h4 subtitulo"></p>
+        @*<input type="hidden" id="divisionName" value="@Model.Nombre" />*@
+    </div>
+</div>
+
+<div class="collapse" id="bh-Filters">
+    <select class="custom-select w-25" id="reporte-instituciones" style="width: 150px;"></select>
+    <select class="custom-select w-25 ml-2" id="reporte-servicios" style="width: 150px;"></select>
+</div>
+
+<div class="table-responsive-sm p-3 mt-5">
+    <table class="table table-sm" id="tblReportes">
+        <thead>
+            <tr>
+                <th scope="col">Reportes Generales:</th>
+                <th scope="col" class="text-center">Formato</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div class="table-responsive-sm p-3 mt-1">
+    <table class="table table-sm" id="tblReportess2">
+        <thead>
+            <tr>
+                <th scope="col">Reportes específicos para Sistema Estado Verde:</th>
+                <th scope="col" class="text-center">Formato</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+<div class="table-responsive-sm p-3 mt-1">
+    <table class="table table-sm" id="tblReportess3">
+        <thead>
+            <tr>
+                <th scope="col">Reportes históricos Sistema Estado Verde:</th>
+                <th scope="col" class="text-center">Formato</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        getNombreServicio();
+
+
+        @*loadSelectData(
+        $("#reporte-instituciones"),
+        "@Url.Content("~/api/instituciones/getinstituciones")/@UserManager.GetUserId(User)",
+        parseInt(localStorage.getItem("institucionId")),
+        'id', true, "Instituciones");*@
+
+        loadSelectDataAsync(
+            $("#reporte-instituciones"),
+            "@Url.Content("~/api/instituciones/getinstituciones")/@UserManager.GetUserId(User)"
+            , "", "", true, true).then(function () {
+                $("#reporte-instituciones option:first").html("Instituciones");
+                $("#reporte-instituciones").val(parseInt(localStorage.getItem("institucionId")));
+            });
+
+        @*loadSelectData(
+        $("#reporte-servicios"),
+        "@Url.Content("~/api/servicios/getserviciosbyuser")/@UserManager.GetUserId(User)",
+        parseInt(localStorage.getItem("servicioId")),
+        'id',
+        false, "Servicios");*@
+        loadSelectDataAsync(
+            $("#reporte-servicios"),
+            "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + parseInt(localStorage.getItem("institucionId")), "", "", true, true).then(function () {
+
+                $("#reporte-servicios option:first").text("Servicios");
+                $("#reporte-servicios").val(localStorage.getItem("servicioId"));
+            });
+
+
+
+        getReportes(localStorage.getItem("servicioId"));
+
+    });
+
+
+
+    $("#reporte-instituciones").change(function () {
+        if (!$(this).val())
+            return;
+
+        //localStorage.setItem('institucionId', $(this).val());
+
+        //$("#bh-servicios").html("<option value=''>Servicios</option>");
+        @*loadSelectData($("#reporte-servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), "","", true, "Servicios");*@
+            loadSelectDataAsync($("#reporte-servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), "", "", true, true).then(function () {
+                $("#reporte-servicios option:first").text("Servicios");
+                $("#reporte-divisiones").val("");
+            });
+    });
+
+    $("#reporte-servicios").change(function () {
+        $(".subtitulo").text($(this).children("option:selected").html());
+        getReportes($(this).val());
+    });
+</script>

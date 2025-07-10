@@ -1,0 +1,240 @@
+﻿@model EnergeticosIndexModel
+@{
+    ViewData["Title"] = "Energeticos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+@await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+
+@( await Component.InvokeAsync<BodyHeaderViewComponent>(new BodyHeader { Nombre = "Energéticos" }) )
+
+<hr />
+
+<div class="alert alert-warning collapse" role="alert">
+
+    <a href="#" id="btnCloseAlert" class="close">
+        <span aria-hidden="true">&times;</span>
+    </a>
+    <strong>Alerta!</strong> El energetico que requiere activar no tiene asociados unidades de medida, favor contactar con el administrador.
+</div>
+
+<div class="card container">
+    <table class="table" id="tablaDivisionEnergetio" style="font-size:1rem;">
+        <thead style="color:#808080; background-color:white;font-size:1.16rem;">
+            <tr>
+                <th><label> </label></th>
+                <th><label asp-for="Nombre">Fuente Energética</label></th>
+                <th><label asp-for="Activo">Encendido / Apagado</label></th>
+                <th><label>Configurar</label></th>
+            </tr>
+        </thead>
+        <tbody class="table-borderless text-center">
+            @foreach (EnergeticoModel item in Model.Items)
+            {
+                <tr id="@item.Id">
+                    <td class="align-middle">
+                        <span class="ge @item.Icono @item.ClassIconActivo"></span>
+                    </td>
+                    <td class="align-middle"><label class="@item.ClassTextActivo">@item.Nombre</label></td>
+                    <td class="align-middle">
+                        <label class="switch">
+                            <input type="checkbox" name="switcher" data-target="@item.Id" @permisos.EscrituraHabilitado>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td class="align-middle">
+                        @if (@item.PermiteMedidor)
+                        {
+                            <a class="@item.ClassLinkDisabled @item.ClassLinkHidden" asp-controller="miunidad" asp-action="EnergeticosConfig" asp-route-id="@item.Id">Medidores</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@*<div class="modal fade" id="ModalSelectUnidadMedida" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLongTitle">Seleccionar Unidad de Medida</h5>
+                </div>
+
+                <input type="hidden" id="enerId" name="enerId" value="0">
+                <input type="hidden" id="state" name="state" value="false">
+
+                <div class="modal-body">
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="aceptarUnidadMedida">Aceptar</button>
+                    <button type="button" class="btn btn-light" id="cancelarUnidadMedida">Cancelar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>*@
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnActions-btnVolver").click(function (e) {
+            e.preventDefault();
+            window.location = "@Url.Action("Ver","MiUnidad")" + "/" + localStorage.getItem("divisionId");
+        });
+
+        SetEnergeticos(localStorage.getItem("divisionId"));
+
+        var switcher;
+
+        $('input[name=switcher]').change(function () {
+
+            switcher = this;
+
+            var enerId = $(this).data("target");
+            $('#enerId').val(enerId);
+            $('#state').val(this.checked);
+
+
+
+            if (this.checked) {
+                ShowUnidadesMedida(enerId, this);
+            } else {
+                Switch(enerId, this.checked); //desactiva el switch
+            }
+
+        });
+
+        $('#aceptarUnidadMedida, #cancelarUnidadMedida').click(function () {
+
+            if ($(this).attr('id') === 'cancelarUnidadMedida') {
+                $('#ModalSelectUnidadMedida').modal('hide');
+                switcher.checked = false;
+                return;
+            }
+
+            var enerId = $('#enerId').val();
+            var state = $('#state').val();
+
+            console.log('Unidad de Medida ID:' + unidadMedidaId);
+
+            Switch(enerId, state);
+        });
+
+        $('#btnCloseAlert').click(function () {
+            $('.alert').hide('fade');
+        });
+
+        function ShowUnidadesMedida(enerId, radio) {
+
+            $.ajax({
+                url: '/MiUnidad/CheckUnidadMedida/?enerId=' + enerId,
+                type: "POST",
+                contentType: 'application/json;charset=utf-8',
+                dataType: 'json',
+                success: function (response) {
+                    // console.log('exitoso: ' + response.success + ' ¿Muestra el Modal?: ' + response.responseText + ' data: ' + response.data);
+
+                    if (response.data != null) {
+                        Switch(enerId, radio.checked);//, response.data);
+                    } else {
+                        $('.alert').show('fade');
+                        radio.checked = false;
+                    }
+                },
+                error: function (errormessage) {
+                    console.log(errormessage);
+
+                }
+
+            });
+
+
+        }
+
+        function Switch(enerId, State){
+
+            var retorno = false;
+
+            let claseCambio = {
+                EnergeticoId: enerId,
+                State: State,
+                DivisionId: localStorage.getItem("divisionId")
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SwitchEnergetico", "MiUnidad")',
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(claseCambio),
+                success: function (response) {
+
+                    if (State) {
+                        $('#' + enerId + ' td span').addClass('active');
+                        $('#' + enerId + ' td label').removeClass('text-muted').addClass('text-primary');
+                        $('#' + enerId + ' td a').removeAttr("class").attr("href", "@Url.Action("EnergeticosConfig","MiUnidad")/" + enerId);
+                    }
+                    else {
+                        $('#' + enerId + ' td span').removeClass('active');
+                        $('#' + enerId + ' td label').removeClass('text-primary').addClass('text-muted');
+                        $('#' + enerId + ' td a').addClass('btn disabled text-muted');
+                    }
+
+
+                    $('#ModalSelectUnidadMedida').modal('hide');
+                    console.log(response.responseText + ' row ' + enerId + ' was checked: ' + State);
+                    retorno = true;
+                },
+                error: function (errormessage) {
+                    retorno = false;
+                }
+            });
+
+            return retorno;
+        }
+
+    });
+
+    $("#bh-divisiones").change(function () {
+
+        if (!$(this).val()) {
+            return;
+        }
+
+        SetEnergeticos($(this).val());
+
+    });
+
+    function SetEnergeticos(divisionId) {
+        $.ajax({
+            type: "GET",
+            url: apiEnergeticos + "/GetByDivisionId/" + divisionId,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            cache: false,
+            success: function (data) {
+
+                $("input[name='switcher']:checked").each(function () { this.checked = !this.checked; });
+                $("#tablaDivisionEnergetio tbody tr span").removeClass("active");
+                $("#tablaDivisionEnergetio tbody tr label").removeClass('text-primary').addClass("text-muted");
+                $("#tablaDivisionEnergetio tbody tr a").removeAttr("href").addClass("btn disabled text-muted");
+
+                $.each(data, function (index, item) {
+                    $("#tablaDivisionEnergetio tbody #" + item.energeticoId + " input[type='checkbox']").each(function () { this.checked = true; });
+                    $("#tablaDivisionEnergetio tbody #" + item.energeticoId + " span").addClass("active");
+                    $("#tablaDivisionEnergetio tbody #" + item.energeticoId + " label").removeClass("text-muted").addClass("text-primary");
+                    $("#tablaDivisionEnergetio tbody #" + item.energeticoId + " a").attr("href", "/miunidad/EnergeticosConfig/" + item.energeticoId).removeClass("btn disabled text-muted");
+                });
+
+            },
+            error: function (error) {
+                alert(error)
+            }
+        });
+    }
+
+</script>

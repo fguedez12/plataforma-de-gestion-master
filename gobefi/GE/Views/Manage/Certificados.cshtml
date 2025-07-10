@@ -1,0 +1,66 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    ViewData["Title"] = "Certificados";
+    ViewData.AddActivePage(ManageNavPages.Certificados);
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+}
+
+
+<h2>Certificados</h2>
+<hr />
+
+<div ng-app="certificadosApp">
+    <div ng-controller="certificadosController">
+        <form name="form">
+            <div class="card">
+                <div class="card-header">Certificados</div>
+                <div class="card-body no-padding">
+                    <div class="container no-padding">
+                        <font size="2">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Numero de Serie</th>
+                                        <th>Tipo de Certificado</th>
+                                        <th>Duración</th>
+                                        <th>Fecha de entrega</th>
+                                        <th>Nota final</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="nota in notas">
+                                        <td>{{nota.numeroSerie}}</td>
+                                        <td>{{nota.nombreCertificado}}</td>
+                                        <td>{{nota.duracion}} Horas</td>
+                                        <td>{{nota.fechaEntrega | date:'dd-MM-yyyy'}}</td>
+                                        <td>{{nota.notaFinal | number:2}}</td>
+                                        <td>
+                                            <button class="btn btn-success"
+                                                    ng-click="downloadPdf(
+                                                    nota.nombreUsuario,
+                                                    nota.notaFinal | number:1,
+                                                    nota.fechaEntrega | date:'d',
+                                                    nota.fechaEntrega | date:'MMMM',
+                                                    nota.fechaEntrega | date:'yyyy',
+                                                    nota.numeroSerie,
+                                                    nota.codigo
+                                                )">
+                                                Descargar
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>    
+                        </font>
+ 
+                    </div>
+                </div>
+            </div>
+        </form>
+
+
+    </div>
+</div>
+

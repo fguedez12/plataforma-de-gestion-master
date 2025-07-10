@@ -1,0 +1,184 @@
+﻿@model EdificioModel
+
+@{
+    ViewData["Title"] = "Editar";
+}
+
+<h2>Editar</h2>
+
+<h4></h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div id="msgGuardarEdificio">
+
+        </div>
+        <form asp-action="Edit" id="frmGuardarEdificio">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Calle" class="control-label"></label>
+                <input asp-for="Calle" class="form-control" />
+                <span asp-validation-for="Calle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Numero" class="control-label"></label>
+                <input asp-for="Numero" class="form-control" />
+                <span asp-validation-for="Numero" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegionId"></label>
+                @*<select asp-for="Comuna.Region.Id" id="RegionId" class="form-control" asp-items="ViewBag.Regiones"></select>*@
+                <select asp-for="RegionId" id="RegionId" class="form-control" asp-items="ViewBag.Regiones"></select>
+                <span asp-validation-for="RegionId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProvinciaId"></label>
+                @*<select asp-for="Comuna.Provincia.Id" id="ProvinciaId" class="form-control"></select>*@
+                <select asp-for="ProvinciaId" id="ProvinciaId" class="form-control"></select>
+                <span asp-validation-for="ProvinciaId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ComunaId" class="control-label"></label>
+                @*<input asp-for="ComunaId" type="hidden" />*@
+                <select asp-for="ComunaId" class="form-control"></select>
+                <span asp-validation-for="ComunaId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Tipos de Uso</label>
+                <select class="form-control" asp-items="ViewBag.TiposDeUso" multiple disabled></select>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" disabled />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedAt" class="control-label"></label>
+                <input asp-for="UpdatedAt" class="form-control" disabled />
+                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Version" class="control-label"></label>
+                <input asp-for="Version" class="form-control" disabled />
+                <span asp-validation-for="Version" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="Active" disabled /> @Html.DisplayNameFor(model => model.Active)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="ModifiedBy" class="control-label"></label>
+                <input asp-for="ModifiedBy" class="form-control" disabled />
+                <span asp-validation-for="ModifiedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedBy" class="control-label"></label>
+                <input asp-for="CreatedBy" class="form-control" disabled />
+                <span asp-validation-for="CreatedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Guardar = true, Volver = true })
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        //CargaRegionProvinciaComuna($("input[type='hidden']#ComunaId").val());
+        CargaRegionProvinciaComuna(@Model.ComunaId);
+    });
+
+    $("body").on("click", "#btnActions-btnVolver", function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminEdificio")";
+    });
+
+
+    $("#btnGuardar").click(function (e) {
+        e.preventDefault();
+        GuardarEficio();
+    });
+
+    async function GuardarEficio() {
+        $("#btnGuardar").button("loading");
+        try {
+
+            response = await $.post({
+                url: $("#frmGuardarEdificio").attr("action"),
+                data: $("#frmGuardarEdificio").serialize()
+            });
+
+
+            $("#msgGuardarEdificio").html('<div class="alert alert-success fade show"><button type="button" class="close close-alert" data-dismiss="alert" aria-hidden="true">×</button>Edificio actualizado con exito</div>');
+            $("#msgGuardarEdificio .alert").delay(200).addClass("in").fadeOut(10000);
+
+        } catch (e) {
+            let ulItem = $("<ul>");
+
+
+            $.each(JSON.parse(e.responseText), function (node, text) {
+
+
+                let liItem = $("<li>").append(text);
+
+                ulItem.append(liItem);
+            });
+
+            $("#msgGuardarEdificio").html("<div class=\"alert alert-danger fade show\"><button type=\"button\" class=\"close close-alert\" data-dismiss=\"alert\" aria-hidden=\"true\">×</button>" + ulItem.html() + "</div>");
+            $("#msgGuardarEdificio .alert").delay(200).addClass("in").fadeOut(10000);
+
+        } finally {
+            $("#btnGuardar").button("reset");
+        }
+    }
+
+    async function CargaRegionProvinciaComuna(comunaId) {
+
+        let responseComuna;
+        try {
+
+            responseComuna = await $.get({
+                url: apiComuna + "/" + comunaId
+            });
+
+            $("select#RegionId").val(responseComuna.regionId);
+            await loadSelectDataAsync($("select#ProvinciaId"), apiProvincia + "/getByRegionId/" + responseComuna.regionId, responseComuna.provinciaId, "id", true, true);
+
+            await loadSelectDataAsync($("select#ComunaId"), apiComuna + "/getByProvinciaId/" + responseComuna.provinciaId, comunaId, "id", true, true);
+
+        } catch (e) {
+        }
+            
+    }
+
+
+    $("select#RegionId").change(function () {
+
+        if ($(this).val() != "") {
+            loadSelectDataAsync($("select#ProvinciaId"), apiProvincia + "/getByRegionId/" + $(this).val(), "", "", true);
+        } else {
+            
+            $("select#ProvinciaId, select#ComunaId").val("").attr("disabled", "disabled");
+        }
+
+
+    });
+
+    $("select#ProvinciaId").change(function () {
+        
+        $("select#ComunaId").html("<option value=''>-- SELECCIONE --</option>").attr("disabled", "disabled");
+
+        if ($(this).val() !== "") {
+            //loadSelectData($("#ComunaId"), apiComuna + "/getByProvinciaId/" + $(this).val(), "selected");
+            loadSelectDataAsync($("select#ComunaId"), apiComuna + "/getByProvinciaId/" + $(this).val(), "", "", true);
+        }
+
+    });
+</script>

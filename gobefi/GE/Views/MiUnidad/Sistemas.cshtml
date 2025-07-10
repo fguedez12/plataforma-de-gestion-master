@@ -1,0 +1,20 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result ||
+    UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_AUDITOR).Result;
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<div ng-app="sistemasApp">
+    <div ng-controller="sistemasController">
+        <input type="hidden" id="input-id" value="@UserManager.GetUserId(User)" />
+        <input type="hidden" id="input-is-admin" value="@_isAdmin.ToString()" />
+        <input type="hidden" id="input-is-consulta" value="@_isConsulta.ToString()" />
+        <input type="hidden" id="input-lectura" value="@permisos.Lectura.ToString()" />
+        <input type="hidden" id="input-escritura" value="@permisos.Escritura.ToString()" />
+        <ui-view></ui-view>
+    </div>
+</div>
+

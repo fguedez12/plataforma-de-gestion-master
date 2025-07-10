@@ -1,0 +1,60 @@
+﻿@model ModalConfirmModel
+
+@{
+//ViewData["Title"] = "_ModalConfirm";
+//Layout = "~/Views/Shared/_Layout.cshtml";
+
+/*
+ * 
+ * Rellenar Modelo
+ * 
+ * Idea obtenida de:
+ * https://codepen.io/ajchambeaud/pen/KpVvMV?editors=1010
+ * 
+ * JS en Cliente: 
+ * var modalConfirm = function(callback){
+ *   $("#btn-confirm").on("click", function(){
+ *   $("#mi-modal").modal('show');
+ *   });
+ *   
+ *   $("#modal-btn-si").on("click", function(){
+ *   callback(true);
+ *   $("#mi-modal").modal('hide');
+ *   });
+ *   
+ *   $("#modal-btn-no").on("click", function(){
+ *   callback(false);
+ *   $("#mi-modal").modal('hide');
+ *   });
+ *   };
+ *   
+ *   modalConfirm(function(confirm){
+ *   if(confirm){
+ *   //Acciones si el usuario confirma
+ *   $("#result").html("CONFIRMADO");
+ *   }else{
+ *   //Acciones si el usuario no confirma
+ *   $("#result").html("NO CONFIRMADO");
+ *   }
+ *   });
+ *   
+ */
+}
+
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true" id="@Model.TagId">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">@Model.Title</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <p id="bodyText">@Model.BodyText</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="modal-btn-si">Si</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-no">No</button>
+            </div>
+        </div>
+    </div>
+</div>

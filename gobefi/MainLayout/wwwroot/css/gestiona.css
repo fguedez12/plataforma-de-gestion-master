@@ -1,0 +1,73 @@
+body{
+    background-color: #f4f4f4;
+}
+section.contenidogeneral {
+    background-image: url(/images/fondo.png);
+    background-size: cover;
+    background-position-y: bottom;
+    background-position-x: center;
+    background-repeat: no-repeat;
+    min-height: 90vh;
+    padding-bottom: 100px;
+}
+.logogestiona img{
+	width: 100%;
+	max-width: 300px;
+}
+
+.mensaje{
+	font-family: gobCL, sans-serif;
+	line-height: 24px;
+	font-size: 1em;
+	margin:0 auto 3em;
+}
+.tresbotones{
+	margin:1em auto 0px;
+}
+	.tresbotones a{
+		font-family: gobCL, sans-serif;
+	    border: 0px;
+	    border-radius: 40px 40px 40px 40px;
+	    display: block;
+	    padding: 20px;
+	    color: #FFF;
+	    height: 80px;
+	    margin-bottom: 2em;
+	    transition:all .25s;
+	}
+		.tresbotones a.btnsectorpublico{
+			background-color:#844082;
+		}
+			.tresbotones a.btnsectorpublico:hover{
+				background-color:#633462;
+			}
+
+		.tresbotones a.btnsectormypymes{
+			background-color:#009FE3;
+		}
+			.tresbotones a.btnsectormypymes:hover{
+				background-color:#1088bc;
+			}
+		.tresbotones a.btnsectorvivienda{
+			background-color:#9DBE15;
+		}
+			.tresbotones a.btnsectorvivienda:hover{
+				background-color:#80991a;
+			}
+		.tresbotones a h6{
+			font-size: 12px;
+			margin: 0;
+			font-weight: 400;
+		}
+		.tresbotones a h3{
+			font-size: 24px;
+			margin: 0;
+			font-weight: 900;
+		}
+
+
+@media screen and (max-width:768px){
+	section.contenidogeneral{
+		background-size: contain;
+	}
+}

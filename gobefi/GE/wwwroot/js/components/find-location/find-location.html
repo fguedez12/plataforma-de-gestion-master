@@ -1,0 +1,72 @@
+﻿<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label">Buscar Dirección</label>
+                    <input id="input-places"
+                           class="form-control"
+                           places-auto-complete size=80
+                           ng-model="$ctrl.adress"
+                           component-restrictions="{country:'cl'}"
+                           types="{{$ctrl.types}}"
+                           on-place-changed="$ctrl.changeLocation()" />
+                </div>
+                <div class="row">
+                    <div class="col-md-12 m-auto">
+                        <ng-map id="map1" map-type-control="true" zoom="15" center="{{$ctrl.initialPos}}" on-click="$ctrl.getpos($event)">
+                            <marker centered="true" position="{{$ctrl.initialPos}}" title="Ubicación" animation="Animation.BOUNCE" draggable="true" on-dragend="$ctrl.getpos($event)"></marker>
+                        </ng-map>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6" style="margin-top:20px;">
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Calle</label>
+                    <div class="col-sm-9">
+                        <input type="text" ng-model="$ctrl.direccion.calle" class="form-control" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Número</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.numero" ng-disabled="true">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Región</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.region" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Provincia</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.provincia" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="ComunaId" class="col-sm-3 col-form-label">Comuna</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.comuna" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Latitud</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.latitud" ng-disabled="true">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Longitud</label>
+                    <div class="col-sm-9">
+                        <input type="text" class="form-control" ng-model="$ctrl.direccion.longitud" ng-disabled="true">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

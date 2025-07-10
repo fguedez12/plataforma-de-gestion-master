@@ -1,0 +1,79 @@
+﻿<h1>Definición Alcance Diagnóstico (Objetivo 2)</h1>
+<h2>{{nombreServicio}}</h2>
+<hr />
+<div>
+    <h3>Estado carga de información: {{estadoCarga}}</h3>
+    <h3>Revisión por parte de la Red: {{revisionRed}}</h3>
+    <div class="form-group">
+        <label for="comentario-red">Observación de la Red:</label>
+        <textarea ng-model="servicio.comentarioRed" name="comentario-red" class="form-control" cols="3" readonly></textarea>
+    </div>
+</div>
+<hr />
+<div class="mt-3">
+    <div class="form-group">
+        <label for="justificacion">Respuesta a Observaciones de la Red:{{justificacion}}</label>
+        <textarea ng-model="servicio.justificacion" name="justificacion" class="form-control" cols="3" ng-disabled="!escritura"></textarea>
+    </div>
+    <button ng-disabled="!escritura" class="btn btn-success" ng-click="saveJustificacion()">Guardar</button>
+</div>
+<div class="d-flex justify-content-end">
+    <div class="col-md-4 mt-3 ">
+        <input name="searchText"
+               ng-keyup="searchUnidad()"
+               ng-model="searchText"
+               class="form-control mr-sm-2" type="search"
+               placeholder="Buscar unidad" aria-label="Buscar">
+    </div>
+</div>
+
+<div class="mt-3" style="max-height:600px; overflow-y:scroll" ng-show="divisiones.length>0 && !loadingTable">
+    <form name="divisionesForm">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Dirección</th>
+                    <th>Pisos</th>
+                    <th style="width:20%">Año inicio Gestión Energética</th>
+                    <th style="width:20%">Año inicio resto Ítemes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="division in divisiones">
+                    <td>
+                        {{division.direccion}}
+                    </td>
+
+                    <td>
+                        {{division.pisos | limitTo: 15}}
+                    </td>
+                    <td>
+                        <select ng-model="division.anioInicioGestionEnergetica"
+                                ng-change="chageInicioGestion(division)"
+                                ng-disabled="!escritura"
+                                class="form-control"
+                                ng-options="anio as (anio === '0' ? 'Sin información' : anio) for anio in aniosDisponibles">
+                            <option value="">--seleccione--</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select ng-model="division.anioInicioRestoItems"
+                                ng-change="chageRestoItems(division)"
+                                ng-disabled="!escritura"
+                                class="form-control"
+                                ng-options="anio as (anio === '0' ? 'Sin información' : anio) for anio in aniosDisponibles">
+                            <option value="">--seleccione--</option>
+                        </select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<div class="d-flex" ng-show="loadingTable">
+    <h3 class="mt-5">Cargando datos..</h3>
+    <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+</div>
+<div class="d-flex" ng-show="divisiones.length==0 && !loadingTable">
+    <h3 class="mt-5">No existen datos para mostrar</h3>
+</div>

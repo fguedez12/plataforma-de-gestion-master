@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "Carga Masiva";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script>
+    $(document).ready(function () {
+
+        for (i = 0; i < 5; i++) {
+
+            var columnaFechaCompra = "<td><input type='date' class='form-control' id='fechaCompra_" + i + "'></td>"
+
+            var inputTextoCantidad = "<div class='col pr-0'><input type='text' class='form-control id='cantidad_" + i + "' ></div>";
+            var inputUnidadMedida = "<div class='col'><input type='text' disabled class='form-control' id='unidadMedida_" + i + "'></div>";
+            var columnaCantidad = "<td class='row'> " + inputTextoCantidad + inputUnidadMedida + " </row>"
+
+            var spanCosto = "<div class='input-group-prepend'><span class='input-group-text' id='tooltipCosto_" + i + "'>$</span></div>";
+            var inputCosto = "<td><div class='input-group'>" + spanCosto + "<input type='text' class='form-control' id='costo_" + i + "'></div></td>";
+
+
+            var labelFile = "<label class='custom-file-label' for='factura'><small>Seleccione un Archivo...</small></label>";
+            var AttrAcceptFile = "accept='application/pdf, image/jpeg, image/png, image/x-citrix-jpeg'";
+            var inputFile = "<td><div class='custom-file'><input type='file' class='custom-file-input' id='factura_" + i + "' " + AttrAcceptFile + ">" + labelFile + "</div></td>";
+
+            var nuevaFila = "<tr id='compra_" + i + "'>" +
+                columnaFechaCompra +
+                columnaCantidad +
+                inputCosto +
+                inputFile
+            "</tr>";
+
+            $('#tablaCargaMasiva tbody').append(nuevaFila);
+        }
+
+    });
+</script>
+
+<button type="button" class="btn btn-primary">
+    <span class="fa fa-filter"></span> Filtros
+</button>
+
+<hr />
+
+<div class="row">
+    <div class="col-12">
+        <h4><a href="/consumo/index">Mis Compras</a> › Carga Masiva</h4>
+        <p class="h6 subtitulo"></p>
+    </div>
+</div>
+
+<hr />
+
+
+<form class="table" id="tablaCargaMasiva">
+    <div class="row">
+        <label class="col-sm-4 col-form-label" for="energeticoId">Seleccione Energetico:</label>
+        <div class="col-sm-8">
+            <select class="form-control custom-select" id="energeticoId">
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+    </div>
+
+    <br />
+
+    <table class="table table-responsive-lg">
+        <thead>
+            <tr>
+                <th>Fecha de Compra</th>
+                <th>Cantidad</th>
+                <th>Costo</th>
+                <th>Factura (max 2MB)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="text-right">
+        <button type="button" id="btnCancel" class="btn btn-light">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </div>
+
+</form>

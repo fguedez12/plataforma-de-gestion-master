@@ -1,0 +1,75 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Filtros</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+       Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="frm-vehiculo ion-padding">
+  <form [formGroup]="filtroForm" (ngSubmit)="filtrar()" novalidate>
+    <!-- <ion-item>
+      <ion-label>Tipo de Vehículo</ion-label>
+      <ion-spinner name="bubbles" [hidden]="!loadingTipo"></ion-spinner>
+      <ion-select 
+          placeholder="Seleccione" 
+          okText="Ok" 
+          cancelText="Cancelar"
+          formControlName="tipo"
+          [hidden]="loadingTipo"
+          >
+        <ion-select-option *ngFor="let tipo of tipos" [value]="tipo">{{tipo}}</ion-select-option>
+      </ion-select>
+    </ion-item> -->
+    <!-- <ion-item>
+      <ion-label>Marca</ion-label>
+      <ion-spinner name="bubbles" [hidden]="!loadingMarca"></ion-spinner>
+      <ion-select 
+          placeholder="Seleccione" 
+          okText="Ok" 
+          cancelText="Cancelar"
+          formControlName="marca"
+          [hidden]="loadingMarca"
+          >
+        <ion-select-option *ngFor="let marca of marcas" [value]="marca">{{marca}}</ion-select-option>
+      </ion-select>
+    </ion-item> -->
+    <!-- <ion-item>
+      <ion-label>Propulsión</ion-label>
+      <ion-spinner name="bubbles" [hidden]="!loadingPropulsiones"></ion-spinner>
+      <ion-select 
+          placeholder="Seleccione" 
+          okText="Ok" 
+          cancelText="Cancelar"
+          formControlName="propulsion"
+          [hidden]="loadingPropulsiones"
+          >
+        <ion-select-option *ngFor="let propulsion of propulsiones" [value]="propulsion">{{propulsion}}</ion-select-option>
+      </ion-select>
+    </ion-item>-->
+    <ion-item>
+      <ion-label position="floating">Marca o modelo</ion-label>
+      <ion-input type="text"  formControlName="modelo" (click)="presentPopoverModelos($event)"></ion-input>
+    </ion-item>
+    <ion-item> 
+      <ion-label>Ministerio</ion-label>
+      <ion-spinner name="bubbles" [hidden]="!loadingPropulsiones"></ion-spinner>
+      <ion-select 
+          placeholder="Seleccione" 
+          okText="Ok" 
+          cancelText="Cancelar"
+          formControlName="ministerio"
+          [hidden]="loadingPropulsiones"
+          >
+        <ion-select-option *ngFor="let ministerio of ministerios" [value]="ministerio.id">{{ministerio.nombre}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-button  type="submit" expand="block" >
+      Filtrar
+    </ion-button>
+  </form>
+  
+
+</ion-content>

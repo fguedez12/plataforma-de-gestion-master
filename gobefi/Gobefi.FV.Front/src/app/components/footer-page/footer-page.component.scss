@@ -1,0 +1,119 @@
+.footer-me {
+    background-color: #001c41 !important;
+    color: #fff !important;
+    position: relative !important;
+  }
+  
+  .footer-me h3 {
+    font-size: 30px;
+    font-size: 1.875rem;
+    display: table;
+    margin: 10px auto;
+  }
+  
+  .footer-me .footer-me-content p {
+   
+    font-size: 16px;
+    font-size: 1rem;
+  }
+  
+  .footer-me .first h3 {
+    width: 80%;
+  }
+  
+  .footer-me .first h5 {
+    font-size: 16px;
+    font-size: 1rem;
+
+  }
+  
+  .footer-me .first .footer-me-content {
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  .footer-me .second .footer-me-content {
+    border-right: 1px solid #fff;
+    border-left: 1px solid #fff;
+    text-align: center;
+  }
+  
+  .footer-me .footer-me-rs {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+   
+  }
+  
+  .footer-me .footer-me-rs ul {
+    padding: 0;
+  }
+  
+  .footer-me .footer-me-rs ul li {
+    display: inline-block;
+    margin: 0 5px;
+  }
+  
+  .footer-me .footer-me-rs ul li i.fa {
+    font-size: 24px;
+    border: 1px solid #fff;
+    padding: 7px;
+    border-radius: 50%;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    -webkit-transition: all 300ms ease-in-out;
+    transition: all 300ms ease-in-out;
+  }
+  
+  .footer-me .footer-me-rs ul li i.fa:hover {
+    background-color: #fff;
+    color: #001c41;
+    -webkit-transition: all 300ms ease-in-out;
+    transition: all 300ms ease-in-out;
+  }
+  
+  .footer-me .footer-logo-gob {
+    position: absolute;
+    bottom: 0;
+    left: 3.2%;
+  }
+
+  .footer-me-rs{
+      padding-left: 25%;
+      margin-top: 60px;
+  }
+  .div-mobile p{
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-left: 15px;
+  }
+
+  @media (max-width: 479px) {
+    .footer-web {
+      display: none;
+    }
+
+    .div-mobile {
+      display: block;
+    }
+  }
+
+  @media (min-width: 480px) {
+    .footer-web {
+      display: block;
+    }
+
+    .div-mobile {
+      display: none;
+    }
+  }

@@ -1,0 +1,31 @@
+﻿@model GobEfi.Web.Data.Entities.UnidadMedida
+
+@{
+    ViewData["Title"] = "Crear";
+}
+
+<h2>Crear</h2>
+
+<h4>Nueva unidad de medida</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Abrv" class="control-label"></label>
+                <input asp-for="Abrv" class="form-control" />
+                <span asp-validation-for="Abrv" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary"><span class="@Constants.Icons.EDITAR"></span> Guardar</button>
+                <a asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+            </div>
+        </form>
+    </div>
+</div>

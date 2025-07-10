@@ -1,0 +1,242 @@
+﻿@model DivisionDetailsModel
+@inject UserManager<Usuario> UserManager
+@{
+    ViewData["Title"] = "Detalles";
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    string electricidad = Model.ComparteMedidorElectricidad ? "checked" : "";
+    string gas = Model.ComparteMedidorGasCanieria ? "checked" : "";
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+}
+
+<h2>Detalle Unidad</h2>
+
+<br />
+
+<div class="card">
+    <div class="card-body">
+        <h4>Edificio</h4>
+
+        <br />
+
+        <div class="form-group">
+            <label class="control-label">Region</label>
+            <select class="form-control" id="RegionId" disabled>
+                <option>@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Provincia</label>
+            <select class="form-control" id="ProvinciaId" disabled>
+                <option>@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Comuna</label>
+            <select class="form-control" asp-for="ComunaId" disabled>
+                <option>@Constants.Titles.SELECCIONE</option>
+            </select>
+            <input asp-for="ComunaId" type="hidden" />
+        </div>
+        <div class="form-group">
+            <label asp-for="EdificioId" class="control-label">Edificio</label>
+            <select asp-for="EdificioId" class="form-control" disabled>
+                <option>@Constants.Titles.SELECCIONE</option>
+            </select>
+            <input asp-for="EdificioId" type="hidden" />
+        </div>
+    </div>
+</div>
+
+<br />
+<form asp-action="DetailsEdit" method="post">
+    <div class="card">
+        <div class="card-body">
+            <h4>Unidad</h4>
+            <hr />
+
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label class="control-label">Institución</label>
+                <select class="form-control" asp-for="InstitucionId" disabled>
+                    <option>@Constants.Titles.SELECCIONE</option>
+                </select>
+                <input asp-for="InstitucionId" type="hidden" />
+            </div>
+            <div class="form-group">
+                <label asp-for="ServicioId" class="control-label"></label>
+                <select asp-for="ServicioId" class="form-control" disabled>
+                    <option>@Constants.Titles.SELECCIONE</option>
+                </select>
+                <input asp-for="ServicioId" type="hidden" />
+            </div>
+            <div class="form-group">
+                <label asp-for="NombreUnidad" class="control-label"></label>
+                <input asp-for="NombreUnidad" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoDeUsoId" class="control-label"></label>
+                <select asp-for="TipoDeUsoId" class="form-control" asp-items="ViewBag.TiposDeUso" disabled></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Pisos" class="control-label"></label>
+                <input asp-for="Pisos" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Superficie" class="control-label"></label>
+                <input asp-for="Superficie" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="TipoPropiedadId" class="control-label"></label>
+                <select asp-for="TipoPropiedadId" class="form-control" asp-items="ViewBag.TiposDePropiedad" disabled></select>
+            </div>
+            @if (_isConsulta)
+            {
+                <div class="form-group">
+                    <label asp-for="NroRol" class="control-label"></label>
+                    <input asp-for="NroRol" class="form-control" readonly />
+                    <span asp-validation-for="NroRol" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">No posee Rol</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="cb-sinrol" type="checkbox" asp-for="SinRol" disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div id="div-justifica" class="form-group">
+                    <label asp-for="JustificaRol" class="control-label"></label>
+                    <input type="text" asp-for="JustificaRol" class="form-control" readonly />
+                    <span asp-validation-for="JustificaRol" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <label asp-for="NroRol" class="control-label"></label>
+                    <input asp-for="NroRol" class="form-control" />
+                    <span asp-validation-for="NroRol" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">No posee Rol</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="cb-sinrol" type="checkbox" asp-for="SinRol">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div id="div-justifica" class="form-group">
+                    <label asp-for="JustificaRol" class="control-label"></label>
+                    <input type="text" asp-for="JustificaRol" class="form-control" />
+                    <span asp-validation-for="JustificaRol" class="text-danger"></span>
+                </div>
+            }
+
+            <div class="form-group">
+                <label asp-for="AnioConstruccion" class="control-label"></label>
+                <select asp-for="AnioConstruccion" class="form-control" asp-items="ViewBag.AniosDeConstruccion" disabled></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="NroFuncionarios" class="control-label"></label>
+                <input asp-for="NroFuncionarios" class="form-control" disabled />
+            </div>
+
+
+
+
+            <div class="mb-3">
+                <h4>Electricidad</h4>
+                <p class="h6 text-center mb-0">
+                    Con respecto al consumo de electricidad.
+                </p>
+                <hr class="mt-1" />
+                <div class="row container">
+                    <div class="col-4">
+                        <span class="ge ge-energetico-electricidad active"></span>
+                    </div>
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" disabled @electricidad>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <h4>
+                    Gas de Cañería
+                </h4>
+                <p class="h6 text-center mb-0">
+                    En caso que se consuma Gas de Cañería (GN / GLP).
+                </p>
+                <hr class="mt-1" />
+                <div class="row container">
+                    <div class="col-4">
+                        <span class="ge ge-energetico-gn active"></span>
+                    </div>
+                    <div class="col" style="padding: 15px">
+                        <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" disabled @gas>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <br />
+    @if (_isConsulta)
+    {
+        <div class="form-group">
+            @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Guardar = true, Volver = true })
+        </div>
+
+    }
+
+
+</form>
+
+<script src="~/js/AdminDivision/JSComun.js" asp-append-version="true"></script>
+<script src="~/js/AdminDivision/Details.js" asp-append-version="true"></script>
+
+
+<script>
+     $("body").on("click", "#btnActions-btnVolver", function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminDivision")";
+     });
+
+    $(document).ready(function () {
+
+        if ($('#cb-sinrol').prop('checked')) {
+            $('#div-justifica').show();
+        } else {
+            $('#div-justifica').hide();
+        }
+    });
+
+    $("body").on("click", "#cb-sinrol", function (e) {
+        if ($('#cb-sinrol').prop('checked')) {
+            $('#div-justifica').show();
+        } else {
+            $('#div-justifica').hide();
+        }
+    });
+
+</script>

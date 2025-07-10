@@ -1,0 +1,79 @@
+﻿@model MedidorModel
+@{
+    //Model para crear un Medidor utilizado en la pagina MiUnidad/EnergeticosConfig
+    EnergeticoConfigModel data = (EnergeticoConfigModel)ViewData["EnergeticoConfigModelData"];
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+   
+}
+
+<div id="divTblMedidores">
+    @await Html.PartialAsync("Shared/_AsociarMedidores", Model.Medidores)
+</div>
+
+<hr />
+
+<div id="divFrmMedidor">
+    <h5 style="color: #4787d2;"><strong>Crear nuevo medidor</strong></h5>
+
+
+    @*<div id="msjeModalMedidor" style="display:none;" class="alert alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <p></p>
+        </div>*@
+    <div id="msjeModalMedidor">
+
+    </div>
+    <br />
+
+    <form asp-action="SaveMedidor" method="post" id="frmMedidor" name="frmMedidor" style="color:#007bff;">
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group row mr-1">
+            <label asp-for="NumeroClienteId" class="col-5">Número de Cliente:</label>
+            <select asp-for="NumeroClienteId" class="custom-select col-7" asp-items="ViewBag.NumCliente" disabled></select>
+            <input type="hidden" asp-for="NumeroClienteId" />
+        </div>
+
+        <div class="form-group row mr-1">
+            <label asp-for="Numero" class="col-5">Número de Medidor:</label>
+            <input asp-for="Numero" value="" required class="form-control col-7" id="tbNumeroMedidor" placeholder="Número de Medidor" autocomplete="off">
+        </div>
+
+        <div class="form-group row mr-1">
+            <label asp-for="_inteligente" class="col-5">Medidor Inteligente:</label>
+
+            <label class="switch">
+                <input type="checkbox" class="custom-control-input" asp-for="_inteligente">
+                <span class="slider round"></span>
+            </label>
+
+        </div>
+
+        <div class="form-group row mr-1">
+            <label asp-for="_compartido" class="col-5">Medidor Compartido:</label>
+
+            <label class="switch">
+                <input type="checkbox" class="custom-control-input" asp-for="_compartido">
+                <span class="slider round"></span>
+            </label>
+
+        </div>
+        <div class="form-group row mr-1">
+            <label asp-for="_factura" class="col-5">Tiene acceso a la factura:</label>
+
+            <label class="switch">
+                <input type="checkbox" class="custom-control-input" asp-for="_factura">
+                <span class="slider round"></span>
+            </label>
+
+        </div>
+    </form>
+
+    <div asp-validation-summary="ModelOnly"></div>
+
+    <button type="button" data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+
+    @if (permisos.Escritura)
+    {
+        <button type="button" form="frmMedidor" id="btnAgregarMedidor" class="btn btn-primary" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Guardando..."><span class="fa fa-save"></span> Agregar Medidor</button>
+    }
+</div>

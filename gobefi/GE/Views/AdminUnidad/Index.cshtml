@@ -1,0 +1,632 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+}
+
+<div ng-app="adminUnidadApp">
+    <div ng-controller="adminUnidadController">
+        <input type="hidden" id="input-id" value="@UserManager.GetUserId(User)" />
+        <input type="hidden" id="input-is-admin" value="@_isAdmin.ToString()" />
+        <input type="hidden" id="input-is-consulta" value="@_isConsulta.ToString()" />
+        <ui-view></ui-view>
+    </div>
+</div>
+
+@*<admin-unidad-app user-id="@UserManager.GetUserId(User)">
+
+    </admin-unidad-app>*@
+@*<div ng-app="unidadApp">
+        <div ng-controller="unidadController">
+            <div ng-show="showSt0">
+                <div class="modal fade" id="modalFiltroUnidades" tabindex="-1" role="dialog" aria-labelledby="modalFiltroUnidades" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title ml-2" id="exampleModalLabel">Filtros</h5>
+                                <button type="button" class="close" ng-click="cancelModalFiltro()" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form name="filtroUnidadForm" novalidate>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 col-form-label">Unidad</label>
+                                        <div class="col-sm-12">
+                                            <input type="text" ng-model="filtro.unidad" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                            <label class="col-sm-3 col-form-label">Región</label>
+                                            <div class="col-sm-12">
+                                                <select id="RegionId" class="custom-select" name="RegionId"
+                                                        ng-model="filtro.regionId"
+                                                        ng-change="changeRegion()"
+                                                        ng-options="region.id as region.nombre for region in data.regiones">
+                                                    <option value="">--Seleccione la región--</option>
+                                                    <option value="99">Test</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    <div class="form-group">
+                                            <label for="ComunaId" class="col-sm-3 col-form-label">Comuna</label>
+                                            <div class="col-sm-12">
+                                                <select id="ComunaId" class="custom-select" name="ComunaId"
+                                                        ng-model="filtro.comunaId"
+                                                        ng-options="comuna.id as comuna.nombre for comuna in data.comunas"
+                                                        ng-disabled="filtro.regionId==null">
+                                                    <option value="">--Seleccione la comuna--</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" ng-click="cancelModalFiltro()">Cancelar</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="filtroUnidadForm.$invalid" ng-click="filtrarUnidad()">Aplicar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="modalEditUnidad" tabindex="-1" role="dialog" aria-labelledby="modalEditUnidad" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title ml-2" id="exampleModalLabel">Editar Unidad</h5>
+                                <button type="button" class="close" ng-click="cancelModalEditUnidad()" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form name="UpdateUnidadForm" novalidate>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 col-form-label">Unidad</label>
+                                        <div class="col-sm-12">
+                                            <input type="text" ng-model="unidadToEdit.nombre" class="form-control" />
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" ng-click="cancelModalEditUnidad()">Cancelar</button>
+                                <button type="button" class="btn btn-primary" ng-disabled="UpdateUnidadForm.$invalid" ng-click="UpdateUnidad()">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h3>Unidades </h3>
+                <div class="row mb-2">
+                    <button ng-click="goToStep1()" class="btn btn-primary mr-1"><span class="fa fa-file"></span>&nbsp; Nuevo</button>
+                    <button ng-click="showModalFiltro()" class="btn btn-primary mr-1"><span class="fa fa-filter"></span>&nbsp;Filtros</button>
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Id
+                            </th>
+                            <th>
+                                Unidad
+                            </th>
+                            <th>
+                                Activo
+                            </th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="unidad in unidadList">
+                            <td>
+                                {{unidad.id}}
+                            </td>
+                            <td>
+                                {{unidad.nombre}}
+                            </td>
+                            <td>
+                                {{unidad.active}}
+                            </td>
+                            <td>
+                                <div class=" btn-group">
+                                    <a class="btn btn-info text-white"
+                                       title="Editar"
+                                       style="margin-right:5px;"
+                                       ng-click="showEditUnidad(unidad)"><span class="fa fa-pencil-square-o"></span></a>
+                                    <a class="btn btn-danger text-white"
+                                       title="Eliminar"
+                                       ng-click="deleteUnidad(unidad)"><span class="fa fa-trash-o"></span></a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr ng-if="unidadList==null">
+                            <td colspan="4">Cargando..</td>
+                        </tr>
+                        <tr ng-if="unidadList.length==0">
+                            <td colspan="4">No hay registros</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <div class="row">
+                    <nav>
+                        <ul class="pagination">
+                            <li class="page-item">
+                                <a class="page-link" ng-click="prevPage()" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                            </li>
+                            <li ng-show="overPagesDown" class="page-item">
+                                <a class="page-link" ng-click="prevPage()" aria-label="Next">
+                                    ...
+                                </a>
+                            </li>
+                            <li ng-repeat="x in [].constructor(showPages) track by $index"
+                                ng-class="{active: $index+startPage == pageNumber}"
+                                class="page-item">
+                                <a class="page-link" ng-click="getPage($index+startPage)">{{$index+startPage}}</a>
+                            </li>
+
+                            <li ng-show="overPagesUp" class="page-item">
+                                <a class="page-link" ng-click="nextPage()" aria-label="Next">
+                                    ...
+                                </a>
+                            </li>
+
+                            <li class="page-item">
+                                <a class="page-link" ng-click="nextPage()" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+            <div ng-show="showSt1" class="inmueble-stepper">
+                <h3>Unidades </h3>
+                <hr />
+                <button ng-click="backto0()" class="btn btn-secondary mb-2"><span class="fa fa-backward"></span>&nbsp;Volver</button>
+                @await Component.InvokeAsync("FindLocationMap")
+                @await Component.InvokeAsync("InmuebleSearch")
+            </div>
+
+            <div ng-show="showSt2" class="inmueble-stepper">
+                <form name="unidadForm" novalidate>
+                    <h3>Seleccionar o crear unidad</h3>
+                    <hr />
+                    <p>Debe crear una unidad o seleccionar de la lista en caso de querer modificarla</p>
+                    <div class="row">
+                        <div class="alert alert-primary col-md-12 " role="alert">
+                            <div class="row">
+                                <img ng-if="inmueble.tipoInmueble==1" src="~/images/Complejo_letra.svg" style="width:50px" />
+                                <img ng-if="inmueble.tipoInmueble==2" src="~/images/Edificio_Letra.svg" style="width:50px" />
+                                <div class="ml-4">
+                                    <h5 class="text-dark ">
+                                        {{inmueble.calle}}, {{inmueble.numero}}
+                                    </h5>
+                                    <p class="text-dark">
+                                        {{inmueble.comuna}}, {{inmueble.region}}
+                                    </p>
+                                </div>
+                                <div class="ml-5">
+                                    <h5>{{inmueble.nombre}}</h5>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="unidades" class="col-form-label">Unidades</label>
+                                <div>
+                                    <select id="unidades" class="custom-select" name="unidades"
+                                            ng-model="unidad.unidadId"
+                                            ng-options="unidad.id as unidad.nombre for unidad in data.unidades">
+                                        <option value="">--Seleccione--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div ng-show="!unidad.unidadId">
+                                <div class="form-check">
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           id="chkNombre"
+                                           name="chkNombre"
+                                           ng-model="unidad.chkNombre">
+                                    <label class="form-check-label">Utilizar dirección como nombre de unidad</label>
+                                </div>
+                                <div class="form-group mb-0 mt-2">
+                                    <label class="col-form-label">Nombre de la Unidad</label>
+                                    <div class="input-group">
+                                        <input type="text"
+                                               class="form-control"
+                                               id="nombreUnidad"
+                                               name="nombreUnidad"
+                                               ng-disabled="unidad.chkNombre"
+                                               ng-class="{'is-invalid':unidadForm.nombreUnidad.$invalid  && (unidadForm.nombreUnidad.$touched || unidadForm.nombreUnidad.$dirty) }"
+                                               ng-model="unidad.nombre"
+                                               ng-required="!unidad.chkNombre">
+
+                                    </div>
+                                    <div class="row">
+                                        <small ng-show="unidadForm.nombreUnidad.$error.required && (unidadForm.nombreUnidad.$touched || unidadForm.nombreUnidad.$dirty)"
+                                               id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="instituciones" class="col-form-label">Ministerio</label>
+                                    <div>
+                                        <select id="instituciones" class="custom-select" name="instituciones"
+                                                ng-class="{'is-invalid':unidadForm.instituciones.$invalid  && (unidadForm.instituciones.$touched || unidadForm.instituciones.$dirty) }"
+                                                ng-model="unidad.institucionId"
+                                                ng-options="institucion.id as institucion.nombre for institucion in data.instituciones"
+                                                ng-change="selectInstitucion()"
+                                                ng-required="!unidad.unidadId">
+                                            <option value="">--Seleccione--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <small ng-show="unidadForm.instituciones.$error.required &&
+                                               (unidadForm.instituciones.$touched || unidadForm.instituciones.$dirty)"
+                                           class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="servicio" class="col-form-label">Servicio</label>
+                                    <div>
+                                        <select id="servicio" class="custom-select" name="servicio"
+                                                ng-class="{'is-invalid':unidadForm.servicio.$invalid  && (unidadForm.servicio.$touched || unidadForm.servicio.$dirty) }"
+                                                ng-model="unidad.servicioId"
+                                                ng-disabled="disabledServicio"
+                                                ng-options="serivicio.id as serivicio.nombre for serivicio in data.serivicios"
+                                                ng-required="!unidad.unidadId">
+                                            <option value="">--Seleccione--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                    <div class="row ml-auto mr-3 mt-3">
+                        <button class="btn btn-danger btn-sm mr-2"
+                                ng-click="backto1()">
+                            Atras
+                        </button>
+                        <button class="btn btn-primary btn-sm"
+                                ng-click="saveUnidad()"
+                                ng-show="!unidad.unidadId"
+                                ng-disabled="unidadForm.$invalid">
+                            Guardar
+                        </button>
+                        <button class="btn btn-primary btn-sm"
+                                ng-click="loadUnidad()"
+                                ng-show="unidad.unidadId">
+                            Siguiente
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div ng-show="showSt3" class="inmueble-stepper">
+                <h3>Asociar inmueble al servicio</h3>
+                <hr />
+                <p>Debe marcar con un las zonas utilizadas por su servicio y el tipo de propiedad que tiene con esta.</p>
+                <div class="row">
+                    <div class="alert alert-primary col-md-12 " role="alert">
+                        <div class="row">
+                            <img ng-if="inmueble.tipoInmueble==1" src="~/images/Complejo_letra.svg" style="width:50px" />
+                            <img ng-if="inmueble.tipoInmueble==2" src="~/images/Edificio_Letra.svg" style="width:50px" />
+                            <div class="ml-4">
+                                <h5 class="text-dark ">
+                                    {{inmueble.calle}}, {{inmueble.numero}}
+                                </h5>
+                                <p class="text-dark">
+                                    {{inmueble.comuna}}, {{inmueble.region}}
+                                </p>
+                            </div>
+                            <div class="ml-5">
+                                <h5>{{inmueble.nombre}}</h5>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="inmueble.tipoInmueble==1">
+                    <div ng-repeat="edificio in inmueble.children">
+                        <div class="row">
+                            <div class="alert alert-primary mb-2 alert-inmueble col-md-10 " role="alert">
+                                <div class="row">
+                                    <img src="~/images/Edificio_Letra.svg" style="width:50px" />
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{edificio.nombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <label class="switch mt-2">
+                                    <input type="checkbox" ng-checked="edificio.checked" ng-click="addInmueble(edificio)">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="piso in edificio.pisos">
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-8 alert alert-warning mb-2 alert-inmueble " role="alert">
+                                    <div class="row">
+                                        <div class="ml-4">
+                                            <h5 class="text-dark mt-2">
+                                                {{piso.numeroPisoNombre}}
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <label class="switch mt-2">
+                                        <input type="checkbox" ng-checked="piso.checked" ng-click="addPiso(piso)">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div ng-repeat="area in piso.areas">
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                    </div>
+                                    <div class="col-md-6  alert alert-success mb-2 alert-inmueble" role="alert">
+                                        <div class="row">
+                                            <div class="ml-4">
+                                                <h5 class="text-dark mt-2">
+                                                    {{area.nombre}}
+                                                </h5>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-check">
+                                        <label class="switch mt-2">
+                                            <input type="checkbox" ng-checked="area.checked" ng-click="addArea(area)">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="inmueble.tipoInmueble==2">
+
+                    <div ng-repeat="piso in inmueble.pisos">
+                        <div class="row">
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-8 alert alert-warning mb-2 alert-inmueble " role="alert">
+                                <div class="row">
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{piso.numeroPisoNombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <label class="switch mt-2">
+                                    <input type="checkbox" ng-checked="piso.checked" ng-click="addPiso(piso)">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="area in piso.areas">
+                            <div class="row">
+                                <div class="col-md-4">
+
+                                </div>
+                                <div class="col-md-6  alert alert-success mb-2 alert-inmueble" role="alert">
+                                    <div class="row">
+                                        <div class="ml-4">
+                                            <h5 class="text-dark mt-2">
+                                                {{area.nombre}}
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <label class="switch mt-2">
+                                        <input type="checkbox" ng-checked="area.checked" ng-click="addArea(area)">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row ml-auto mr-3 mt-3">
+                    <button class="btn btn-danger btn-sm mr-2"
+                            ng-click="backto2()">
+                        Atras
+                    </button>
+                    <button class="btn btn-primary btn-sm"
+                            ng-click="goToStep4()">
+                        Siguiente
+                    </button>
+                </div>
+            </div>
+
+            <div ng-show="showSt4" class="inmueble-stepper">
+                <h3>Asociar inmueble al servicio</h3>
+                <hr />
+                <div class="alet alert-success mb-4">Su inmueble ha sido creado con éxito los detalles aparecen a continuación:</div>
+                <div class="row">
+                    <div class="alert alert-primary col-md-12 " role="alert">
+                        <div class="row">
+                            <img ng-if="inmuebleCopy.tipoInmueble==1" src="~/images/Complejo_letra.svg" style="width:50px" />
+                            <img ng-if="inmuebleCopy.tipoInmueble==2" src="~/images/Edificio_Letra.svg" style="width:50px" />
+                            <div class="ml-4">
+                                <h5 class="text-dark ">
+                                    {{inmuebleCopy.calle}}, {{inmuebleCopy.numero}}
+                                </h5>
+                                <p class="text-dark">
+                                    {{inmuebleCopy.comuna}}, {{inmuebleCopy.region}}
+                                </p>
+                            </div>
+                            <div class="ml-5">
+                                <h5>{{inmuebleCopy.nombre}}</h5>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="inmueble.tipoInmueble==1">
+                    <div ng-repeat="edificio in inmuebleCopy.children">
+                        <div class="row">
+                            <div class="alert alert-primary mb-2 alert-inmueble col-md-12 " role="alert">
+                                <div class="row">
+                                    <img src="~/images/Edificio_Letra.svg" style="width:50px" />
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{edificio.nombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="piso in edificio.pisos">
+                            <div class="row">
+                                <div class="col-md-2">
+
+                                </div>
+                                <div class="col-md-10 alert alert-warning mb-2 alert-inmueble " role="alert">
+                                    <div class="row">
+                                        <div class="ml-4">
+                                            <h5 class="text-dark mt-2">
+                                                {{piso.numeroPisoNombre}}
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-repeat="area in piso.areas">
+                                <div class="row">
+                                    <div class="col-md-4">
+
+                                    </div>
+                                    <div class="col-md-8  alert alert-success mb-2 alert-inmueble" role="alert">
+                                        <div class="row">
+                                            <div class="ml-4">
+                                                <h5 class="text-dark mt-2">
+                                                    {{area.nombre}}
+                                                </h5>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div ng-if="inmueble.tipoInmueble==2">
+                    <div ng-repeat="piso in inmuebleCopy.pisos">
+                        <div class="row">
+                            <div class="col-md-2">
+
+                            </div>
+                            <div class="col-md-10 alert alert-warning mb-2 alert-inmueble " role="alert">
+                                <div class="row">
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{piso.numeroPisoNombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="area in piso.areas">
+                            <div class="row">
+                                <div class="col-md-4">
+
+                                </div>
+                                <div class="col-md-8  alert alert-success mb-2 alert-inmueble" role="alert">
+                                    <div class="row">
+                                        <div class="ml-4">
+                                            <h5 class="text-dark mt-2">
+                                                {{area.nombre}}
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row ml-auto mr-3 mt-3">
+                    <button class="btn btn-danger btn-sm mr-2"
+                            ng-click="backto3()">
+                        Atras
+                    </button>
+                </div>
+            </div>
+
+            <div ng-show="showDel" class="inmueble-stepper">
+                <h3>Eliminar </h3>
+                <h4>¿Esta seguro de eliminar esta unidad? </h4>
+                <hr />
+                <div>
+                    <p>Id : <b>{{unidadToDelete.id}}</b></p>
+                </div>
+                <div>
+                    <p>Nombre : <b>{{unidadToDelete.nombre}}</b></p>
+                </div>
+
+
+                <div class="row mt-4 mr-auto ml-3">
+                    <button class="btn btn-danger mr-2"
+                            ng-click="confirmDeleteUnidad(unidadToDelete.id)">
+                        Eliminar
+                    </button>
+                    <button class="btn btn-secondary  mr-2"
+                            ng-click="backto0()">
+                        <span class="fa fa-backward"></span>
+                        Volver
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>*@
+

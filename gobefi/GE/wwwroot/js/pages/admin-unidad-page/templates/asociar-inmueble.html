@@ -1,0 +1,15 @@
+﻿<h3>Asociar inmueble a la unidad</h3>
+<hr />
+<p>Debe marcar en ON todas las zonas  de este inmueble que son utilizadas por su servicio</p>
+<inmueble-top inmueble="inmuebleSelected"></inmueble-top>
+<inmueble-detalle 
+                  admin="admin"
+                  edit-mode="editMode"
+                  inmueble="inmuebleSelected"
+                  on-back="back()"
+                  on-add-piso="addPiso(piso,edificio)"
+                  on-add-area="addArea(area,piso,edificio)"
+                  on-add-edificio ="addEdificio(edificio)"
+                  on-save ="saveUnidad()"
+                  >
+</inmueble-detalle>

@@ -1,0 +1,49 @@
+﻿<button 
+        ng-if="$ctrl.nuevo" 
+        type="button"
+        ng-click="$ctrl.clickNew()"
+        class="btn btn-primary btn-sm">
+    <span class="fa fa-file"></span> Nuevo
+</button>
+<button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+    <span class="fa fa-filter"></span> Filtros
+</button>
+<button ng-if="$ctrl.volver" 
+        type="button"
+        ng-click="$ctrl.clickBack()"
+        class="btn btn-secondary btn-sm">
+    <span class="fa fa-backward"></span> Volver
+</button>
+<hr />
+<h4>{{$ctrl.title}}</h4>
+<div class="collapse" id="collapseFiltros">
+    <form class="form-inline">
+        <select 
+                ng-model="$ctrl.institucionId"
+                ng-change="$ctrl.changeInstitucion()" 
+                class="custom-select w-25" 
+                id="instituciones" 
+                style="width: 150px;">
+            <option value="">Instituciones</option>
+            <option ng-repeat="item in $ctrl.instituciones" value="{{item.id}}">{{item.nombre}}</option>
+        </select>
+        <select
+                ng-model="$ctrl.servicioId"
+                ng-change="$ctrl.changeServicio()" 
+                class="custom-select w-25 ml-2" 
+                id="servicios" style="width: 150px;" 
+                ng-disabled="$ctrl.institucionId==''">
+            <option value="">Servicios</option>
+            <option ng-repeat="item in $ctrl.servicios" value="{{item.id}}">{{item.nombre}}</option>
+        </select>
+        <select 
+                ng-model="$ctrl.regionId"
+                ng-change="$ctrl.changeRegion()" 
+                class="custom-select w-25 ml-2" 
+                id="regiones" style="width: 150px;">
+            <option value="">Regiones</option>
+            <option ng-repeat="item in $ctrl.regiones" value="{{item.id}}">{{item.nombre}}</option>
+        </select>
+    </form>
+</div>
+<hr />

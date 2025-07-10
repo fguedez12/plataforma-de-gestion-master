@@ -1,0 +1,87 @@
+﻿@model ServicioIndexModel
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+<div class="row">
+    <div class="col-12">
+        <h2>Servicios</h2>
+        <p>
+            @if (permisos.Escritura)
+            {
+                <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+            }
+            <button type="button" class="btn btn-primary" id="filter">
+                <span class="fa fa-filter"></span> Filtros
+            </button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>@Constants.Titles.ACCION</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (item.Id).ToString(), Permisos = permisos }))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @(await Component.InvokeAsync<PaginationViewComponent>(Model.Items))
+</div>
+<div class="modal" id="servicioFilter">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Index" asp-controller="adminServicio" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtrar por:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="Nombre" class="form-label"></label>
+                        <input asp-for="Nombre" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="institucion">Institución</label>
+                        <select asp-for="InstitucionId" asp-items="ViewBag.Instituciones" class="form-control"></select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#filter").click(function () {
+            $("#servicioFilter").modal('toggle');
+        });
+    });
+</script>

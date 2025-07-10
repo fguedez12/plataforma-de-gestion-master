@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewData["Title"] = "Adm. Consumos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<h2>Consumos</h2>
+<form id="frmBuscarId" method="get">
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="CompraId">Id Compra</label>
+            <input type="text" class="form-control" autocomplete="off" placeholder="Id Compra" id="CompraId" />
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Buscar</button>
+</form>
+<hr />
+<form id="frmBuscarCompras" method="get">
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="InstitucionId">Institución</label>
+            <select class="form-control" id="InstitucionId"></select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="ServicioId">Servicio</label>
+            <select class="form-control" id="ServicioId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="DivisionId">Unidad</label>
+            <select class="form-control" id="UnidadId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+
+    </div>
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="EnergeticoId">Energetico</label>
+            <select class="form-control" id="EnergeticoId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="NumClienteId">N° de Cliente</label>
+            <select class="form-control" id="NumClienteId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="NumMedidorId">N° de Medidor</label>
+            <select class="form-control" id="NumMedidorId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="RegionId">Región</label>
+            <select class="form-control" id="RegionId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="EdificioId">Edificio</label>
+            <select class="form-control" id="EdificioId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="NombreId">Nombre Opcional</label>
+            <select class="form-control" id="NombreId" disabled>
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="switcherUnidadPmg">Unidad PMG</label>
+            <label class="switch switch-pmg">
+                <input type="checkbox" id="UnidadPmgId" name="UnidadPmg" checked="checked">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="EstadoId">Estado</label>
+            <select class="form-control" id="EstadoId">
+                <option value="">@Constants.Titles.SELECCIONE</option>
+            </select>
+        </div>
+        @*<div class="col-md-4 mb-3">
+            <label for="CompraId">Id Compra</label>
+            <input type="text" class="form-control" autocomplete="off" placeholder="Id Compra" id="CompraId" />
+        </div>*@
+    </div>
+    <button class="btn btn-primary" type="submit">Buscar</button>
+</form>
+
+<br />
+
+<div id="divTblValidarConsumos">
+
+</div>
+
+<div id="MsjeSinFiltros" class="alert alert-dark" role="alert">
+    Seleccione algun filtros para comenzar la busqueda de compras.
+</div>
+
+<div id="cover-spin"></div>
+
+<div id="loader" class="text-center" style="display:none;">
+    <img src='~/images/reload.gif' style="width:32px; height:32px">
+</div>
+
+@await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+
+
+@await Html.PartialAsync("../Consumo/Shared/_ModalCompras.cshtml")
+
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/jquery.dataTables.min.css" />
+<script type="text/javascript" src="~/vendor/DataTables/js/datatables.min.js"></script>
+
+
+<script src="~/vendor/flatpickr/js/flatpickr.js"></script>
+<link href="~/vendor/flatpickr/css/flatpickr.min.css" rel="stylesheet" />
+<script src="~/vendor/flatpickr/locale/es.js"></script>
+
+<script src="~/js/modalCompras.js" asp-append-version="true"></script>
+<script src="~/js/AdminConsumos/adminConsumos.js" asp-append-version="true"></script>
+<script>
+    $("#btnActions-btnVolver").click(function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","Admin")";
+    });
+</script>

@@ -1,0 +1,160 @@
+﻿@inject UserManager<Usuario> UserManager
+@model DivisionIndexModel
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+    AjustesDTO ajustes = (AjustesDTO)ViewData["ajustes"];
+    bool userServiceIsPmg = (bool)ViewData["userServiceIsPmg"];
+
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isGestConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+}
+<input type="hidden" id="admin-users-servicioId" value="@ViewBag.ServicioId" />
+
+<div class="row">
+    <div class="col-12">
+        <h2>Unidades</h2>
+        <p>
+            @if (permisos.Escritura)
+            {
+                if(!ajustes.CreateUnidadPMG && userServiceIsPmg && !_isAdmin)
+                {
+
+                }
+                else 
+                {
+                    <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nueva</a>    
+                }
+                
+            }
+            <button type="button" class="btn btn-primary" id="filter">
+                <span class="fa fa-filter"></span> Filtros
+            </button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th style="width: 70%;">
+                    @Html.DisplayNameFor(model => model.Direccion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Pisos)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Active)
+                </th>
+                <th style="width: 20%;">@Constants.Titles.ACCION</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Direccion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Pisos)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Active)
+                    </td>
+                    <td>
+                    @{
+                        permisos.PermisoPorAccion = true;
+
+                        PermisoAcciones accion = new PermisoAcciones
+                        {
+                            //Editar = _isAdmin ? true : !item.ServicioEsPMG,
+                            Editar = permisos.Escritura ? true : false,
+                            Detalle = permisos.Escritura ? false : true,
+                            Eliminar = permisos.Escritura ? true : false // TODO definir a nivel de negocio
+                        };
+                    }
+                    @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = ((item.Id).ToString()), Permisos = permisos, Acciones = accion, PMG = item.ReportaPMG, Ajustes = ajustes, IsAdmin = _isAdmin  }))
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @(await Component.InvokeAsync<PaginationViewComponent>(Model.Items))
+</div>
+<div class="modal" id="divisionFilter">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Index" asp-controller="AdminDivision" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtrar por:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Direccion"></label>
+                        <input class="form-control" asp-for="Direccion" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Nombre"></label>
+                        <input class="form-control" asp-for="Nombre"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="InstitucionId"></label>
+                        <select class="form-control" asp-for="InstitucionId" asp-items="ViewBag.Institucion"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="ServicioId"></label>
+                        <select class="form-control" asp-for="ServicioId" disabled>
+                            <option>@Constants.Titles.SELECCIONE</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" asp-for="Activo"></label><br />
+                        <label class="switch">
+                            <input type="checkbox" class="form-control" asp-for="Activo">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#InstitucionId").change();
+        
+
+        $("#filter").click(function () {
+            $("#divisionFilter").modal('toggle');
+        });
+    });
+
+    $("#InstitucionId").change(function () {
+
+        if ($(this).val()) {
+            
+            //loadSelectDataAsync($("#ServicioId"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), Number($("#admin-users-servicioId").val()), "id", true);
+            loadSelectDataAsync($("#ServicioId"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), $("#admin-users-servicioId").val(),"id", true).then(function (){
+                if ($("#ServicioId option[value='" + $("#admin-users-servicioId").val() + "']").length <= 0){
+                    $("#ServicioId option:first").attr("selected", "selected")
+                }
+                
+            });
+        } else {
+            $("#ServicioId").attr("selected", "selected").attr("disabled", "disabled");
+        }
+
+    });
+
+</script>

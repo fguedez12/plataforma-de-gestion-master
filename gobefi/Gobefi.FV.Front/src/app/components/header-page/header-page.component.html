@@ -1,0 +1,19 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button menu="first">
+      </ion-menu-button>
+    </ion-buttons>
+    <ion-title class="title-web">
+      {{title}}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-icon slot="start" [name]="userService.icon"></ion-icon>
+          <ion-label class="title-web">
+            {{userService.modo}}
+          </ion-label>
+          <ion-toggle [(ngModel)]="userService.toogleValue"  (ionChange)="changeToogle()"slot="end"></ion-toggle>
+    </ion-buttons>
+    <ng-content></ng-content>   
+  </ion-toolbar>
+</ion-header>

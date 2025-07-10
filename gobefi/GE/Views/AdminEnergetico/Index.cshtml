@@ -1,0 +1,57 @@
+﻿@model IEnumerable<GobEfi.Web.Models.EnergeticoModels.EnergeticoModel>
+
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <h2>Energéticos</h2>
+        <p>
+            @if (permisos.Escritura)
+            {
+                <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+            }
+            <button type="button" class="btn btn-primary" id="filter">
+                <span class="fa fa-filter"></span> Filtros
+            </button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th class="text-center">
+                    @Html.DisplayNameFor(model => model.PermiteMedidor)
+                </th>
+                <th class="text-center">@Constants.Titles.ACCION</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td class="text-center">
+                        <label class="switch">
+                            <input type="checkbox" name="switcherPermiteMedidor" checked="@item.PermiteMedidor" disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                    <td class="text-center">
+                        @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (item.Id).ToString(), Permisos = permisos }))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

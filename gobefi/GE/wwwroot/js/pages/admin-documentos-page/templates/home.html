@@ -1,0 +1,1914 @@
+﻿﻿<h2>Documentación Etapa {{etapa}}</h2>
+<hr />
+<h4>Servicio: {{nombreServicio}}</h4>
+<hr />
+<div ng-show="etapa==1">
+    <h5>Marque los tipos de documentos que el servicio no registrará el presente período PMG:</h5>
+    <div class="d-flex">
+        <div class="col-md-6">
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="politica-ambiental"
+                       ng-model="politicaAmbientalCheck"
+                       ng-disabled="isConsulta"
+                       ng-change="checkPoliticaAmbiental()">
+                <label class="form-check-label" for="politica-ambiental">Política Ambiental</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="proc-formal-papel"
+                       ng-disabled="isConsulta"
+                       ng-model="procFormalPapelCheck"
+                       ng-change="checkProcFormalPapel()">
+                <label class="form-check-label" for="proc-formal-papel">Procedimiento formal de papel</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="doc-residuos-certificados"
+                       ng-disabled="isConsulta"
+                       ng-model="docResiduosCertificadosCheck"
+                       ng-change="checkDocResiduosCertificados()">
+                <label class="form-check-label" for="doc-residuos-certificados">Residuos- proceso con certificado</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="doc-residuos-sistemas"
+                       ng-disabled="isConsulta"
+                       ng-model="docResiduosSistemasCheck"
+                       ng-change="checkDocResiduosSistemas()">
+                <label class="form-check-label" for="doc-residuos-certificados">Residuos – proceso sin certificado</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="proc-baja-bienes-muebles"
+                       ng-disabled="isConsulta"
+                       ng-model="procBajaBienesMueblesCheck"
+                       ng-change="checkProcBajaBienesMuebles()">
+                <label class="form-check-label" for="proc-baja-bienes-muebles">Procedimiento para dar de baja bienes muebles</label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="alert alert-warning mt-3" ng-show="etapa==1">
+    <strong>Nota:</strong> Recuerde que todos los documentos declarados como inexistentes deben ser fundamentados en el análisis de los resultados del diagnóstico
+</div>
+<hr />
+<div>
+    <button class="btn btn-primary btn-sm"
+            ng-show="!isConsulta"
+            ng-click="newDocument()">
+        Agregar
+    </button>
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+        <span class="fa fa-filter"></span> Filtros
+    </button>
+    <div class="collapse" id="collapseFiltros">
+        <hr />
+        <form class="form-inline">
+            <select-institucion user-id="{{userId}}"
+                                on-institucion-change="changeInstitucion(institucionId)">
+            </select-institucion>
+            <select-servicio servicios="servicios"
+                             on-servicio-change="changeServicio(servicioId)">
+            </select-servicio>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="form-group">
+    <label for="anioDoc">Año Documento:</label>
+    <select id="anioDoc"
+            name="anioDoc"
+            ng-model="anioDoc"
+            ng-change="changeAnioDoc()"
+            class="form-control">
+        <option value="0">--Todos--</option>
+        <option ng-repeat="year in yearsForSelect" value="{{year}}">{{year}}</option>
+    </select>
+</div>
+<hr/>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+        <a class="nav-item nav-link active"
+           id="nav-comite-tab"
+           data-toggle="tab"
+           href="#nav-comite"
+           role="tab">
+            Comité
+        </a>
+        <a class="nav-link"
+           id="nav-politica-tab"
+           data-toggle="tab"
+           href="#nav-politica"
+           role="tab">
+            {{etapa==1?'Política':'Política Ambiental E2'}}
+        </a>
+        <a ng-show="{{etapa==1}}" class="nav-link"
+           id="nav-procedimientos-tab"
+           data-toggle="tab"
+           href="#nav-procedimientos"
+           role="tab">
+            Información documental
+        </a>
+        <a class="nav-link"
+           id="nav-charlas-tab"
+           data-toggle="tab"
+           href="#nav-charlas"
+           ng-if="etapa==1"
+           role="tab">
+            Concientizados SEV{{etapa==2?'-E2':''}}
+        </a>
+        <!-- <a class="nav-link"
+           ng-show="etapa==1"
+           id="nav-capacitadosmp-tab"
+           data-toggle="tab"
+           href="#nav-capacitadosmp"
+           role="tab">
+            Capacitados MP{{etapa==2?'-E2':''}}
+        </a> -->
+        <a ng-show="{{etapa==1}}"
+           class="nav-link"
+           id="nav-gestioncomprasustentable-tab"
+           data-toggle="tab"
+           href="#nav-gestioncomprasustentable"
+           role="tab">
+            Gestión Compras Sustentables
+        </a>
+        <a ng-show="{{etapa==2}}"
+           class="nav-link"
+           id="nav-pace3-tab"
+           data-toggle="tab"
+           href="#nav-pace3"
+           role="tab">
+           PAC para año t+1
+        </a>
+        <a ng-show="{{etapa==2}}"
+           class="nav-link"
+           id="nav-pga-tab"
+           data-toggle="tab"
+           href="#nav-pga"
+           role="tab">
+           PGA - Resolución
+        </a>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent-comite">
+    <div class="tab-pane fade show active" id="nav-comite" role="tabpanel">
+        <div ng-show="Comites.length>0 && !loadingTable">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N° Resolución</th>
+                            <th>Tipo de Documento</th>
+                            <th style="max-width: 150px;">Tema Tratado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="comite in Comites">
+                            <td>
+                                {{comite.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{comite.nresolucion}}
+                            </td>
+                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                                {{comite.tipoDocumentoNombre}}
+                            </td>
+                            <td class="text-break" style="max-width: 150px;">
+                                <ul class="list-unstyled mb-0">
+                                    <li ng-repeat="tema in comite.listaTemas" class="mb-2">
+                                        <div class="d-flex">
+                                            <span class="mr-2" style="margin-top: 5px;">•</span>
+                                            <span style="flex: 1; word-break: break-word;">{{tema}}</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                            <td>
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(comite.id)">
+                                    {{editText}}
+                                </button>
+                                <button class="btn btn-danger"
+                                        ng-show="!isConsulta"
+                                        ng-click="deleteDocumento(comite.id)">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPage()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': page==arrPage}" ng-repeat="arrPage in arrayPages">
+                        <button class="page-link" ng-click="setPage(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPage()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="Comites.length==0 && !loadingTable">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTable">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-politica" role="tabpanel">
+        <div ng-show="politicas.length>0 && !loadingTablePolitica">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N° Resolución</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="politica in politicas">
+                            <td>
+                                {{politica.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{politica.nResolucionPolitica}}
+                            </td>
+                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                                {{politica.tipoDocumentoNombre}}
+                            </td>
+                            <td>
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(politica.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(politica.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPagePoliticas()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pagePoliticas==arrPage}" ng-repeat="arrPage in arrayPagesPoliticas">
+                        <button class="page-link" ng-click="setPagePoliticas(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPagePoliticas()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="politicas.length==0 && !loadingTablePolitica">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTablePolitica">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-procedimientos" role="tabpanel">
+        <div ng-show="procedimientos.length>0 && !loadingTableProcedimientos">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="procedimiento in procedimientos">
+                            <td style="white-space: nowrap;">
+                                {{procedimiento.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{procedimiento.titulo | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{procedimiento.tipoDocumentoNombre}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(procedimiento.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(procedimiento.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageProcedimientos()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pageProcedimientos==arrPage}" ng-repeat="arrPage in arrayPagesProcedimientos">
+                        <button class="page-link" ng-click="setPageProcedimientos(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageProcedimientos()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="procedimientos.length==0 && !loadingTableProcedimientos">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableProcedimientos">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-charlas" role="tabpanel">
+        <div ng-show="charlas.length>0 && !loadingTableCharlas">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="charla in charlas">
+                           
+                            <td>
+                                {{charla.titulo | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{charla.tipoDocumentoNombre}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(charla.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(charla.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageCharlas()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pageCharlas==arrPage}" ng-repeat="arrPage in arrayPagesCharlas">
+                        <button class="page-link" ng-click="setPageCharlas(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageCharlas()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="charlas.length==0 && !loadingTableCharlas">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableCharlas">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-capacitadosmp" role="tabpanel">
+        <div ng-show="capacitadosMP.length>0 && !loadingTableCapacitadosMP">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in capacitadosMP">
+                            <td style="white-space: nowrap;">
+                                {{item.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.titulo | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.tipoDocumentoNombre}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(item.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(item.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageCapacitadosMP()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pageCapacitadosMP==arrPage}" ng-repeat="arrPage in arrayPagesCapacitadosMP">
+                        <button class="page-link" ng-click="setPageCapacitadosMP(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageCapacitadosMP()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="capacitadosMP.length==0 && !loadingTableCapacitadosMP">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableCapacitadosMP">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-gestioncomprasustentable" role="tabpanel">
+        <div ng-show="comprasustentables.length>0 && !loadingTableCompraSustentables">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in comprasustentables">
+                            <td style="white-space: nowrap;">
+                                {{item.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.titulo | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.tipoDocumentoNombre}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(item.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(item.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageCompraSustentable()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pageCompraSustentable==arrPage}" ng-repeat="arrPage in arrayPagesCompraSustentable">
+                        <button class="page-link" ng-click="setPageCompraSustentable(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageCompraSustentable()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="comprasustentables.length==0 && !loadingTableCompraSustentables">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableCompraSustentables">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-pace3" role="tabpanel">
+        <div ng-show="pacE3.length>0 && !loadingTablePacE3">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Título</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in pacE3">
+                            <td style="white-space: nowrap;">
+                                {{item.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.titulo | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.tipoDocumentoNombre}}
+                            </td>
+                            <td style="white-space: nowrap;">
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(item.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(item.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPagePacE3()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pagePacE3==arrPage}" ng-repeat="arrPage in arrayPagesPacE3">
+                        <button class="page-link" ng-click="setPagePacE3(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPagePacE3()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="pacE3.length==0 && !loadingTablePacE3">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTablePacE3">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-pga" role="tabpanel">
+        <div ng-show="pga.length>0 && !loadingTablePga">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>N° Resolución</th>
+                            <th>Tipo de Documento</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="item in pga">
+                            <td>
+                                {{item.fecha | date:'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{item.nResolucionPolitica}}
+                            </td>
+                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                                {{item.tipoDocumentoNombre}}
+                            </td>
+                            <td>
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(item.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteDocumento(item.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPagePga()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pagePga==arrPage}" ng-repeat="arrPage in arrayPagesPga">
+                        <button class="page-link" ng-click="setPagePga(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPagePga()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="pga.length==0 && !loadingTablePga">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTablePga">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document" ng-class="sizeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+                <button type="button" class="close" ng-click="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="documentoForm" enctype="multipart/form-data" novalidate>
+                <div class="modal-body">
+                    <div class="d-flex">
+                        <div class="card-body" ng-class="colLista">
+                            <div class="form-group">
+                                <label for="tipo-documento">Tipo de documento:</label>
+                                <select id="tipoDocumentoId"
+                                        name="tipoDocumentoId"
+                                        ng-class="{'is-invalid':documentoForm.tipoDocumentoId.$invalid  && (documentoForm.tipoDocumentoId.$touched || documentoForm.tipoDocumentoId.$dirty) }"
+                                        class="form-control"
+                                        ng-disabled="isConsulta"
+                                        ng-model="documento.tipoDocumentoId"
+                                        ng-change="changeTipoDocumento()"
+                                        required >
+                                    <option value="">--Seleccione--</option>
+                                    <option ng-repeat="tipo in tipoDocumentos" value="{{tipo.id}}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px;">{{ etapa==1 ? tipo.nombre : tipo.nombreE2}}</option>
+                                </select>
+                                <span ng-show="documentoForm.tipoDocumentoId.$invalid  && (documentoForm.tipoDocumentoId.$touched || documentoForm.tipoDocumentoId.$dirty)"
+                                      class="text-danger">Debe seleccionar una opción</span>
+                            </div>
+                            <div class="d-flex mb-2" ng-show="showCheckPolitica">
+                                <div class="form-check mr-2">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           ng-model="documento.elaboraPolitica"
+                                           name="elaboraPolitica"
+                                           id="elaboraPolitica" value="false">
+                                    <label class="form-check-label" for="elaboraPolitica">
+                                        Elabora
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2 mr-2">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           ng-model="documento.actualizaPolitica"
+                                           name="actualizaPolitica"
+                                           id="actualizaPolitica" value="false">
+                                    <label class="form-check-label" for="actualizaPolitica">
+                                        Actualiza
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2 mr-2">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           ng-model="documento.mantienePolitica"
+                                           name="mantienePolitica"
+                                           id="mantienePolitica" value="false">
+                                    <label class="form-check-label" for="mantienePolitica">
+                                        Mantiene
+                                    </label>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group" ng-show="showActaComiteSel">
+                                <label for="actaComiteId">N° de resolución de la creación del Comité Estado Verde:</label>
+                                <select id="actaComiteId"
+                                        name="actaComiteId"
+                                        ng-class="{'is-invalid':documentoForm.actaComiteId.$invalid  && (documentoForm.actaComiteId.$touched || documentoForm.actaComiteId.$dirty) }"
+                                        class="form-control"
+                                        ng-disabled="isConsulta"
+                                        ng-model="documento.actaComiteId"
+                                        ng-required="showActaComiteSel">
+                                    <option value="">--Seleccione--</option>
+                                    <option ng-repeat="acta in actasLista" value="{{acta.id}}">{{acta.nresolucion}}</option>
+                                </select>
+                                <span ng-show="documentoForm.actaComiteId.$invalid  && (documentoForm.actaComiteId.$touched || documentoForm.actaComiteId.$dirty)"
+                                      class="text-danger">Debe seleccionar una opción</span>
+                            </div>
+                            <div class="form-group" ng-show="showPolitica">
+                                <label for="politicaId">Política:</label>
+                                <select id="politicaId"
+                                        name="politicaId"
+                                        ng-disabled="isConsulta"
+                                        ng-class="{'is-invalid':documentoForm.politicaId.$invalid  && (documentoForm.politicaId.$touched || documentoForm.politicaId.$dirty) }"
+                                        class="form-control"
+                                        ng-model="documento.politicaId"
+                                        ng-required="reqPolitica">
+                                    <option value="">--Seleccione--</option>
+                                    <option ng-repeat="politica in politicasLista" value="{{politica.id}}">{{politica.nResolucionPolitica}}</option>
+                                </select>
+                                <span ng-show="documentoForm.politicaId.$invalid  && (documentoForm.politicaId.$touched || documentoForm.politicaId.$dirty)"
+                                      class="text-danger">Debe seleccionar una opción</span>
+                            </div>
+
+                            <div class="form-group" ng-show="showNResolucionProcedimiento">
+                                <label for="nResolucionProcedimiento">N° Resolución Procedimiento:</label>
+                                <input id="nResolucionProcedimiento"
+                                       name="nResolucionProcedimiento"
+                                       ng-disabled="isConsulta"
+                                       type="text"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':documentoForm.nResolucionProcedimiento.$invalid  && (documentoForm.nResolucionProcedimiento.$touched || documentoForm.nResolucionProcedimiento.$dirty) }"
+                                       ng-model="documento.nResolucionProcedimiento" />
+                            </div>
+                            <div class="form-group" ng-show="showTitulo">
+                                <label for="titulo">Título:</label>
+                                <input id="titulo"
+                                       name="titulo"
+                                       type="text"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.titulo.$invalid  && (documentoForm.titulo.$touched || documentoForm.titulo.$dirty) }"
+                                       ng-model="documento.titulo"
+                                       ng-required="showTitulo" />
+                                <span ng-show="documentoForm.titulo.$invalid  && (documentoForm.titulo.$touched || documentoForm.titulo.$dirty)"
+                                      class="text-danger">El campo título es requerido</span>
+                            </div>
+                            <div class="form-group" ng-if="showFecha">
+                                <label for="fecha">{{fechaText}}{{etapa==2?'-E2':''}}:</label>
+                                <input id="fecha"
+                                       name="fecha"
+                                       type="date"
+                                       min="{{fechaMIn}}"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.fecha"
+                                       ng-class="{'is-invalid':documentoForm.fecha.$invalid  && (documentoForm.fecha.$touched || documentoForm.fecha.$dirty) }"
+                                       ng-required="showFecha" />
+                                <span ng-show="documentoForm.fecha.$invalid  && (documentoForm.fecha.$touched || documentoForm.fecha.$dirty)"
+                                      class="text-danger">Debe Ingresar una fecha</span>
+                            </div>
+                            <div class="form-group" ng-show="showNComprasCriterios">
+                                <label for="nComprasCriterios" class="form-label">Numerador: N° de compras a través de licitación pública adjudicadas y compras ágiles realizadas que utilicen criterios de evaluación y/o requisitos sustentables</label>
+                                <input id="nComprasCriterios"
+                                       name="nComprasCriterios"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasCriterios.$invalid  && (documentoForm.nComprasCriterios.$touched || documentoForm.nComprasCriterios.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasCriterios"
+                                       ng-model="documento.nComprasCriterios" />
+                                <span ng-show="documentoForm.nComprasCriterios.$invalid  && (documentoForm.nComprasCriterios.$touched || documentoForm.nComprasCriterios.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div>
+                            <div class="form-group" ng-show="showNComprasRubros">
+                                <label for="nComprasRubros" class="form-label">Denominador: N° de compras a través de licitación pública adjudicadas y compras ágiles realizadas en rubros factibles de aplicar criterios de sustentabilidad</label>
+                                <input id="nComprasRubros"
+                                       name="nComprasRubro"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasRubros.$invalid  && (documentoForm.nComprasRubros.$touched || documentoForm.nComprasRubros.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasRubros"
+                                       ng-model="documento.nComprasRubros" />
+                                <span ng-show="documentoForm.nComprasRubros.$invalid  && (documentoForm.nComprasRubros.$touched || documentoForm.nComprasRubros.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div>
+                           
+                            <!-- <div class="form-group" ng-show="showNComprasRubros2">
+                                <label for="nComprasRubros2" class="form-label">Número de compras realizadas en rubros factibles de aplicar criterios de sustentabilidad (1May2024-31Oct2024):</label>
+                                <input id="nComprasRubros2"
+                                       name="nComprasRubro2"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasRubros2.$invalid  && (documentoForm.nComprasRubros2.$touched || documentoForm.nComprasRubros2.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasRubros2"
+                                       ng-model="documento.nComprasRubros2" />
+                                <span ng-show="documentoForm.nComprasRubros2.$invalid  && (documentoForm.nComprasRubros2.$touched || documentoForm.nComprasRubros2.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div> -->
+                            <!-- <div class="form-group" ng-show="showNComprasCriterios2">
+                                <label for="nComprasCriterios2" class="form-label">Número de compras realizadas que utilizan criterios de evaluación y/o requisitos sustentables (1May2024-31Oct2024):</label>
+                                <input id="nComprasCriterios2"
+                                       name="nComprasCriterios2"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasCriterios2.$invalid  && (documentoForm.nComprasCriterios2.$touched || documentoForm.nComprasCriterios2.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasCriterios2"
+                                       ng-model="documento.nComprasCriterios2" />
+                                <span ng-show="documentoForm.nComprasCriterios2.$invalid  && (documentoForm.nComprasCriterios2.$touched || documentoForm.nComprasCriterios2.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div> -->
+                            <!-- <div class="form-group" ng-show="showNComprasRubrosFuera">
+                                <label for="nComprasRubrosFuera" class="form-label">Número de compras realizadas en rubros factibles de aplicar criterios de sustentabilidad realizadas por fuera plataforma Chilecompra:</label>
+                                <input id="nComprasRubrosFuera"
+                                       name="nComprasRubroFuera"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasRubrosFuera.$invalid  && (documentoForm.nComprasRubrosFuera.$touched || documentoForm.nComprasRubrosFuera.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasRubrosFuera"
+                                       ng-model="documento.nComprasRubrosFuera" />
+                                <span ng-show="documentoForm.nComprasRubrosFuera.$invalid  && (documentoForm.nComprasRubrosFuera.$touched || documentoForm.nComprasRubrosFuera.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div> -->
+                            <!-- <div class="form-group" ng-show="showNComprasCriteriosFuera">
+                                <label for="nComprasCriteriosFuera" class="form-label">Número de compras realizadas que utilizan criterios de evaluación y/o requisitos sustentables, realizadas por fuera plataforma Chilecompra:</label>
+                                <input id="nComprasCriteriosFuera"
+                                       name="nComprasCriteriosFuera"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nComprasCriteriosFuera.$invalid  && (documentoForm.nComprasCriteriosFuera.$touched || documentoForm.nComprasCriteriosFuera.$dirty) }"
+                                       step="1"
+                                       min="0"
+                                       class="form-control"
+                                       ng-required="showNComprasCriteriosFuera"
+                                       ng-model="documento.nComprasCriteriosFuera" />
+                                <span ng-show="documentoForm.nComprasCriteriosFuera.$invalid  && (documentoForm.nComprasCriteriosFuera.$touched || documentoForm.nComprasCriteriosFuera.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                            </div> -->
+                            <!-- <hr /> -->
+                            <!-- <div ng-show="showTemplateCompraSustentableAnt" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/Compras_Anteriores_nov-abr.xlsx" target="_blank">Compras_Anteriores_nov-abr.xlsx</a>
+                            </div> -->
+                           
+                            <!-- <div ng-show="documento.adjuntoUrlCompraSustentableAnt" class="form-group">
+                                <label>Documento Adjunto:</label>
+                                <a href="{{linkToDownloadCompraSustentableAnt}}" target="_blank">{{documento.adjuntoNombreCompraSustentableAnt}}</a>
+                            </div>
+                            <div ng-show="showComprasAnteriores" class="form-group">
+                                <label for="adjuntoCompraSustentableAnt">Adjuntar documento compras anteriores:</label>
+                                <input id="adjuntoCompraSustentableAnt"
+                                       name="adjuntoCompraSustentableAnt"
+                                       ng-disabled="isConsulta"
+                                       type="file"
+                                       class="form-control"
+                                       ng-model="documento.adjuntoPathCompraSustentableAnt"
+                                       ng-change="changeFileCompraSustentableAnt()"
+                                       ng-class="{'is-invalid':documentoForm.adjuntoCompraSustentableAnt.$invalid  && (documentoForm.adjuntoCompraSustentableAnt.$touched || documentoForm.adjuntoCompraSustentableAnt.$dirty) }"
+                                       valid-file
+                                       accept="{{filetypes}}"
+                                       ng-required="!documento.adjuntoUrlCompraSustentableAnt && showComprasAnteriores" />
+                                <span ng-show="documentoForm.adjuntoCompraSustentableAnt.$invalid  && (documentoForm.adjuntoCompraSustentableAnt.$touched || documentoForm.adjuntoCompraSustentableAnt.$dirty)"
+                                      class="text-danger">Debe adjuntar un documento</span>
+                            </div> -->
+                            <hr />
+                            <div ng-show="showTemplateCompraSustentable" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/Compras_Futuras_may-oct.xlsx" target="_blank">Compras_sustentables_peridodot.xlsx</a>
+                            </div>
+                            <div class="form-group" ng-show="showPorcentajeConcientizadosEtapa2">
+                                <label class="form-label">Porcentaje de colaboradores concientizados acumulado años anteriores - Revisado y ajustado:</label>
+                                <input id="porcentajeConcientizadosEtapa2"
+                                       name="porcentajeConcientizadosEtapa2"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.porcentajeConcientizadosEtapa2.$invalid  && (documentoForm.porcentajeConcientizadosEtapa2.$touched || documentoForm.porcentajeConcientizadosEtapa2.$dirty) }"
+                                       ng-pattern="/^(?:(?:[0-9]|[1-9][0-9])(?:\.[0-9]{1,2})?|100(?:\.00?)?)$/"
+                                       min="0"
+                                       max="100"
+                                       class="form-control"
+                                       ng-required="showPorcentajeConcientizadosEtapa2"
+                                       ng-model="documento.porcentajeConcientizadosEtapa2" />
+                                <span ng-show="documentoForm.porcentajeConcientizadosEtapa2.$invalid  && (documentoForm.porcentajeConcientizadosEtapa2.$touched || documentoForm.porcentajeConcientizadosEtapa2.$dirty)"
+                                      class="text-danger">El campo es requerido , con valores entre 0 y 100, máximo dos decimales</span>
+                            </div>
+                            <div class="form-group" ng-show="showActividadesCI">
+                                <label for="concientizacionInterna">¿El servicio realizará actividades de concientización interna?</label>
+                                <div class="d-flex align-items-center">
+                                    <span class="mr-2">No</span>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="actividadesCI"
+                                               name="actividadesCI"
+                                               ng-model="documento.actividadesCI"
+                                               ng-disabled="isConsulta">
+                                        <label class="custom-control-label" for="actividadesCI"></label>
+                                    </div>
+                                    <span class="ml-2">Sí</span>
+                                </div>
+                            </div>
+                             <div class="form-group" ng-show="showPropuestaTemasCI && documento.actividadesCI">
+                                <label for="propuestaTemasCI">Propuesta temas de concientización interna:</label>
+                                <input id="propuestaTemasCI"
+                                       name="propuestaTemasCI"
+                                       type="text"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.propuestaTemasCI.$invalid  && (documentoForm.propuestaTemasCI.$touched || documentoForm.propuestaTemasCI.$dirty) }"
+                                       ng-model="documento.propuestaTemasCI"
+                                       ng-required="documento.actividadesCI" />
+                                <span ng-show="documentoForm.propuestaTemasCI.$invalid  && (documentoForm.propuestaTemasCI.$touched || documentoForm.propuestaTemasCI.$dirty)"
+                                      class="text-danger">El campo Propuesta temas de concientización interna es requerido</span>
+                            </div>
+                            <div class="form-group" ng-show="showPropuestaPorcentaje">
+                                <label class="form-label">Propuesta porcentaje colaboradores concientizados totales:</label>
+                                <input id="propuestaPorcentaje"
+                                       name="propuestaPorcentaje"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.propuestaPorcentaje.$invalid  && (documentoForm.propuestaPorcentaje.$touched || documentoForm.propuestaPorcentaje.$dirty) }"
+                                       ng-pattern="/^(?:(?:[0-9]|[1-9][0-9])(?:\.[0-9]{1,2})?|100(?:\.00?)?)$/"
+                                       min="0"
+                                       max="100"
+                                       class="form-control"
+                                       ng-required="showPropuestaPorcentaje"
+                                       ng-model="documento.propuestaPorcentaje" />
+                                <span ng-show="documentoForm.propuestaPorcentaje.$invalid  && (documentoForm.propuestaPorcentaje.$touched || documentoForm.propuestaPorcentaje.$dirty)"
+                                      class="text-danger">El campo es requerido , con valores entre 0 y 100, máximo dos decimales</span>
+                            </div>
+                            <div class="form-group" ng-show="showTotalColaboradoresConcientizados">
+                                <label class="form-label">Total de colaboradores concientizados SEV</label>
+                                <input id="totalColaboradoresConcientizados"
+                                       name="totalColaboradoresConcientizados"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.totalColaboradoresConcientizados.$invalid  && (documentoForm.totalColaboradoresConcientizados.$touched || documentoForm.totalColaboradoresConcientizados.$dirty) }"
+                                       class="form-control"
+                                       min="0"
+                                       step="1"
+                                       ng-required="showTotalColaboradoresConcientizados && !esFechaMenorOIgualAlLimite"
+                                       ng-model="documento.totalColaboradoresConcientizados" />
+                                <span ng-show="documentoForm.totalColaboradoresConcientizados.$error.required  && (documentoForm.totalColaboradoresConcientizados.$touched || documentoForm.totalColaboradoresConcientizados.$dirty)"
+                                      class="text-danger">El campo es requerido</span>
+                                <span ng-show="documentoForm.totalColaboradoresConcientizados.$error.number  && (documentoForm.totalColaboradoresConcientizados.$touched || documentoForm.totalColaboradoresConcientizados.$dirty)"
+                                      class="text-danger">El campo  debe ser un número válido</span>
+                                <span ng-show="documentoForm.totalColaboradoresConcientizados.$error.min  && (documentoForm.totalColaboradoresConcientizados.$touched || documentoForm.totalColaboradoresConcientizados.$dirty)"
+                                      class="text-danger">El campo  debe ser mayor a 0</span>
+                                <span ng-show="documentoForm.totalColaboradoresConcientizados.$error.step  && (documentoForm.totalColaboradoresConcientizados.$touched || documentoForm.totalColaboradoresConcientizados.$dirty)"
+                                      class="text-danger">El campo  debe ser numero entero</span>
+                            </div>
+                            <div class="form-group" ng-show="showPorcentajeCapacitadosEtapa2">
+                                <label class="form-label">Porcentaje de capacitados MP para Etapa 2 (%E1 +%E2):</label>
+                                <input id="porcentajeCapacitadosEtapa2"
+                                       name="porcentajeCapacitadosEtapa2"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.porcentajeCapacitadosEtapa2.$invalid  && (documentoForm.porcentajeCapacitadosEtapa2.$touched || documentoForm.porcentajeCapacitadosEtapa2.$dirty) }"
+                                       ng-pattern="/^\d+(\.\d{1,2})?$/"
+                                       min="0"
+                                       max="100"
+                                       class="form-control"
+                                       ng-required="showPorcentajeCapacitadosEtapa2"
+                                       ng-model="documento.porcentajeCapacitadosEtapa2" />
+                                <span ng-show="documentoForm.porcentajeCapacitadosEtapa2.$invalid  && (documentoForm.porcentajeCapacitadosEtapa2.$touched || documentoForm.porcentajeCapacitadosEtapa2.$dirty)"
+                                      class="text-danger">El campo es requerido , con valores entre 0 y 100, máximo dos decimales</span>
+                            </div>
+                            <div class="form-group" ng-show="showCapacitadosMP">
+                                <label class="form-label">Colaboradores de planta directiva o jefaturas de 2° y 3° nivel jerárquico</label>
+                                <input id="funcionariosDesignadosNum"
+                                       name="funcionariosDesignadosNum"
+                                       type="number"
+                                       ng-pattern="/^[0-9][0-9]*$/"
+                                       step="1"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.funcionariosDesignadosNum.$invalid  && (documentoForm.funcionariosDesignadosNum.$touched || documentoForm.funcionariosDesignadosNum.$dirty) }"
+                                       class="form-control"
+                                       ng-required="showCapacitadosMP"
+                                       ng-model="documento.funcionariosDesignadosNum" />
+                                <span ng-show="documentoForm.funcionariosDesignadosNum.$invalid  && (documentoForm.funcionariosDesignadosNum.$touched || documentoForm.funcionariosDesignadosNum.$dirty)"
+                                      class="text-danger">El campo Colaboradores de planta es requerido, numero entero mayor o igual a 0</span>
+
+                            </div>
+                            <div ng-show="showTemplate && etapa==1" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/Formato oficial verificador concientizados SEV_2024.xlsx" target="_blank">Formato oficial verificador concientizados SEV_2025</a>
+                                <!--<a ng-show="etapa==2" href="/templates/Formato oficial verificador concientizados SEV_2024.xlsx" target="_blank">Formato oficial verificador concientizados SEV – E2_2024</a>-->
+                            </div>
+                            <div ng-show="showTemplateCapacitadosMP" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a ng-show="etapa==1" href="/templates/Listado de jefaturas.xlsx" target="_blank">Listado de jefaturas</a>
+                                <a ng-show="etapa==2" href="/templates/medio_verificacion_cocientización_2023.xlsx" target="_blank">Formato oficial verificador capacitados MP – E2_2024</a>
+                            </div>
+                            <div class="form-group" ng-show="showMateria">
+                                <label for="materia">Materia asociada a Estado Verde:</label>
+                                <div class="d-flex">
+                                    <div class="col-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionEnergia"
+                                                   name="gestionEnergia"
+                                                   id="gestionEnergia" value="false">
+                                            <label class="form-check-label" for="gestionEnergia">
+                                                Gestión de la Energía
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionVehiculosTs"
+                                                   name="gestionVehiculosTs"
+                                                   id="gestionVehiculosTs" value="false">
+                                            <label class="form-check-label" for="gestionVehiculosTs">
+                                                Gestión de Vehículos – transporte sustentable
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.trasladoSustentable"
+                                                   name="trasladoSustentable"
+                                                   id="trasladoSustentable" value="false">
+                                            <label class="form-check-label" for="trasladoSustentable">
+                                                Traslado sustentable
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionAgua"
+                                                   name="gestionAgua"
+                                                   id="gestionAgua" value="false">
+                                            <label class="form-check-label" for="gestionAgua">
+                                                Gestión del Agua
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.materiaGestionPapel"
+                                                   name="materiaGestionPapel"
+                                                   id="materiaGestionPapel" value="false">
+                                            <label class="form-check-label" for="materiaGestionPapel">
+                                                Gestión del Papel
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionResiduosEc"
+                                                   name="gestionResiduosEc"
+                                                   id="gestionResiduosEc" value="false">
+                                            <label class="form-check-label" for="gestionResiduosEc">
+                                                Gestión de Residuos – Economía circular
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionComprasS"
+                                                   name="gestionComprasS"
+                                                   id="gestionComprasS" value="false">
+                                            <label class="form-check-label" for="gestionComprasS">
+                                                Gestión de Compras sustentables
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.gestionBajaBs"
+                                                   name="gestionBajaBs"
+                                                   id="gestionBajaBs" value="false">
+                                            <label class="form-check-label" for="gestionBajaBs">
+                                                Gestión de Baja de bienes sustentable
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.huellaC"
+                                                   name="huellaC"
+                                                   id="huellaC" value="false">
+                                            <label class="form-check-label" for="huellaC">
+                                                Huella de Carbono
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.cambioClimatico"
+                                                   name="cambioClimatico"
+                                                   id="cambioClimatico" value="false">
+                                            <label class="form-check-label" for="cambioClimatico">
+                                                Cambio Climático
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   ng-disabled="isConsulta"
+                                                   ng-model="documento.otraMateria"
+                                                   name="otraMateria"
+                                                   id="otraMateria" value="false">
+                                            <label class="form-check-label" for="otraMateria">
+                                                Otro
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                
+                                <!-- <select id="materia"
+                                        name="materia"
+                                        ng-disabled="isConsulta"
+                                        ng-class="{'is-invalid':documentoForm.materia.$invalid  && (documentoForm.materia.$touched || documentoForm.materia.$dirty) }"
+                                        class="form-control"
+                                        ng-model="documento.materia"
+                                        ng-required="showMateria">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="Sistema Estado Verde">Sistema Estado Verde</option>
+                                    <option value="Cambio Climático">Cambio Climático</option>
+                                    <option value="Sistema Estado Verde y Cambio Climático">Sistema Estado Verde y Cambio Climático</option>
+                                    <option ng-show="etapa==2" value="Energía">Enegía</option>
+                                </select>
+                                <span ng-show="documentoForm.materia.$invalid  && (documentoForm.materia.$touched || documentoForm.materia.$dirty)"
+                                      class="text-danger">Debe seleccionar una opción</span> -->
+                            </div>
+                            
+                            <div class="form-check mb-2" ng-show="showApruebaAlcanceGradualSEV && etapa==1">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.apruebaAlcanceGradualSEV"
+                                       name="apruebaAlcanceGradualSEV"
+                                       id="apruebaAlcanceGradualSEV" value="false">
+                                <label class="form-check-label" for="apruebaAlcanceGradualSEV">
+                                    {{cb1Text}}
+                                </label>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showRevPoliticaAmbiental">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.revisionPoliticaAmbiental"
+                                       name="revisionPoliticaAmbiental"
+                                       id="revisionPoliticaAmbiental" value="false">
+                                <label class="form-check-label" for="revisionPoliticaAmbiental">
+                                    {{cb2Text}}
+                                </label>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showDetActDeConcientizacion && etapa==1">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.detActDeConcientizacion"
+                                       name="detActDeConcientizacion"
+                                       id="detActDeConcientizacion" value="false">
+                                <label class="form-check-label" for="detActDeConcientizacion">
+                                    {{cb3Text}}
+                                </label>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showRevProcBienesMuebles && etapa==1">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.revisionProcBienesMuebles"
+                                       name="revisionProcBienesMuebles"
+                                       id="revisionProcBienesMuebles" value="false">
+                                <label class="form-check-label" for="revisionProcBienesMuebles">
+                                    {{cb4Text}}
+                                </label>
+                            </div>
+                            <div class="form-group" ng-if="showdefinePolitica && documento.revisionPoliticaAmbiental">
+                                <label class="form-label" for="definePolitica">Definición Politica</label>
+                                <select id="definePolitica"
+                                        name="definePolitica"
+                                        ng-disabled="isConsulta"
+                                        ng-class="{'is-invalid':documentoForm.definePolitica.$invalid  && (documentoForm.definePolitica.$touched || documentoForm.definePolitica.$dirty) }"
+                                        class="form-control"
+                                        ng-model="documento.definePolitica"
+                                        ng-required="showdefinePolitica && documento.revisionPoliticaAmbiental">
+                                    <option value="">--Seleccione--</option>
+                                    <option value="Define elaborar Política Ambiental">Define elaborar Política Ambiental</option>
+                                    <option value="Define actualizar Política Ambiental">Define actualizar Política Ambiental</option>
+                                    <option value="Define mantener Política Ambiental ">Define mantener Política Ambiental</option>
+                                </select>
+                                <span ng-show="documentoForm.definePolitica.$invalid  && (documentoForm.definePolitica.$touched || documentoForm.definePolitica.$dirty)"
+                                      class="text-danger">Debe seleccionar una opción</span>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showApruebaDiagnostico">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.apruebaDiagnostico"
+                                       name="apruebaDiagnostico"
+                                       id="apruebaDiagnostico" value="false">
+                                <label class="form-check-label" for="apruebaDiagnostico">
+                                    {{cb5Text}}
+                                </label>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showPuestaEnMarchaCEV">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.puestaEnMarchaCEV"
+                                       name="puestaEnMarchaCEV"
+                                       id="puestaEnMarchaCEV" value="false">
+                                <label class="form-check-label" for="puestaEnMarchaCEV">
+                                    Puesta en marcha CEV​
+                                </label>
+                            </div>
+                            <div class="form-check mb-2" ng-show="showDefinePropuestaConcientizados">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.definePropuestaConcientizados"
+                                       name="definePropuestaConcientizados"
+                                       id="definePropuestaConcientizados" value="false">
+                                <label class="form-check-label" for="definePropuestaConcientizados">
+                                    Define propuesta porcentaje total de concientizados año t.
+                                </label>
+                            </div>
+                            <div ng-show="showTemplateActasReunionesE1" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/FORMATO_Acta_CEV_2025.docx" target="_blank">FORMATO_Acta_CEV_2025.docx</a>
+                            </div>
+                            <div class="form-group" ng-show="documento.tipoDocumentoId==1 || documento.tipoDocumentoId==1017">
+                                <label for="nresolucion">N° de resolución:</label>
+                                <input id="nresolucion"
+                                       name="nresolucion"
+                                       ng-disabled="isConsulta"
+                                       type="text"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':documentoForm.nresolucion.$invalid  && (documentoForm.nresolucion.$touched || documentoForm.nresolucion.$dirty) }"
+                                       ng-model="documento.nresolucion"
+                                       ng-required="documento.tipoDocumentoId==1 || documento.tipoDocumentoId==1017" />
+                            </div>
+                            <div class="form-group" ng-show="showNResolucionPolitica">
+                                <label for="nResolucionPolitica">N° de Resolución Política:</label>
+                                <input id="nResolucionPolitica"
+                                       name="nResolucionPolitica"
+                                       type="text"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nResolucionPolitica.$invalid  && (documentoForm.nResolucionPolitica.$touched || documentoForm.nResolucionPolitica.$dirty) }"
+                                       ng-model="documento.nResolucionPolitica"
+                                       ng-required="showNResolucionPolitica" />
+                                <span ng-show="documentoForm.nResolucionPolitica.$invalid  && (documentoForm.nResolucionPolitica.$touched || documentoForm.nResolucionPolitica.$dirty)"
+                                      class="text-danger">El campo N° de Resolución Pólitica es requerido</span>
+                            </div>
+                            <div class="form-group" ng-show="showNparticipantes">
+                                <label for="nParticipantes">
+                                    N° de Participantes:
+                                </label>
+                                <input id="nParticipantes"
+                                       name="nParticipantes"
+                                       type="text"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':documentoForm.nParticipantes.$invalid  && (documentoForm.nParticipantes.$touched || documentoForm.nParticipantes.$dirty) }"
+                                       ng-model="documento.nParticipantes"
+                                       ng-required="showNparticipantes" />
+                                <span ng-show="documentoForm.nParticipantes.$invalid  && (documentoForm.nParticipantes.$touched || documentoForm.nParticipantes.$dirty)"
+                                      class="text-danger">El campo N° de participantes es requerido</span>
+                            </div>
+                            <div ng-show="showTemplatePoliticaE2" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/E2O1_RT1FORMATO_Minuta_Participacion_consultiva_2025.docx" target="_blank">E2O1_RT1FORMATO_Minuta_Participacion_consultiva_2025.docx</a>
+                            </div>
+                            <div ng-show="showTemplateAIC" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/Minuta_Acta_Concientización.docx" target="_blank">Minuta_Acta_Concientización.docx</a>
+                            </div>
+                            <div ng-show="documento.adjuntoUrl && showUploadDoc" class="form-group">
+                                <label>Documento Adjunto:</label>
+                                <a href="{{linkToDownload}}" target="_blank">{{documento.adjuntoNombre}}</a>
+                            </div>
+                            <div ng-show="showUploadDoc" class="form-group">
+                                <label for="adjunto">{{adjuntoText}}:</label>
+                                <div ng-show="showAlertPoliticaE2" class="alert alert-warning text-justify">Volver a subir resolución de política si se mantiene la de etapa 1</div>
+                                <div class="input-group">
+                                    <input id="adjunto"
+                                           name="adjunto"
+                                           ng-disabled="isConsulta"
+                                           type="file"
+                                           class="form-control"
+                                           ng-model="documento.adjuntoPath"
+                                           ng-change="changeFile()"
+                                           ng-class="{'is-invalid':documentoForm.adjunto.$invalid  && (documentoForm.adjunto.$touched || documentoForm.adjunto.$dirty) }"
+                                           valid-file
+                                           accept="{{filetypes}}"
+                                           ng-required="(documento.tipoDocumentoId==1015 || documento.tipoDocumentoId==1016 || esFechaMenorOIgualAlLimite) ? false:!documento.adjuntoUrl && showUploadDoc" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary" ng-click="clearFile()" ng-disabled="isConsulta">X</button>
+                                    </div>
+                                </div>
+
+                                <span ng-show="documentoForm.adjunto.$invalid  && (documentoForm.adjunto.$touched || documentoForm.adjunto.$dirty)"
+                                      class="text-danger">Debe adjuntar un documento</span>
+                                
+                            </div>
+                            <div ng-show="showAlertDocumentoUnico" class="alert alert-warning text-justify">{{alertDocumentoUnicoText}}</div>
+                            <div ng-show="showAlertDisponibilidad" class="alert alert-warning text-justify">
+                                <strong>Aviso:</strong> {{alertDisponibilidadText}}
+                            </div>
+                            <div ng-show="showTotalColaboradoresConcientizados && etapa==2" class="alert alert-info">
+                                El medio de verificación está en módulo Información> Documentos Etapa 1> Listado de colaboradores concientizados SEV -CC.
+                            </div>
+                            <div ng-show="documento.adjuntoUrlInvitacion" class="form-group">
+                                <label>Documento Adjunto:</label>
+                                <a href="{{linkToDownloadInvitacion}}" target="_blank">{{documento.adjuntoNombreinvitacion}}</a>
+                            </div>
+                            <div ng-if="showDocumentoRespaldoParticipativo">
+                                <div ng-show="documento.adjuntoRespaldoUrlParticipativo" class="form-group">
+                                    <label>Documento Adjunto:</label>
+                                    <a href="{{linkToDownloadRespaldoParticipativo}}" target="_blank">{{documento.adjuntoRespaldoNombreParticipativo}}</a>
+                                </div>
+                                <div class="form-group">
+                                    <label for="adjuntoRespaldoParticipativo">Adjuntar respaldo proceso participativo:</label>
+                                    <input id="adjuntoRespaldoParticipativo"
+                                           name="adjuntoRespaldoParticipativo"
+                                           ng-disabled="isConsulta"
+                                           type="file"
+                                           class="form-control"
+                                           ng-class="{'is-invalid':documentoForm.adjuntoRespaldoParticipativo.$invalid  && (documentoForm.adjuntoRespaldoParticipativo.$touched || documentoForm.adjuntoRespaldoParticipativo.$dirty) }"
+                                           ng-model="documento.adjuntoRespaldoPathParticipativo"
+                                           ng-change="changeFileRespaldoParticipativo()"
+                                           valid-file
+                                           ng-required="!documento.adjuntoRespaldoNombreParticipativo && !documento.mantienePolitica"
+                                           accept="{{filetypes}}" />
+                                    <span ng-show="documentoForm.adjuntoRespaldoParticipativo.$invalid  && (documentoForm.adjuntoRespaldoParticipativo.$touched || documentoForm.adjuntoRespaldoParticipativo.$dirty)"
+                                          class="text-danger">Debe adjuntar un documento</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center" ng-if="showConsulta">
+                                <div class="col-8">
+                                    <p>
+                                        En el proceso de participación consultiva: ¿se consultó al personal de planta y a contrata, personal a honorarios y personal regido por el código del trabajo de distintas áreas de la institución, con exclusión del personal subcontratado?”(según corresponda a su servicio)
+                                    </p>
+                                </div>
+                                <div class="col-4">
+                                    <labe>No</labe>
+                                    <label class="switch">
+                                        <input type="checkbox" name="consultaPersonal" ng-model="documento.consultaPersonal" >
+                                        <span class="slider round"></span>
+                                    </label>
+                                    <labe>Si</labe>
+                                </div>
+                            </div>
+                            <div ng-if="showDocumentoRespaldoCompromiso">
+                                <div ng-show="documento.adjuntoRespaldoUrlCompromiso" class="form-group">
+                                    <label>Documento Adjunto:</label>
+                                    <a href="{{linkToDownloadRespaldoCompromiso}}" target="_blank">{{documento.adjuntoRespaldoNombreCompromiso}}</a>
+                                </div>
+                                <div class="form-group">
+                                    <label for="adjuntoRespaldoCompromiso">Adjuntar respaldo compromiso jefe/a de servicio:</label>
+                                    <div class="input-group">
+                                        <input id="adjuntoRespaldoCompromiso"
+                                               name="adjuntoRespaldoCompromiso"
+                                               ng-disabled="isConsulta"
+                                               type="file"
+                                               class="form-control"
+                                               ng-class="{'is-invalid':documentoForm.adjuntoRespaldoCompromiso.$invalid  && (documentoForm.adjuntoRespaldoCompromiso.$touched || documentoForm.adjuntoRespaldoCompromiso.$dirty) }"
+                                               ng-model="documento.adjuntoRespaldoPathCompromiso"
+                                               ng-change="changeFileRespaldoCompromiso()"
+                                               valid-file
+                                               ng-required=""
+                                               accept="{{filetypes}}" />
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-outline-secondary" ng-click="clearFileCompromiso()" ng-disabled="isConsulta">X</button>
+                                        </div>
+                                    </div>
+
+                                    <span ng-show="documentoForm.adjuntoRespaldoCompromiso.$invalid  && (documentoForm.adjuntoRespaldoCompromiso.$touched || documentoForm.adjuntoRespaldoCompromiso.$dirty)"
+                                          class="text-danger">Debe adjuntar un documento</span>
+                                </div>
+                            </div>
+
+                            <div ng-if="showDocumentoRespaldo">
+                                <div ng-show="documento.adjuntoRespaldoUrl" class="form-group">
+                                    <label>Documento Adjunto:</label>
+                                    <a href="{{linkToDownloadRespaldo}}" target="_blank">{{documento.adjuntoRespaldoNombre}}</a>
+                                </div>
+                                <div class="form-group">
+                                    <label for="adjuntoRespaldo">Adjuntar respaldo difusión interna (Opcional):</label>
+                                    <input id="adjuntoRespaldo"
+                                           name="adjuntoRespaldo"
+                                           ng-disabled="isConsulta"
+                                           type="file"
+                                           class="form-control"
+                                           ng-model="documento.adjuntoRespaldoPath"
+                                           ng-change="changeFileRespaldo()"
+                                           valid-file
+                                           accept="{{filetypes}}" />
+                                </div>
+                                <div ng-show="documento.adjuntoRespaldoUrl" class="form-group">
+                                    <label>Documento Adjunto respaldo difusión interna:</label>
+                                    <a href="{{linkToDownloadRespaldo}}" target="_blank">{{documento.adjuntoNombreRespaldo}}</a>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="showNparticipantes">
+                                <label for="adjuntoInvitacion">Documentación adjunta:</label>
+                                <input id="adjuntoInvitacion"
+                                       name="adjuntoInvitacion"
+                                       type="file"
+                                       class="form-control"
+                                       ng-disabled="isConsulta"
+                                       ng-model="documento.adjuntoPathInvitacion"
+                                       demo-file-model="adjuntoInvitacion"
+                                       ng-class="{'is-invalid':documentoForm.adjuntoPathInvitacion.$invalid  && (documentoForm.adjuntoPathInvitacion.$touched || documentoForm.adjuntoPathInvitacion.$dirty) }"
+                                       valid-file
+                                       accept="image/*,.pdf,.rar,.zip,.xlsx,.xls"
+                                       ng-required="!documento.adjuntoUrlInvitacion && showNparticipantes" />
+                                <span ng-show="documentoForm.adjuntoInvitacion.$invalid  && (documentoForm.adjuntoInvitacion.$touched || documentoForm.adjuntoInvitacion.$dirty)"
+                                      class="text-danger">Debe adjuntar un documento</span>
+                            </div>
+                            <div ng-show="documento.adjuntoUrlFotografias" class="form-group">
+                                <label>Documento Adjunto:</label>
+                                <a href="{{linkToDownloadFotografias}}" target="_blank">{{documento.adjuntoNombreFotografias}}</a>
+                            </div>
+                            <!-- <hr />
+                            <div ng-show="showTemplateCompraFuera" class="form-group">
+                                <label>Descargar Formato:</label>
+                                <a href="/templates/Compras_Fuera_Plataforma.xlsx" target="_blank">Compras_Fuera_Plataforma.xlsx</a>
+                            </div>
+                            <div ng-show="documento.adjuntoUrlCompraFuera" class="form-group">
+                                <label>Documento Adjunto:</label>
+                                <a href="{{linkToDownloadCompraFuera}}" target="_blank">{{documento.adjuntoNombreCompraFuera}}</a>
+                            </div>
+                            <div ng-show="showComprasFuera" class="form-group">
+                                <label for="adjuntoCompraFuera">Adjuntar documento compras fuera de la plataforma ChileCompras:</label>
+                                <input id="adjuntoCompraFuera"
+                                       name="adjuntoCompraFuera"
+                                       ng-disabled="isConsulta"
+                                       type="file"
+                                       class="form-control"
+                                       ng-model="documento.adjuntoPathCompraFuera"
+                                       ng-change="changeFileCompraFuera()"
+                                       ng-class="{'is-invalid':documentoForm.adjuntoCompraFuera.$invalid  && (documentoForm.adjuntoCompraFuera.$touched || documentoForm.adjuntoCompraFuera.$dirty) }"
+                                       valid-file
+                                       accept="{{filetypes}}"
+                                       ng-required="!documento.adjuntoUrlCompraFuera && showComprasFuera" />
+                                <span ng-show="documentoForm.adjuntoCompraFuera.$invalid  && (documentoForm.adjuntoCompraFuera.$touched || documentoForm.adjuntoCompraFuera.$dirty)"
+                                      class="text-danger">Debe adjuntar un documento</span>
+                            </div> -->
+
+                            <div class="form-group" ng-show="showObservaciones">
+                                <label for="observaciones">{{obsText}}:</label>
+                                <div ng-if="documento.otraMateria" class="alert alert-warning">Debe describir otra materia en el cuadro de texto</div>
+                                <textarea id="observaciones"
+                                          maxlength="497"
+                                          name="observaciones"
+                                          ng-disabled="isConsulta"
+                                          ng-model="documento.observaciones"
+                                          type="text"
+                                          rows="4"
+                                          class="form-control">
+                                </textarea>
+                            </div>
+                            <div ng-show="showAlertGCSE1" class="alert alert-warning text-justify">NOTA: Se permite subir un solo archivo, respetando formato EXCEL, facilitado por la Red. CUIDADO: en el caso de subir un nuevo documento, este reemplazará al anterior</div>
+                            <div ng-show="showCobertura">
+                                <div class="form-group">
+                                    <label for="cobertura">Cobertura:</label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.cobertura"
+                                               value="1"
+                                               name="cobertura">Nacional
+                                    </label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <label class="form-check-label">
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.cobertura"
+                                               value="2"
+                                               name="cobertura">Nivel Central
+                                    </label>
+                                </div>
+                                <div class="form-check-inline disabled">
+                                    <label class="form-check-label">
+                                        <input type="radio"
+                                               class="form-check-input"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.cobertura"
+                                               value="3"
+                                               name="cobertura">Regional
+                                    </label>
+                                </div>
+                                <hr />
+                            </div>
+                            <div class="mb-2" ng-show="showChekPoliticaE2">
+                                <div class="form-group">
+                                    <label>Cumple con:</label>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.e1O1RT2"
+                                               id="E1O1RT2" value="false">
+                                        <label class="form-check-label" for="E1O1RT2">
+                                            Contiene aspectos de acuerdo a lo indicado en el E1O1RT2.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.definicionesEstrategicas"
+                                               id="definicionesEstrategicas" value="false">
+                                        <label class="form-check-label" for="definicionesEstrategicas">
+                                            Existe relación con las definiciones estratégicas institucionales.
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               ng-disabled="isConsulta"
+                                               ng-model="documento.consultiva"
+                                               id="consultiva" value="false">
+                                        <label class="form-check-label" for="consultiva">
+                                            Incluyó un proceso de participación consultiva
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-show="{{etapa==1}}">
+                                <div class="form-group" ng-show="showTemasConsideradosLabel">
+                                    <label>Temas considerados:</label>
+                                </div>
+                                <div class="overflow-auto px-3" style="max-height: 300px;">
+                                    <div class="row g-3">
+                                        <div class="col-6">
+                                            <div class="form-check" ng-show="showImpresionDobleCara">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="impresionDobleCara" ng-model="documento.impresionDobleCara">
+                                                <label class="form-check-label" for="impresionDobleCara">Impresión a doble Cara</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showBajoConsumoTinta">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="bajoConsumoTinta" ng-model="documento.bajoConsumoTinta">
+                                                <label class="form-check-label" for="bajoConsumoTinta">Bajo consumo de tinta</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showImplementacion">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" ng-model="documento.implementacion" id="implementacion">
+                                                <label class="form-check-label" for="implementacion">Digitalización</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showReduccion">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" ng-model="documento.reduccion" id="reduccion">
+                                                <label class="form-check-label" for="reduccion">{{lblReduccion}}</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showReciclaje">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" ng-model="documento.reciclaje" id="reciclaje">
+                                                <label class="form-check-label" for="reciclaje">{{lblReciclaje}}</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-check" ng-show="showEficienciaEnergetica">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" ng-model="documento.eficienciaEnergetica" id="eficienciaEnergetica">
+                                                <label class="form-check-label" for="eficienciaEnergetica">Eficiencia Energética</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showReutilizacion">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="reutilizacion" ng-model="documento.reutilizacion">
+                                                <label class="form-check-label" for="reutilizacion">{{lblReutilizacion}}</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showFormatoDocumento">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="formatoDocumento" ng-model="documento.formatoDocumento">
+                                                <label class="form-check-label" for="formatoDocumento">Formato documento para reducir uso de papel</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showGestionPapel">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="gestionPapel" ng-model="documento.gestionPapel">
+                                                <label class="form-check-label" for="gestionPapel">Gestión del Papel</label>
+                                            </div>
+                                            <div class="form-check mt-2" ng-show="showCompraSustentable">
+                                                <input class="form-check-input" type="checkbox" ng-disabled="isConsulta" id="comprasSustentables" ng-model="documento.comprasSustentables">
+                                                <label class="form-check-label" for="comprasSustentables">Compras Sustentables</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-12">
+                                <div class="form-check" ng-show="showBajaBienesFormalizado">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="bajaBienesFormalizado"
+                                           ng-model="documento.bajaBienesFormalizado">
+                                    <label class="form-check-label" for="bajaBienesFormalizado">
+                                        Procedimiento de baja de bienes formalizado
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showBajaBienesInmueble">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="donacion"
+                                           ng-model="documento.donacion">
+                                    <label class="form-check-label" for="donacion">
+                                        Donación
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showBajaBienesInmueble">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="destruccion"
+                                           ng-model="documento.destruccion">
+                                    <label class="form-check-label" for="destruccion">
+                                        Destrucción
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showBajaBienesInmueble">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="reparacion"
+                                           ng-model="documento.reparacion">
+                                    <label class="form-check-label" for="reparacion">
+                                        Reparacion
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showEntregaCertificadoRegistroRetiro">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="entregaCertificadoRegistroRetiro"
+                                           ng-model="documento.entregaCertificadoRegistroRetiro">
+                                    <label class="form-check-label" for="entregaCertificadoRegistroRetiro">
+                                        Entrega de certificados/registro de retiro
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showEntregaCertificadoRegistroDisposicion">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="entregaCertificadoRegistroDisposicion"
+                                           ng-model="documento.entregaCertificadoRegistroDisposicion">
+                                    <label class="form-check-label" for="entregaCertificadoRegistroDisposicion">
+                                        Entrega de certificados/registro de disposición y trazabilidad
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showEntregaCertificadoRegistroCantidades">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="entregaCertificadoRegistroCantidades"
+                                           ng-model="documento.entregaCertificadoRegistroCantidades">
+                                    <label class="form-check-label" for="entregaCertificadoRegistroCantidades">
+                                        Entrega de certificados/registro de cantidades (pesaje)
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showProdBajoImpactoAmbiental">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="prodBajoImpactoAmbiental"
+                                           ng-model="documento.prodBajoImpactoAmbiental">
+                                    <label class="form-check-label" for="prodBajoImpactoAmbiental">
+                                        Productos o servicios adquiridos con criterios de sustentabilidad
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showProcesoGestionSustentable">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="procesoGestionSustentable"
+                                           ng-model="documento.procesoGestionSustentable">
+                                    <label class="form-check-label" for="procesoGestionSustentable">
+                                        Procesos de prestación de servicios que incorporan criterios de sustentabilidad
+                                    </label>
+                                </div>
+                                <div class="form-check" ng-show="showEstandaresSustentabilidad">
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           id="estandaresSustentabilidad"
+                                           ng-model="documento.estandaresSustentabilidad">
+                                    <label class="form-check-label" for="estandaresSustentabilidad">
+                                        Cumplimiento de estándares de sustentabilidad verificables por parte de los proveedores
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group" ng-show="showOtras">
+                                <label for="otras">Otras(Indicar):</label>
+                                <textarea id="otras"
+                                          name="otras"
+                                          maxlength="500"
+                                          ng-disabled="isConsulta"
+                                          ng-model="documento.otras"
+                                          type="text"
+                                          rows="4"
+                                          class="form-control">
+                                </textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 card-body" ng-show="showListaIntegrantes">
+                            <h4>Agregar Integrante</h4>
+                            <div class="form-group">
+                                <label for="nombreInt">Nombre:</label>
+                                <input id="nombreInt"
+                                       ng-disabled="isConsulta"
+                                       name="integranteNombre"
+                                       type="text"
+                                       class="form-control"
+                                       ng-model="integrante.nombre">
+
+                            </div>
+                            <div class="form-group">
+                                <label for="nombreInt">Área(s) de la institución que representan:</label>
+                                <input id="areaInst"
+                                       name="areaInst"
+                                       ng-disabled="isConsulta"
+                                       type="text"
+                                       class="form-control"
+                                       ng-model="integrante.areaInst">
+
+                            </div>
+                            <div class="form-group">
+                                <label for="rolInt">Rol:</label>
+                                <select id="rolInt"
+                                        name="rolInt"
+                                        ng-disabled="isConsulta"
+                                        ng-model="integrante.rol"
+                                        class="form-control">
+                                    <option value="">--Seleccione-</option>
+                                    <option value="Coordinador">Coordinador(a)</option>
+                                    <option value="Secretaría">Secretaria(o)</option>
+                                    <option value="Coordinación Técnica">Coordinación Técnica</option>
+                                    <option value="Otro Cargo">Otro Cargo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="emailInt">Email contacto:</label>
+                                <input id="emailInt"
+                                       name="emailInt"
+                                       ng-disabled="isConsulta"
+                                       type="email"
+                                       ng-model="integrante.email"
+                                       class="form-control">
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       id="marcaInt"
+                                       ng-disabled="isConsulta"
+                                       ng-model="integrante.marca"
+                                       value="false">
+                                <label class="form-check-label" for="marcaInt">
+                                    Representante Jefe de Servicio
+                                </label>
+                            </div>
+                            <button ng-click="addIntegrante()" ng-disabled="!validateIntegrante()" type="button" class="btn btn-primary mt-2">Agregar</button>
+                        </div>
+                    </div>
+                    <div class="mb-3" ng-show="showListaIntegrantes">
+                        <hr />
+                        <h4>Detalle de Integrantes</h4>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Nombre
+                                    </th>
+                                    <th>
+                                        Rol
+                                    </th>
+                                    <th>
+                                        Email
+                                    </th>
+                                    <th>
+                                        Representante Jefe de Servicio
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="integrante in listaIntegrantes">
+                                    <td>{{integrante.nombre}}</td>
+                                    <td>{{integrante.rol}}</td>
+                                    <td>{{integrante.email}}</td>
+                                    <td>{{integrante.marca ? "Si" : "No"}}</td>
+                                    <td>
+                                        <button type="button" ng-click="remIntegrante(integrante)" class="btn btn-danger">Quitar</button>
+                                    </td>
+                                </tr>
+                                <tr ng-show="listaIntegrantes.length==0">
+                                    <td colspan="4">Debe ingresar al menos 1 integrante</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <hr />
+                    </div>
+                    <span ng-show="validationDocPACE3" class="text-danger">Debe adjuntar solo uno de los documentos solicitados</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModal()">Cancelar</button>
+                    <button type="button" class="btn btn-primary" ng-click="submitForm()" ng-show="!isConsulta" ng-disabled="documentoForm.$invalid || listaIntegrantesValid() || validationDocPACE3">Guardar</button>
+                    <!--<button type="button" class="btn btn-secondary" ng-click="testValid()">Test</button>-->
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

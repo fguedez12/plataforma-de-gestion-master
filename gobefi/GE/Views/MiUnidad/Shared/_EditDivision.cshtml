@@ -1,0 +1,195 @@
+﻿@model DivisionVerModel
+@{
+    Layout = null;
+
+    string electricidadCompartido = Model.ComparteMedidorElectricidad ? "checked" : "";
+    string gasCanieria = Model.ComparteMedidorGasCanieria ? "checked" : "";
+    string indicadaEfiEnergetico = Model.ComparteMedidorGasCanieria ? "checked" : "";
+}
+
+<div id="formContent">
+    <form asp-action="InformacionGeneralSave" id="divisionEditForm">
+        @Html.HiddenFor(x=>x.ReportaPMG)
+        <input type="hidden" asp-for="Id" value="@Model.Id" />
+        <div class="form-group row">
+            <label asp-for="Direccion" class="col-3 col-form-label"></label>
+            @Model.Direccion
+        </div>
+        <div class="form-group row">
+            <label asp-for="Nombre" class="col-3 col-form-label"></label>
+            <input type="text" asp-for="Nombre" class="col-9 form-control" value="@Model.Nombre" />
+        </div>
+        <div class="form-group row">
+            <label asp-for="Pisos" class="col-3 col-form-label"></label>
+            <input type="text" asp-for="Pisos" class="col-9 form-control" value="@Model.Pisos" />
+        </div>
+        <div class="form-group row">
+            <label asp-for="Superficie" class="col-3 col-form-label"></label>
+            <input asp-for="Superficie" class="col-9 form-control" />
+        </div>
+        <div class="form-group row">
+            <label asp-for="TipoUsoId" class="col-3 col-form-label"></label>
+            <select id="tipoUso" asp-for="TipoUsoId" class="col-9 form-control">
+                <option value="0">-- Elija tipo de Uso --</option>
+            </select>
+        </div>
+        <div class="form-group row">
+            <label asp-for="TipoPropiedadId" class="col-3 col-form-label"></label>
+            <select id="tipoPropiedad" asp-for="TipoPropiedadId" class="col-9 form-control">
+                <option value="0">-- Elija tipo de Propiedad --</option>
+            </select>
+        </div>
+        <div class="form-group row">
+            <label asp-for="AnyoConstruccion" class="col-3 control-label"></label>
+            <select asp-for="AnyoConstruccion" class="col-9 form-control" asp-items="ViewBag.AniosDeConstruccion"></select>
+        </div>
+        <div class="form-group row">
+            <label class="col-3 col-form-label">Nº de funcionarios</label>
+            <input asp-for="Funcionarios" class="col-9 form-control" min="1" required />
+        </div>
+        <div class="form-group row">
+            <label class="col-3 col-form-label">N° de Rol</label>
+            <input asp-for="NroRol" class="col-9 form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <h4>Electricidad</h4>
+            <p class="h6 text-center mb-0">
+                Con respecto al consumo de electricidad.
+            </p>
+            <hr class="mt-1" />
+            <div class="row container">
+                <div class="col-4">
+                    <span class="ge ge-energetico-electricidad active"></span>
+                </div>
+                <div class="col" style="padding: 15px">
+                    <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                        <input type="checkbox" asp-for="ComparteMedidorElectricidad">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h4>
+                Gas de Cañería
+            </h4>
+            <p class="h6 text-center mb-0">
+                En caso que se consuma Gas de Cañería (GN / GLP).
+            </p>
+            <hr class="mt-1" />
+            <div class="row container">
+                <div class="col-4">
+                    <span class="ge ge-energetico-gn active"></span>
+                </div>
+                <div class="col" style="padding: 15px">
+                    <span class="mr-5" style="font-size: 1.2rem;">¿Tiene algún medidor compartido?</span>
+
+                    <label class="switch" style="margin-bottom: -0.5rem!important;">
+                        <input type="checkbox" asp-for="ComparteMedidorGasCanieria">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="form-group">
+        <button class="btn btn-danger" title="Cancelar" id="btnCancelar">
+            <span class='@Constants.Icons.VOLVER'></span> Cancelar
+        </button>
+
+        <button class="btn btn-primary" id="btnGuardarDivision" data-target="@Model.Id" title="Guardar">
+            <span class="@Constants.Icons.GUARDAR" aria-hidden="true"></span> Guardar
+        </button>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        let tipoUsoId = @Model.TipoUso.Id;
+        let tipoPropiedadId = @Model.TipoPropiedad.Id;
+
+        loadSelectDataAsync($("#tipoUso"), "@Url.Content("~/api/tipouso")", tipoUsoId, "id", true, true).then();
+        loadSelectDataAsync($("#tipoPropiedad"), "@Url.Content("~/api/tipopropiedad")", tipoPropiedadId, "id", true, true).then();
+
+        $("#btnGuardarDivision").click(function () {
+
+            var form = $("#divisionEditForm");
+            //$("#formContent").hide();
+            form.submit();
+        });
+
+        $("#btnCancelar").click(function () {
+            editInformation($("#btnCancelar"), false);
+        });
+
+        $("#divisionEditForm").submit(function (event) {
+            let form = $(this);
+            event.preventDefault();
+            //var dataForm = form.serialize();
+
+            EditarDivision(form).then();
+
+        });
+    });
+
+    async function EditarDivision(form) {
+        let response;
+        try {
+
+            response = await $.post({
+                url: form.attr("action"),
+                type: "POST",
+                dataType: "json",
+                data: form.serialize() //dataForm
+            });
+
+            console.log(response.data.direccion);
+            //console.log("Yupi!");
+
+            localStorage.setItem("divisionName", response.data.direccion);
+            $("#subtitulo span").html(response.data.direccion);
+
+            if (response.success === true) {
+                console.log(response.responseText);
+                // console.log(data.data);
+            } else {
+                console.log("There were errors");
+            }
+
+            editInformation($("#btnEditarDivision"), false);
+
+
+        } catch (e) {
+
+            $(".is-invalid").removeClass("is-invalid");
+            $(".invalid-feedback").remove()
+                    
+
+            let jsonError = jQuery.parseJSON(e.responseText);
+
+            $.each(jsonError, function (nodo, text) {
+                        
+                //if (nodo.indexOf('.') > 0)
+                //    nodo = nodo.split('.')[0].toLowerCase();
+
+                //if (nodo[0] === nodo[0].toUpperCase())
+                //    nodo = nodo.charAt(0).toLowerCase() + nodo.slice(1);
+
+                if ($('#' + nodo).attr("type") == "date") {
+                    $('#' + nodo).addClass('is-invalid').next().after("<div class='invalid-feedback d-block'>" + text + "</div>");
+                } else {
+                    $('#' + nodo).addClass('is-invalid').after("<label class='col-3'></label><div class='invalid-feedback d-block col-9'>" + text + "</div>");
+                }
+                //$('#alertModalCliente').removeClass('alert-warning').addClass('alert-danger').removeClass('d-none').append(text);
+
+            });
+        }
+    }
+
+</script>

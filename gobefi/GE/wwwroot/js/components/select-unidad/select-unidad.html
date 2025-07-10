@@ -1,0 +1,8 @@
+﻿<select id="unidadId"
+        ng-model="$ctrl.unidadId"
+        ng-change="$ctrl.changeUnidad()"
+        name="unidadId"
+        class="custom-select ml-1" style="width:250px;">
+    <option value="">Unidades</option>
+    <option ng-repeat="item in $ctrl.unidades" value="{{item.id}}">{{item.direccion}}</option>
+</select>

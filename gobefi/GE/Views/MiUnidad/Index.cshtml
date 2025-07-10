@@ -1,0 +1,204 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    /*
+     * Pagina "Mis Unidades"
+     * Es la principal la cual permite seleccionar una unidad
+     * al cargar esta pagina se elimina el localstorage divisionId para que no permita navegar con la misma unidad
+     * */
+
+    ViewData["Title"] = "Mis unidades";
+}
+
+<script src="~/js/miunidad.js" asp-append-version="true"></script>
+
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/jquery.dataTables.min.css" />
+
+<script type="text/javascript" src="~/vendor/DataTables/js/datatables.min.js"></script>
+
+
+
+<div ng-app="modalSexoApp">
+    <div ng-controller="modalController">
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+            <span class="fa fa-filter"></span> Filtros
+        </button>
+        <hr />
+        <h4>Mis Unidades</h4>
+        <div class="collapse" id="collapseFiltros">
+            <form class="form-inline">
+                <select class="custom-select w-25" id="instituciones" style="width: 150px;">
+                    <option value="">Instituciones</option>
+                </select>
+                <select class="custom-select w-25 ml-2" id="servicios" style="width: 150px;" disabled>
+                    <option value="">Servicios</option>
+                </select>
+                <select class="custom-select w-25 ml-2" id="regiones" style="width: 150px;">
+                    <option value="">Regiones</option>
+                </select>
+                @*<button type="button" class="btn btn-primary btn-sm">
+                        <span class="fa fa-search"></span>
+                    </button>*@
+            </form>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col" id="divisiones">
+                <div id="loader" style='display: none;' class="text-center">
+                    <img src='~/images/reload.gif' style="width:32px; height:32px">
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalSexo" tabindex="-1" role="dialog" aria-labelledby="modalSexo" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Actualizar datos</h5>
+                        @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>*@
+                    </div>
+
+                    <form name="modalSexoForm" ng-submit="updateSexo()">
+                        <div class="modal-body">
+                            <h5>Por favor seleccione su sexo antes de continuar</h5>
+                            <div class="form-group row">
+                                <label for="sexo" class="col-sm-2 col-form-label">Sexo:</label>
+                                <div class="col-sm-8">
+                                    <select class="custom-select"
+                                            ng-model="updateUser.sexoId"
+                                            ng-class="{'is-invalid':modalSexoForm.sexo.$invalid && modalSexoForm.sexo.$touched }"
+                                            name="sexo"
+                                            id="sexo"
+                                            required>
+                                        <option value="">-- Seleccione --</option>
+                                        <option value="1">Hombre</option>
+                                        <option value="2">Mujer</option>
+                                    </select>
+                                    <small ng-show="modalSexoForm.sexo.$error.required && (modalSexoForm.sexo.$touched || modalSexoForm.sexo.$dirty)"
+                                           id="sexoHelp" class="form-text text-danger">Debe seleccionar una opción</small>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit"
+                                    class="btn btn-primary"
+                                    ng-disabled="modalSexoForm.$invalid">
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var sexoId = @ViewBag.sexoId;
+
+        if (sexoId == 0) {
+            $("#modalSexo").modal('show');
+        }
+
+        localStorage.removeItem('divisionId');
+        localStorage.removeItem("menuActual");
+        localStorage.removeItem("institucionId");
+
+        $('#myTabContent ul li a span').removeClass("active");
+
+        @*loadSelectData(
+            $("#instituciones"),
+            "@Url.Content("~/api/instituciones/getinstituciones")/@UserManager.GetUserId(User)","","",true,"Instituciones");*@
+        loadSelectDataAsync(
+            $("#instituciones"),
+            "@Url.Content("~/api/instituciones/getinstituciones")/@UserManager.GetUserId(User)", "", "", true, true).then(function () {
+                $("#instituciones option:first").html("Instituciones");
+            });
+
+        @*loadSelectData(
+            $("#regiones"),
+            "@Url.Content("~/api/regiones/getregiones")","","",true,"Regiones");*@
+        loadSelectDataAsync(
+            $("#regiones"),
+            "@Url.Content("~/api/regiones/getregiones")", "", "", true, true).then(function () {
+                $("#regiones option:first").html("Regiones");
+            });
+
+        loadTableDivisiones("@Url.Action("Divisiones", "MiUnidad")");
+
+        $("#instituciones").change(function () {
+            @*$("#servicios").html("<option value=''>Servicios</option>");
+            loadSelectData($("#servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(),"","",true,"Servicios");*@
+            var institution = $(this).val();
+            if (institution) {
+                loadSelectDataAsync($("#servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), "", "", true, true).then(function () {
+                    $("#servicios option:first").html("Servicios");
+                });
+            } else {
+                $("#servicios").html("<option value=''>Servicios</option>");
+                $("#servicios").attr("disabled", true);
+                $('#servicios option[value=""]').attr('selected', 'selected');
+                loadTableDivisiones("@Url.Action("Divisiones", "MiUnidad")");
+            }
+        });
+
+        $("#servicios, #regiones").change(function () {
+            //var servicio = $("#servicios").val() === "" ? 0 : $("#servicios").val();
+            if ($("#servicios").val() === "") {
+                return;
+            }
+
+            loadTableDivisiones(apiDivision + '/GetByFilters/@UserManager.GetUserId(User)/' + $("#servicios").val() + "/" + $("#regiones").val());
+        });
+
+
+
+    });
+
+    function loadTableDivisiones(urlForGetData) {
+        $("#divisiones div[id*=tablaDivisiones]").html('');
+
+        if ($("#loader").is(":visible")) {
+            console.log("Debe esperar a que la carga se complete");
+            return;
+        }
+
+        $.ajax({
+            url: urlForGetData,
+            type: "GET",
+            contentType: "application/json",
+            beforeSend: function () {
+                $("#loader").show();
+            },
+            success: function (result) {
+                content = "<table class='table table-striped table-hover' id='tablaDivisiones'><thead><tr><td>Unidades</td></tr></thead>";
+                $.each(result, function (index, value) {
+                    content += "<tr class='clickable-row' style='cursor: pointer;'' data-href='@Url.Content("~/MiUnidad/Ver")/" + value.id + "' division-id='" + value.id + "' servicio-id='" + value.servicioId + "' institucion-id='" + value.institucionId + "'><td>" + value.direccion + "</td></tr>";
+                });
+                content += "</table>";
+                $("#divisiones").append(content);
+
+                configurarDataTable($("#tablaDivisiones"));
+
+            },
+            error: function (result, err) {
+                var content = "<div class='alert alert-danger'>" +
+                    "   <strong>Error!</strong> Ha ocurrido un problema. Favor contacte a su administrador." + " status code: " + result.status + " respuesta del servidor " + err +
+                              "</div>";
+                $("#divisiones").append(content);
+
+            },
+            complete: function() {
+                $("#loader").hide();
+            }
+        });
+    }
+
+</script>

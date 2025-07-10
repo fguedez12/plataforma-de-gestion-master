@@ -1,0 +1,15 @@
+﻿@inject UserManager<Usuario> UserManager
+
+@*<mi-unidad-app user-id="@UserManager.GetUserId(User)"></mi-unidad-app>*@
+
+<div ng-app="miUnidadApp">
+    <div ng-controller="miUnidadController">
+        <input type="hidden" id="input-id" value="@UserManager.GetUserId(User)" />
+        <ui-view></ui-view>
+    </div>
+    @*<a ui-sref="home">Home</a>*@
+</div>
+
+
+
+

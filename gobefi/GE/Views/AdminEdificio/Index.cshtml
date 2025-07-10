@@ -1,0 +1,99 @@
+﻿@model GobEfi.Web.Models.EdificioModels.EdificioIndexModel
+@{
+    ViewData["Title"] = "Index";
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+<div class="row">
+    <div class="col-12">
+        <h2>Edificios</h2>
+        <p>
+            @if (permisos.Escritura)
+            {
+                <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+            }
+            <button type="button" class="btn btn-primary" id="filter">
+                <span class="fa fa-filter"></span> Filtros
+            </button>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+        </p>
+    </div>
+</div>
+<div class="card container">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th class="w-75">
+                    @Html.DisplayNameFor(model => model.Direccion)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Direccion)
+                    </td>
+                    <td>
+                        @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (item.Id).ToString(), Permisos = permisos }))
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    @(await Component.InvokeAsync<PaginationViewComponent>(Model.Items))
+</div>
+<div class="modal" id="edificioFilter">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Index" asp-controller="adminEdificio" method="get">
+                <div class="modal-header">
+                    <h5 class="modal-title">Filtrar por:</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="Direccion" class="form-label"></label>
+                        <input asp-for="Direccion" class="form-control"/>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RegionId" class="form-label"></label>
+                        <select asp-for="RegionId" asp-items="ViewBag.Regiones" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ComunaId" class="form-label"></label>
+                        <select asp-for="ComunaId" asp-items="ViewBag.Comunas" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Id" class="form-label"></label>
+                        <input asp-for="Id" value="" class="form-control" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+
+
+        $("#filter").click(function () {
+            $("#edificioFilter").modal('toggle');
+        });
+    });
+</script>

@@ -1,0 +1,1141 @@
+﻿
+@model  GobEfi.Web.Models.PermisosModels.PermisosModel
+@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+    bool _isGestorServicio = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORSERVICIO).Result;
+    var _permisos = ViewData["permisos"] as PermisosModel;
+}
+
+<div ng-app="inmuebleApp">
+    <div ng-controller="inmuebleController">
+        <div ng-show="showSt0" class="inmueble-stepper">
+            <div class="modal fade" id="modalFiltroInmueble" tabindex="-1" role="dialog" aria-labelledby="modalFiltroInmueble" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title ml-2" id="exampleModalLabel">Filtros</h5>
+                            <button type="button" class="close" ng-click="cancelModalFiltro()" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form name="filtroInmuebleForm" novalidate>
+                                <div class="form-group">
+                                    <label class="col-sm-3 col-form-label">Dirección</label>
+                                    <div class="col-sm-12">
+                                        <input type="text" ng-model="filtro.direccion" class="form-control" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-3 col-form-label">Región</label>
+                                    <div class="col-sm-12">
+                                        <select id="RegionId" class="custom-select" name="RegionId"
+                                                ng-model="filtro.regionId"
+                                                ng-change="changeRegion()"
+                                                ng-options="region.id as region.nombre for region in data.regiones">
+                                            <option value="">--Seleccione la región--</option>
+                                            <option value="99">Test</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="ComunaId" class="col-sm-3 col-form-label">Comuna</label>
+                                    <div class="col-sm-12">
+                                        <select id="ComunaId" class="custom-select" name="ComunaId"
+                                                ng-model="filtro.comunaId"
+                                                ng-options="comuna.id as comuna.nombre for comuna in data.comunas"
+                                                ng-disabled="filtro.regionId==null">
+                                            <option value="">--Seleccione la comuna--</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" ng-click="cancelModalFiltro()">Cancelar</button>
+                            <button type="button" class="btn btn-primary" ng-disabled="filtroInmuebleForm.$invalid" ng-click="filtrarInmueble()">Aplicar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h3>Inmuebles </h3>
+            <hr />
+            <div class="row mb-2">
+                @if (_isAdmin || _isGestorServicio) { 
+                <button ng-click="goToStep1()" class="btn btn-primary mr-1"><span class="fa fa-file"></span>&nbsp; Nuevo</button>
+                }
+                <button ng-click="showModalFiltro()" class="btn btn-primary mr-1"><span class="fa fa-filter"></span>&nbsp;Filtros</button>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary"><span class="@Constants.Icons.VOLVER"></span> Volver</a>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Tipo Inmueble</th>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="inmueble in inmuebleList">
+                        <td>{{inmueble.id}}</td>
+                        <td>{{inmueble.tipoInmueble}}</td>
+                        <td>{{inmueble.nombre}}</td>
+                        <td>{{inmueble.direccion}}</td>
+                        <td>
+                            <div class=" btn-group">
+
+                                @if (_isAdmin)
+                                {
+                                    <a class="btn btn-info text-white"
+                                       title="Editar"
+                                       style="margin-right:5px;"
+                                       ng-click="editImueble(inmueble.id)"><span class="fa fa-pencil-square-o"></span>
+                                    </a>
+
+                                    <a class="btn btn-danger text-white"
+                                       title="Eliminar"
+                                       ng-click="eliminarInmueble(inmueble)"><span class="fa fa-trash-o"></span>
+                                    </a>
+
+                                }
+                                else
+                                { 
+                                    <a class="btn btn-info text-white"
+                                       title="Ver"
+                                       style="margin-right:5px;"
+                                       ng-click="editImueble(inmueble.id)"><span class="fa fa-eye"></span>
+                                    </a>
+                                
+                                }
+                            </div>
+
+                        </td>
+                    </tr>
+                    <tr ng-if="inmuebleList==null">
+                        <td colspan="4">Cargando..</td>
+                    </tr>
+                    <tr ng-if="inmuebleList.length==0">
+                        <td colspan="4">No hay registros</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="row">
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" ng-click="prevPage()" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                        </li>
+                        <li ng-show="overPagesDown" class="page-item">
+                            <a class="page-link" ng-click="prevPage()" aria-label="Next">
+                                ...
+                            </a>
+                        </li>
+                        <li ng-repeat="x in [].constructor(showPages) track by $index"
+                            ng-class="{active: $index+startPage == pageNumber}"
+                            class="page-item">
+                            <a class="page-link" ng-click="getPage($index+startPage)">{{$index+startPage}}</a>
+                        </li>
+
+                        <li ng-show="overPagesUp" class="page-item">
+                            <a class="page-link" ng-click="nextPage()" aria-label="Next">
+                                ...
+                            </a>
+                        </li>
+
+                        <li class="page-item">
+                            <a class="page-link" ng-click="nextPage()" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                @*<p class="mt-2 ml-2 mr-2">Mostrando</p>
+                    <select class="form-control col-md-1">
+                        <option value="1">5</option>
+                        <option value="1">10</option>
+                        <option value="1">15</option>
+                        <option value="1">20</option>
+                    </select>*@
+                @*<p class="mt-2 ml-2 mr-2">de {{TotalRecords}} registros</p>*@
+            </div>
+        </div>
+
+        <div ng-show="showDel" class="inmueble-stepper">
+            <h3>Eliminar </h3>
+            <h4>¿Esta seguro de eliminar este inmueble? </h4>
+            <hr />
+            <div>
+                <p>Id : <b>{{inmuebleToDel.id}}</b></p>
+            </div>
+            <div>
+                <p>Nombre : <b>{{inmuebleToDel.nombre}}</b></p>
+            </div>
+            <div>
+                <p>Dirección : <b>{{inmuebleToDel.direccion}}</b></p>
+            </div>
+            <div>
+                <p>Tipo de inmueble : <b>{{inmuebleToDel.tipoInmueble}}</b></p>
+            </div>
+            <div class="row mt-4 mr-auto ml-3">
+                <button class="btn btn-danger mr-2"
+                        ng-click="confirmDelete(inmuebleToDel.id)">
+                    Eliminar
+                </button>
+                <button class="btn btn-secondary  mr-2"
+                        ng-click="backto0()">
+                    <span class="fa fa-backward"></span>
+                    Volver
+                </button>
+            </div>
+        </div>
+
+        <div ng-show="showSt1" class="inmueble-stepper">
+            <h3>Inmuebles </h3>
+            <hr />
+            <button ng-click="backto0()" class="btn btn-secondary mb-2"><span class="fa fa-backward"></span>&nbsp;Volver</button>
+            @await Component.InvokeAsync("FindLocationMap")
+
+            @await Component.InvokeAsync("InmuebleSearch")
+
+        </div>
+
+        <div ng-show="showSt2" class="inmueble-stepper">
+            <h3>Agregrar inmuebles</h3>
+            <hr />
+            <h5 class="text-muted">
+                Dirección
+            </h5>
+            <div class="alert alert-primary inmueble" role="alert">
+                <div class="row">
+                    <div class="ml-4">
+                        <h5 class="text-dark ">
+                            {{inmueble.calle}}, Nro. {{inmueble.numero}},
+                        </h5>
+                        <p class="text-dark">
+                            {{inmueble.comuna}}, {{inmueble.region}}
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card">
+                <div class="card body">
+                    <div class="row p-4">
+                        <div class="col-md-6">
+                            <div>
+                                <p class="text-muted mt-2">
+                                    A que corresponde esta dirección?
+                                </p>
+                            </div>
+                            <div class="btn-group col-md-12 mt-2 p-0 mb-2">
+                                <button ng-class="{'btn btn-primary col-md-6':tipoComplejo==true , 'btn btn-outline-primary col-md-6':tipoComplejo==false }"
+                                        ng-click="selectTipoComplejo()"
+                                        ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                        >
+                                    <img src="~/images/Complejo_letra.svg" style="width:40px; margin-right:10px;" />Complejo 
+                                </button>
+                                <button ng-class="{'btn btn-primary col-md-6':tipoEdificio==true , 'btn btn-outline-primary col-md-6':tipoEdificio==false }"
+                                        ng-click="selectTipoEdificio()"
+                                        ng-disabled="'@_isAdmin'=='False' && editModeInmueble">
+                                    <img src="~/images/Edificio_letra.svg" style="width:40px; margin-right:10px;" />Edificio
+                                </button>
+                            </div>
+                            <div ng-show="tipoComplejo">
+                                <img class="img-fluid" src="~/images/complejo_info.svg" />
+                            </div>
+                            <div ng-show="tipoEdificio">
+                                <img class="img-fluid" src="~/images/edificio_info.svg" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <form name="inmuebleForm" novalidate>
+                                <div>
+                                    <p class=" mt-2 mb-0">
+                                        Datos del {{inmuebleText}}
+
+                                    </p>
+                                    <hr class="mt-0" />
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label class="col-form-label">Nombre</label>
+                                    <div>
+                                        <input type="text" class="form-control"
+                                               id="nombre"
+                                               name="nombre"
+                                               ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                               ng-model="inmueble.nombre"
+                                               ng-class="{'is-invalid':inmuebleForm.nombre.$invalid  && (inmuebleForm.nombre.$touched || inmuebleForm.nombre.$dirty) }"
+                                               required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <small ng-show="inmuebleForm.nombre.$error.required && (inmuebleForm.nombre.$touched || inmuebleForm.nombre.$dirty)"
+                                           id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                </div>
+                                <label class="col-form-label" ng-show="tipoComplejo">Superficie del terreno</label>
+                                <label class="col-form-label" ng-show="tipoEdificio">Superficie construida</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="superficie" name="superficie"
+                                           ng-model="inmueble.superficie"
+                                           ng-class="{'is-invalid':inmuebleForm.superficie.$invalid  && (inmuebleForm.superficie.$touched || inmuebleForm.superficie.$dirty) }"
+                                           required
+                                           ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/"
+                                           ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                           min="1">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">mt<sup>2</sup></div>
+                                    </div>
+
+                                </div>
+                                <div ng-show="tipoEdificio">
+                                    <label class="col-form-label">Año de construcción</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="anyoConstruccion" name="anyoConstruccion" step="1"
+                                               ng-model="inmueble.anyoConstruccion"
+                                               ng-class="{'is-invalid':inmuebleForm.anyoConstruccion.$invalid  && (inmuebleForm.anyoConstruccion.$touched || inmuebleForm.anyoConstruccion.$dirty) }"
+                                               ng-required="tipoEdificio"
+                                               ng-min="minValidatorAnio"
+                                               ng-max=9999
+                                               ng-pattern="/^[0-9]{1,4}$/"
+                                               ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                               >
+
+                                    </div>
+
+                                    <div class="row">
+                                        <small ng-show="inmuebleForm.anyoConstruccion.$error.required && (inmuebleForm.anyoConstruccion.$touched || inmuebleForm.anyoConstruccion.$dirty)"
+                                               id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                        <small ng-show="(inmuebleForm.anyoConstruccion.$error.min ||
+                                                inmuebleForm.anyoConstruccion.$error.max ||
+                                                inmuebleForm.anyoConstruccion.$error.pattern ||
+                                                inmuebleForm.anyoConstruccion.$error.number
+                                                ) && (inmuebleForm.anyoConstruccion.$touched || inmuebleForm.anyoConstruccion.$dirty)"
+                                               id="anioHelp" class="form-text text-danger pl-3">
+                                            El año debe ser mayor a 1800 y máximo 4 caracteres sin puntos ni comas
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <small ng-show="inmuebleForm.superficie.$error.required && (inmuebleForm.superficie.$touched || inmuebleForm.superficie.$dirty)"
+                                           id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                    <small ng-show="inmuebleForm.superficie.$error.min && (inmuebleForm.superficie.$touched || inmuebleForm.superficie.$dirty)"
+                                           id="superficieMInHelp" class="form-text text-danger pl-3">La superficie debe ser mayor a 0</small>
+                                    <small ng-show="inmuebleForm.superficie.$error.pattern && (inmuebleForm.superficie.$touched || inmuebleForm.superficie.$dirty)"
+                                           id="superficieMInHelp" class="form-text text-danger pl-3">Solo numeros sin separadores de miles y punto para los decimales </small>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="tipoUso" class="col-form-label">Tipo de uso</label>
+                                    <div>
+                                        <select id="tipoUso" class="custom-select" name="tipouso"
+                                                ng-model="inmueble.tipoUsoId"
+                                                ng-class="{'is-invalid':inmuebleForm.tipouso.$invalid  && (inmuebleForm.tipouso.$touched || inmuebleForm.tipouso.$dirty) }"
+                                                ng-options="uso.id as uso.nombre for uso in tipousos"
+                                                ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                                required>
+                                            <option value="">--Seleccione--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <small ng-show="inmuebleForm.tipouso.$error.required &&
+                                           (inmuebleForm.tipouso.$touched || inmuebleForm.tipouso.$dirty)"
+                                           id="superficieHelp"
+                                           class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                </div>
+                                <label class="col-form-label">N° de Rol</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="nroRol" name="nroRol" ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                           ng-model="inmueble.nroRol">
+                                </div>
+
+                                <br />
+                                <label class="col-form-label mb-0">Administración</label>
+                                <hr class="mt-0" />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracion" id="miinstitucion"
+                                                   ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                                   value="1"
+                                                   ng-model="inmueble.tipoAdministracionId"
+                                                   ng-change="miInstitucion()">
+                                            <label class="form-check-label" for="miinstitucion">
+                                                Mi Servicio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracion" value="2" id="otrainstitucion"
+                                                   ng-model="inmueble.tipoAdministracionId"
+                                                   ng-change="otrainstitucion()"
+                                                   ng-disabled="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label class="form-check-label" for="otrainstitucion">
+                                                Otro Servicio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracion" value="3" id="privado"
+                                                   ng-model="inmueble.tipoAdministracionId"
+                                                   ng-change="privadoSelected()"
+                                                   ng-disabled="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label class="form-check-label" for="privado">
+                                                Un Privado/Otro
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0" ng-hide="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label for="instituciones" class="col-form-label">Ministerio</label>
+                                            <div>
+                                                <select id="instituciones" class="custom-select" name="instituciones"
+                                                        ng-class="{'is-invalid':inmuebleForm.instituciones.$invalid  && (inmuebleForm.instituciones.$touched || inmuebleForm.instituciones.$dirty) }"
+                                                        ng-model="inmueble.administracionMinisterioId"
+                                                        ng-options="institucion.id as institucion.nombre for institucion in data.instituciones"
+                                                        ng-change="selectInstitucion()"
+                                                        ng-disabled="disabledInstitucion"
+                                                        ng-required="requiredIS">
+                                                    <option value="">--Seleccione--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-0" ng-show="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label for="institucionesText" class="col-form-label">Ministerio</label>
+                                            <div>
+                                                <input class="form-control" type="text" name="institucionesText" id="institucionesText"
+                                                       ng-model="inmueble.administracionInstitucionNombre"
+                                                       disabled>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <small ng-show="inmuebleForm.instituciones.$error.required &&
+                                           (inmuebleForm.instituciones.$touched || inmuebleForm.instituciones.$dirty)"
+                                                   class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                        </div>
+                                        <div class="form-group mb-0" ng-hide="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label for="servicio" class="col-form-label">Servicio</label>
+                                            <div>
+                                                <select id="servicio" class="custom-select" name="servicio"
+                                                        ng-class="{'is-invalid':inmuebleForm.servicio.$invalid  && (inmuebleForm.servicio.$touched || inmuebleForm.servicio.$dirty) }"
+                                                        ng-model="inmueble.administracionServicioId"
+                                                        ng-disabled="disabledServicio"
+                                                        ng-options="serivicio.id as serivicio.nombre for serivicio in data.serivicios"
+                                                        ng-required="requiredIS">
+                                                    <option value="">--Seleccione--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <small ng-show="inmuebleForm.servicio.$error.required &&
+                                           (inmuebleForm.servicio.$touched || inmuebleForm.servicio.$dirty)"
+                                                   class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                        </div>
+                                        <div class="form-group mb-0" ng-show="'@_isAdmin'=='False' && editModeInmueble">
+                                            <label for="servicioText" class="col-form-label">Servicio</label>
+                                            <div>
+                                                <input class="form-control" type="text" name="servicioText" id="servicioText"
+                                                       ng-model="inmueble.administracionServicioNombre"
+                                                       disabled>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="row mt-4 ml-auto mr-3">
+                            <button ng-if="!editModeInmueble" class="btn btn-danger btn-sm mr-2"
+                                    ng-click="backto1()">
+                                Atras
+                            </button>
+                            <button ng-if="editModeInmueble" class="btn btn-danger btn-sm mr-2"
+                                    ng-click="backto0()">
+                                Atras
+                            </button>
+                            <button class="btn btn-primary btn-sm"
+                                    ng-click="saveInmueble()"
+                                    ng-disabled="inmuebleForm.$invalid">
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div ng-show="showSt3" class="inmueble-stepper">
+            <h3>Agregrar inmuebles</h3>
+            <hr />
+            <h5 class="text-muted">
+                Dirección
+            </h5>
+            <div class="alert alert-primary " role="alert">
+                <div class="row">
+                    <img ng-if="inmueble.tipoInmueble==1" src="~/images/Complejo_letra.svg" style="width:50px" />
+                    <img ng-if="inmueble.tipoInmueble==2" src="~/images/Edificio_Letra.svg" style="width:50px" />
+                    <div class="ml-4">
+                        <h5 class="text-dark ">
+                            {{inmueble.calle}}, {{inmueble.numero}}
+                        </h5>
+                        <p class="text-dark">
+                            {{inmueble.comuna}}, {{inmueble.region}}
+                        </p>
+                    </div>
+                    <div class="ml-5">
+                        <h5>{{inmueble.nombre}}</h5>
+                    </div>
+
+                </div>
+            </div>
+            <div>
+                <p>
+                    Se deben agregar: Todos los edificios del complejo - Todos losPisos de cada Edificio - Todas las Áreas de los Pisos utilizados
+                </p>
+            </div>
+            <br />
+            <div ng-if="inmueble.tipoInmueble==1">
+                <div ng-repeat="edificio in inmueble.children">
+                    <div class="d-flex">
+                        <div class="alert alert-primary mb-2 alert-inmueble "
+                             role="alert"
+                             style="cursor:pointer;min-width:100%"
+                             ng-click="showModalEditEdificio(edificio)">
+                            <div class="row">
+                                <img src="~/images/Edificio_Letra.svg" style="width:50px" class="pt-2" />
+                                <div class="ml-4">
+                                    <h5 class="text-dark mt-2 pt-2">
+                                        {{edificio.nombre}}
+                                    </h5>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div ng-repeat="piso in edificio.pisos | orderBy : 'pisoNumero'">
+                        <div class="d-flex">
+                            <div class="col-md-12 ml-auto alert alert-warning mb-2 alert-inmueble "
+                                 role="alert"
+                                 style="cursor: pointer; min-width: 60%"
+                                 ng-click="showModalEditPisos(edificio,piso)">
+                                <div class="row">
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{piso.numeroPisoNombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="area in piso.areas">
+                            <div class="d-flex">
+                                <div class="col-md-8 ml-auto alert alert-success mb-2 alert-inmueble" role="alert"
+                                     style="cursor: pointer; min-width: 40%"
+                                     ng-click="showModalEditArea(piso,area)">
+                                    <div class="row">
+                                        <div class="ml-4">
+                                            <h5 class="text-dark mt-2">
+                                                {{area.nombre}}
+                                            </h5>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        @if (_isAdmin || _isGestorServicio) { 
+                        <div class="col-md-8 ml-auto mb-2">
+                            <button type="button" class="btn btn-outline-success btn-lg btn-block"
+                                    ng-click="showModalArea(piso)">
+                                <i class="fa fa-plus"></i> Agregar Area
+                            </button>
+                        </div>
+                        }
+                        
+
+                    </div>
+                    @if (_isAdmin || _isGestorServicio) { 
+                    <div class="col-md-10 ml-auto mb-2">
+                        <button type="button" class="btn btn-outline-warning btn-lg btn-block"
+                                ng-click="showModalPisos(edificio)">
+                            <i class="fa fa-plus"></i> Agregar Piso
+                        </button>
+                    </div>
+                    }
+                </div>
+                @if (_isAdmin || _isGestorServicio) { 
+                <button type="button" class="btn btn-outline-primary btn-lg btn-block mt-2"
+                        ng-click="showModalEdificio(inmueble)">
+                    <i class="fa fa-plus"></i> Agregar Edificio
+                </button>
+                }
+                
+            </div>
+
+
+            <div ng-if="inmueble.tipoInmueble==2">
+                <div ng-repeat="piso in inmueble.pisos | orderBy : 'pisoNumero'">
+                    <div class="d-flex">
+
+                        <div class="col-md-12 ml-auto alert alert-warning mb-2 alert-inmueble "
+                             style="cursor: pointer;min-width: 60%"
+                             role="alert"
+                             ng-click="showModalEditPisos(inmueble,piso)">
+                            <div class="row">
+                                <div class="ml-4">
+                                    <h5 class="text-dark mt-2">
+                                        {{piso.numeroPisoNombre}}
+                                    </h5>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div ng-repeat="area in piso.areas">
+                        <div class="d-flex">
+                            <div class="col-md-8 ml-auto alert alert-success mb-2 alert-inmueble"
+                                 style="cursor:pointer;min-width:40%"
+                                 role="alert"
+                                 ng-click="showModalEditArea(piso,area)">
+                                <div class="row">
+                                    <div class="ml-4">
+                                        <h5 class="text-dark mt-2">
+                                            {{area.nombre}}
+                                        </h5>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @if (_isAdmin || _isGestorServicio)
+                    {
+                        <div class="col-md-8 ml-auto mb-2">
+                            <button type="button" class="btn btn-outline-success btn-lg btn-block"
+                                    ng-click="showModalArea(piso)">
+                                <i class="fa fa-plus"></i> Agregar Area
+                            </button>
+                        </div>
+                    }
+
+
+                </div>
+                @if (_isAdmin || _isGestorServicio)
+                {
+                    <div class="col-md-10 ml-auto mb-2">
+                        <button type="button" class="btn btn-outline-warning btn-lg btn-block"
+                                ng-click="showModalPisos(inmueble)">
+                            <i class="fa fa-plus"></i> Agregar Piso
+                        </button>
+                    </div>
+                }
+
+            </div>
+            <div class="row ml-auto mr-3 mt-3">
+                <button class="btn btn-danger btn-sm mr-2"
+                        ng-click="backto2()">
+                    Atras
+                </button>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalEdificio" tabindex="-1" role="dialog" aria-labelledby="modaleEdificio" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <img src="~/images/Edificio_Letra.svg" style="width:30px" />
+                        <h5 class="modal-title ml-2" id="exampleModalLabel">{{modalEdificioTitle}}</h5>
+                        <button type="button" class="close" ng-click="cancelModalEdificio()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form name="edificioForm" novalidate>
+                            <div class="form-group mb-0">
+                                <label class="col-form-label">Nombre del edificio</label>
+                                <div>
+                                    <input type="text" class="form-control"
+                                           id="nombreEdificio"
+                                           name="nombreEdificio"
+                                           ng-model="edificio.nombre"
+                                           ng-class="{'is-invalid':edificioForm.nombreEdificio.$invalid  && (edificioForm.nombreEdificio.$touched || edificioForm.nombreEdificio.$dirty) }"
+                                           required>
+                                </div>
+                                <div class="row">
+                                    <small ng-show="edificioForm.nombreEdificio.$error.required && (edificioForm.nombreEdificio.$touched || edificioForm.nombreEdificio.$dirty)"
+                                           id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                </div>
+                                <label class="col-form-label">Superficie total construida</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="superficieEdificio" name="superficieEdificio"
+                                           ng-model="edificio.superficie"
+                                           ng-class="{'is-invalid':edificioForm.superficieEdificio.$invalid  && (edificioForm.superficieEdificio.$touched || edificioForm.superficieEdificio.$dirty) }"
+                                           required
+                                           ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/"
+                                           min="1">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">mt<sup>2</sup></div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+                                    <small ng-show="edificioForm.superficieEdificio.$error.required && (edificioForm.superficieEdificio.$touched || edificioForm.superficieEdificio.$dirty)"
+                                           id="superficieHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                                    <small ng-show="edificioForm.superficieEdificio.$error.min && (edificioForm.superficieEdificio.$touched || edificioForm.superficieEdificio.$dirty)"
+                                           id="superficieMInHelp" class="form-text text-danger pl-3">La superficie debe ser mayor a 0</small>
+                                    <small ng-show="edificioForm.superficieEdificio.$error.pattern && (edificioForm.superficieEdificio.$touched || edificioForm.superficieEdificio.$dirty)"
+                                           id="superficieMInHelp" class="form-text text-danger pl-3">Solo numeros sin separadores de miles y punto para los decimales </small>
+                                </div>
+                                <label class="col-form-label">Año de construcción</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="anyoConstruccion" name="anyoConstruccion"
+                                           ng-model="edificio.anyoConstruccion"
+                                           ng-class="{'is-invalid':edificioForm.anyoConstruccion.$invalid  && (edificioForm.anyoConstruccion.$touched || edificioForm.anyoConstruccion.$dirty) }"
+                                           required
+                                           ng-min=1800
+                                           ng-max=9999
+                                           ng-pattern="/^[0-9]{1,4}$/">
+
+                                </div>
+
+                                <div class="row">
+                                    <small ng-show="edificioForm.anyoConstruccion.$error.required && (edificioForm.anyoConstruccion.$touched || edificioForm.anyoConstruccion.$dirty)"
+                                           id="superficieHelp" class="form-text text-danger pl-3">
+                                        Campo requerido
+                                    </small>
+                                    <small ng-show="(edificioForm.anyoConstruccion.$error.min ||
+                                                edificioForm.anyoConstruccion.$error.max ||
+                                                edificioForm.anyoConstruccion.$error.pattern ||
+                                                edificioForm.anyoConstruccion.$error.number
+                                                ) && (edificioForm.anyoConstruccion.$touched || edificioForm.anyoConstruccion.$dirty)"
+                                           id="anioHelp" class="form-text text-danger pl-3">
+                                        El año debe ser mayor a 1800 y máximo 4 caracteres sin puntos ni comas
+                                    </small>
+                                </div>
+                                <div class="form-group mb-0">
+                                    <label for="tipoUsoEdificio" class="col-form-label">Tipo de uso</label>
+                                    <div>
+                                        <select id="tipoUsoEdificio" class="custom-select" name="tipouso"
+                                                ng-model="edificio.tipoUsoId"
+                                                ng-class="{'is-invalid':edificioForm.tipoUsoEdificio.$invalid  && (edificioForm.tipoUsoEdificio.$touched || edificioForm.tipoUsoEdificio.$dirty) }"
+                                                ng-options="uso.id as uso.nombre for uso in tipousos"
+                                                required>
+                                            <option value="">--Seleccione--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <small ng-show="edificioForm.tipoUsoEdificio.$error.required &&
+                                           (edificioForm.tipoUsoEdificio.$touched || edificioForm.tipoUsoEdificio.$dirty)"
+                                           id="superficieHelp"
+                                           class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                </div>
+                                <label class="col-form-label">N° de Rol</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="nroRol" name="nroRol"
+                                           ng-model="edificio.nroRol">
+                                </div>
+                                <label class="col-form-label mb-0">Administración</label>
+                                <hr class="mt-0" />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracionEdificio" id="miinstitucionEdificio"
+                                                   value="1"
+                                                   ng-model="edificio.tipoAdministracionId"
+                                                   ng-change="miInstitucionEdificio()">
+                                            <label class="form-check-label" for="miinstitucionEdificio">
+                                                Mi Servicio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracionEdificio" value="2" id="otrainstitucionEdificio"
+                                                   ng-model="edificio.tipoAdministracionId"
+                                                   ng-change="otrainstitucionEdificio()">
+                                            <label class="form-check-label" for="otrainstitucion">
+                                                Otro Servicio
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="administracionEdificio" value="3" id="privadoEdificio"
+                                                   ng-model="edificio.tipoAdministracionId"
+                                                   ng-change="privadoSelectedEdificio()">
+                                            <label class="form-check-label" for="privado">
+                                                Un Privado/Otro
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0">
+                                            <label for="institucionesEdificio" class="col-form-label">Ministerio</label>
+                                            <div>
+                                                <select id="institucionesEdificio" class="custom-select" name="institucionesEdificio"
+                                                        ng-class="{'is-invalid':edificioForm.institucionesEdificio.$invalid  && (edificioForm.institucionesEdificio.$touched || edificioForm.institucionesEdificio.$dirty) }"
+                                                        ng-model="edificio.administracionMinisterioId"
+                                                        ng-options="institucion.id as institucion.nombre for institucion in data.instituciones"
+                                                        ng-change="selectInstitucionEdificio()"
+                                                        ng-disabled="disabledInstitucionEdificio"
+                                                        ng-required="requiredISEdificio">
+                                                    <option value="">--Seleccione--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <small ng-show="edificioForm.institucionesEdificio.$error.required &&
+                                           (edificioForm.institucionesEdificio.$touched || edificioForm.institucionesEdificio.$dirty)"
+                                                   class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                        </div>
+                                        <div class="form-group mb-0">
+                                            <label for="servicio" class="col-form-label">Servicio</label>
+                                            <div>
+                                                <select id="servicioEdificio" class="custom-select" name="servicioEdificio"
+                                                        ng-class="{'is-invalid':edificioForm.servicioEdificio.$invalid  && (edificioForm.servicioEdificio.$touched || edificioForm.servicioEdificio.$dirty) }"
+                                                        ng-model="edificio.administracionServicioId"
+                                                        ng-disabled="disabledServicioEdificio"
+                                                        ng-options="serivicio.id as serivicio.nombre for serivicio in data.serivicios"
+                                                        ng-required="requiredISEdificio">
+                                                    <option value="">--Seleccione--</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <small ng-show="edificioForm.servicioEdificio.$error.required &&
+                                           (edificioForm.servicioEdificio.$touched || edificioForm.servicioEdificio.$dirty)"
+                                                   class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                ng-click="cancelModalEdificio()">
+                            Cancelar
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary"
+                                ng-disabled="edificioForm.$invalid"
+                                ng-show="!editEdificio"
+                                ng-click="saveEdificio(inmueble.id)">
+                            Guardar
+                        </button>
+                        @if (_isAdmin || _isGestorServicio)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    ng-show="editEdificio"
+                                    ng-disabled="edificioForm.$invalid"
+                                    ng-click="editEdificioForm()">
+                                Editar
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    ng-show="editEdificio"
+                                    ng-click="deleteEdificio(edificio.id,inmueble)">
+                                Eliminar
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalPiso" tabindex="-1" role="dialog" aria-labelledby="modalPiso" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title ml-2" id="exampleModalLabel">{{modalPisoTitulo}}</h5>
+                        <button type="button" class="close" ng-click="hideModalPisos()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <p>Se deben agregar todos los pisos de  ... independiente si su servicio los utilice. </p>
+                        </div>
+                        <form name="pisosForm" novalidate>
+                            <div class="form-group row">
+                                <label for="tipoNivelPiso" class="col-sm-6 col-form-label">Tipo de Nivel del piso:</label>
+                                <div class="col-sm-6">
+                                    <select class="custom-select" name="tipoNivelPiso" id="tipoNivelPiso"
+                                            ng-class="{'is-invalid':pisosForm.tipoNivelPiso.$error.required && (pisosForm.tipoNivelPiso.$touched || pisosForm.tipoNivelPiso.$dirty) }"
+                                            ng-model="piso.tipoNivelId"
+                                            ng-change="countPisos()"
+                                            ng-options="item.value as item.name  for item in data.tipoNivelPiso"
+                                            ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                            required>
+                                        <option value="">-- Seleccione --</option>
+                                    </select>
+                                </div>
+                                <small ng-show="pisosForm.tipoNivelPiso.$error.required && (pisosForm.tipoNivelPiso.$touched || pisosForm.tipoNivelPiso.$dirty)"
+                                       id="tipoNivelPisoHelp" class="form-text text-danger">Debe seleccionar una opción</small>
+                            </div>
+                            <div class="form-group row" ng-show="pisosIguales">
+                                <label for="pisosIguales" class="col-sm-6 col-form-label">Crear pisos iguales:</label>
+                                <input type="checkbox"
+                                       ng-model="piso.pisosIguales"
+                                       ng-click="checkPisosIguales($event)"
+                                       class="check-box"
+                                       id="pisosIguales" />
+                            </div>
+                            <div class="form-group row">
+                                <label for="nPiso" class="col-sm-6 col-form-label">N° de pisos:</label>
+                                <div class="col-sm-6">
+                                    <select class="custom-select" name="npiso" id="npiso"
+                                            ng-class="{'is-invalid':pisosForm.npiso.$invalid && (pisosForm.npiso.$touched || pisosForm.npiso.$dirty) }"
+                                            ng-model="piso.numeroPisoId"
+                                            ng-disabled="pisosForm.tipoNivelPiso.$pristine"
+                                            ng-change="chekPiso()"
+                                            ng-options="item.value as item.name for item in data.numeroPiso | filter : { nivel : piso.tipoNivelId } | orderBy:'numPiso':piso.tipoNivelId==1 | orderBy:'numPiso':reverse:piso.tipoNivelId==2"
+                                            required>
+                                        <option value="">-- Seleccione --</option>
+                                    </select>
+                                </div>
+                                <small ng-show="pisosForm.npiso.$error.required && (pisosForm.npiso.$touched || pisosForm.npiso.$dirty)"
+                                       id="nPisoHelp" class="form-text text-danger">Debe seleccionar una opción</small>
+                                <small ng-show="pisosForm.npiso.$error.check && (pisosForm.npiso.$touched || pisosForm.npiso.$dirty)"
+                                       id="nPisoCheckHelp" class="form-text text-danger">El piso ya se encuentra ingresado</small>
+                            </div>
+                            <div class="form-group row" ng-show="pisosIguales && piso.tipoNivelId==2 ">
+                                <label for="check_ep" class="col-sm-6 col-form-label">Tiene entrePiso:</label>
+                                <input type="checkbox"
+                                       ng-model="piso.entrePiso"
+                                       class="check-box"
+                                       id="check_ep" />
+                            </div>
+                            <div class="form-group row">
+                                <label for="superficie" class="col-sm-6 col-form-label">Superficie (m<sup>2</sup>) {{porPiso}}:</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="superficie" id="superficie" placeholder="Ingrese la superficie..."
+                                           ng-class="{'is-invalid':pisosForm.superficie.$invalid  && (pisosForm.superficie.$touched || pisosForm.superficie.$dirty) }"
+                                           ng-model="piso.superficie"
+                                           ng-disabled="(pisosForm.npiso.$pristine  && pisosForm.superficie.$invalid && !editMode) || ('@_isAdmin'=='False' && editModeInmueble)"
+
+                                           required
+                                           ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/"
+                                           min="1" />
+                                </div>
+                                <small ng-show="pisosForm.superficie.$error.required && (pisosForm.superficie.$touched || pisosForm.superficie.$dirty)"
+                                       id="superficieHelp" class="form-text text-danger">Campo requerido</small>
+                                <small ng-show="pisosForm.superficie.$error.min && (pisosForm.superficie.$touched || pisosForm.superficie.$dirty)"
+                                       id="superficieMInHelp" class="form-text text-danger">La superficie debe ser mayor a 0</small>
+                                <small ng-show="pisosForm.superficie.$error.pattern && (pisosForm.superficie.$touched || pisosForm.superficie.$dirty)"
+                                       id="superficieMInHelp" class="form-text text-danger pl-5">Solo numeros sin separadores de miles y punto para los decimales </small>
+                            </div>
+                            <div class="form-group row">
+                                <label for="altura" class="col-sm-6 col-form-label">Altura (m) {{porPiso}}: </label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" name="altura" id="altura" placeholder="Ingrese la altura..."
+                                           ng-class="{'is-invalid':pisosForm.altura.$invalid && (pisosForm.altura.$touched || pisosForm.altura.$dirty) }"
+                                           ng-model="piso.altura"
+                                           ng-disabled="(pisosForm.superficie.$pristine  && pisosForm.altura.$invalid && !editMode) || ('@_isAdmin'=='False' && editModeInmueble)"
+                                           required
+                                           ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/"
+                                           min="1" />
+                                </div>
+                                <small ng-show="pisosForm.altura.$error.required && (pisosForm.altura.$touched || pisosForm.altura.$dirty)"
+                                       id="alturaHelp" class="form-text text-danger">Campo requerido</small>
+                                <small ng-show="pisosForm.altura.$error.min && (pisosForm.altura.$touched || pisosForm.altura.$dirty)"
+                                       id="alturaMinHelp" class="form-text text-danger">La Altura debe ser mayor a 0</small>
+                                <small ng-show="pisosForm.altura.$error.pattern && (pisosForm.altura.$touched || pisosForm.altura.$dirty)"
+                                       id="superficieMInHelp" class="form-text text-danger pl-5">Solo numeros sin separadores de miles y punto para los decimales</small>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label for="tipoUsoPiso" class="col-form-label">Tipo de uso</label>
+                                <div>
+                                    <select id="tipoUsoPiso" class="custom-select" name="tipoUsoPiso"
+                                            ng-model="piso.tipoUsoId"
+                                            ng-class="{'is-invalid':pisosForm.pisosForm.$invalid  && (pisosForm.tipoUsoPiso.$touched || pisosForm.tipoUsoPiso.$dirty) }"
+                                            ng-options="uso.id as uso.nombre for uso in tipousos"
+                                            ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                            required>
+                                        <option value="">--Seleccione--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <small ng-show="pisosForm.tipoUsoPiso.$error.required &&
+                                           (pisosForm.tipoUsoPiso.$touched || pisosForm.tipoUsoPiso.$dirty)"
+                                       id="superficieHelp"
+                                       class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                            </div>
+                            <label class="col-form-label">N° de Rol</label>
+                            <div class="input-group">
+                                <input 
+                                       type="text" 
+                                       class="form-control" 
+                                       id="nroRol" 
+                                       name="nroRol"
+                                       ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                       ng-model="piso.nroRol">
+                            </div>
+
+                            <div class="text-muted pl-5 col-md-11">
+                                <span>Para altura y superficie el número sin separadores de miles y utilizar punto “.” para  decimales Ej: 1789.77</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                ng-click="hideModalPisos()">
+                            Cancelar
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary"
+                                ng-disabled="pisosForm.$invalid || '@_isAdmin'=='False' && editModeInmueble"
+                                ng-show="!editPiso"
+                                ng-click="submitPisoForm()">
+                            Guardar
+                        </button>
+                        @if (_isAdmin)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    ng-disabled="pisosForm.$invalid"
+                                    ng-show="editPiso"
+                                    ng-click="editPisoForm()">
+                                Editar
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    ng-show="editPiso"
+                                    ng-click="deletePiso(piso.id)">
+                                Eliminar
+                            </button>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalArea" tabindex="-1" role="dialog" aria-labelledby="modalArea" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title ml-2" id="exampleModalLabel">{{modalAreaTitulo}}</h5>
+                        <button type="button" class="close" ng-click="hideModalAreas()" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form name="areasForm" novalidate>
+                            <div class="form-group mb-0">
+                                <label for="nombreArea" class="col-sm-6 col-form-label">Nombre: </label>
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" name="nombreArea" id="nombreArea" placeholder="Nombre del Área"
+                                           ng-class="{'is-invalid':areasForm.nombreArea.$invalid && (areasForm.nombreArea.$touched || areasForm.nombreArea.$dirty) }"
+                                           ng-model="area.nombre"
+                                           ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                           required />
+                                </div>
+                                <small ng-show="areasForm.nombreArea.$error.required && (areasForm.nombreArea.$touched || areasForm.nombreArea.$dirty)"
+                                       id="areaHelp" class="form-text text-danger">Campo requerido</small>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label for="tipoUsoArea" class="col-sm-6 col-form-label">Tipo de uso</label>
+                                <div class="col-sm-12">
+                                    <select id="tipoUsoArea" class="custom-select" name="tipoUsoArea"
+                                            ng-model="area.tipoUsoId"
+                                            ng-class="{'is-invalid':areasForm.tipoUsoArea.$invalid  && (areasForm.tipoUsoArea.$touched || areasForm.tipoUsoArea.$dirty) }"
+                                            ng-options="uso.id as uso.nombre for uso in tipousos"
+                                            ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                            required>
+                                        <option value="">--Seleccione--</option>
+                                    </select>
+                                </div>
+                                <small ng-show="areasForm.tipoUsoArea.$error.required &&
+                                        (areasForm.tipoUsoArea.$touched || areasForm.tipoUsoArea.$dirty)"
+                                       id="tipoUsoAreaHelp"
+                                       class="form-text text-danger pl-3">Debe seleccionar una opción</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="superficieArea" class="col-sm-6 col-form-label">Superficie (m<sup>2</sup>):</label>
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" name="superficieArea" id="superficieArea" placeholder="Ingrese la superficie..."
+                                           ng-class="{'is-invalid':areasForm.superficieArea.$invalid  && (areasForm.superficieArea.$touched || areasForm.superficieArea.$dirty) }"
+                                           ng-model="area.superficie"
+                                           ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                           required
+                                           ng-pattern="/^[0-9]+(?:\.[0-9]+)?$/"
+                                           min="1" />
+                                </div>
+                                <small ng-show="areasForm.superficieArea.$error.required && (areasForm.superficieArea.$touched || areasForm.superficieArea.$dirty)"
+                                       id="superficieHelp" class="form-text text-danger">Campo requerido</small>
+                                <small ng-show="areasForm.superficieArea.$error.min && (areasForm.superficieArea.$touched || areasForm.superficieArea.$dirty)"
+                                       id="superficieMInHelp" class="form-text text-danger">La superficie debe ser mayor a 0</small>
+                                <small ng-show="areasForm.superficieArea.$error.pattern && (areasForm.superficieArea.$touched || areasForm.superficieArea.$dirty)"
+                                       id="superficieMInHelp" class="form-text text-danger pl-5">Solo numeros sin separadores de miles y punto para los decimales </small>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-6 col-form-label">N° de Rol</label>
+                                <div class="col-sm-12">
+                                    <input type="text" class="form-control" id="nroRol" name="nroRol" ng-disabled="'@_isAdmin'=='False' && editModeInmueble"
+                                           ng-model="area.nroRol">
+                                </div>
+                            </div>
+                            
+                            <div class="text-muted pl-5 col-md-11">
+                                <span>Para altura y superficie el número sin separadores de miles y utilizar punto “.” para  decimales Ej: 1789.77</span>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                ng-click="hideModalAreas()">
+                            Cancelar
+                        </button>
+                        <button type="button"
+                                class="btn btn-primary"
+                                ng-disabled="areasForm.$invalid"
+                                ng-show="!editArea"
+                                ng-click="submitAreasForm()">
+                            Guardar
+                        </button>
+                        @if (_permisos.Escritura)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    ng-disabled="areasForm.$invalid"
+                                    ng-show="editArea"
+                                    ng-click="submitEditAreasForm()">
+                                Editar
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    ng-show="editArea"
+                                    ng-click="deleteArea(area.id)">
+                                Eliminar
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

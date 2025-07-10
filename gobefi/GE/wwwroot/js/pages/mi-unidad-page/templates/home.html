@@ -1,0 +1,14 @@
+﻿<filtro-unidades title="Mis Unidades"
+                 nuevo="false"
+                 volver="false"
+                 user-id="{{userId}}"
+                 on-institucion-change="changeInstitucion(institucionId)"
+                 on-servicio-change="changeServicio(servicioId)"
+                 on-region-change="changeRegion(regionId)">
+</filtro-unidades>
+<unidades-table user-id="{{userId}}"
+                loading="loading"
+                unidades="unidades"
+                activo="false"
+                acciones="false">
+</unidades-table>

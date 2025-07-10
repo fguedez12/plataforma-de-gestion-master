@@ -1,0 +1,58 @@
+﻿@model EmpresaDistribuidoraModel
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+
+<h2>Eliminar</h2>
+
+<h3>¿Esta seguro de eliminar la empresa distribuidora?</h3>
+<div>
+    <h4>@Model.Nombre</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Energetico)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Energetico.Nombre)
+        </dd>
+
+        <div class="form-group col-12 pl-0">
+            <label asp-for="Comunas" class="control-label"></label>
+            <div class="input-group">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header small">
+                        Asociados
+                    </div>
+
+                    <div class="card-body p-0">
+                        <select asp-for="Comunas" disabled asp-items="ViewBag.ComunasAsociadas" class="form-control" multiple></select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Eliminar = true }) |
+        @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+    </form>
+</div>
+
+<script>
+    $("body").on("click", "#btnActions-btnVolver", function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminEmpresaDistribuidora")";
+    });
+</script>
+

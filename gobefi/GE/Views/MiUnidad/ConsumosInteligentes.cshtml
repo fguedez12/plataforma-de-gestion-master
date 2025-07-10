@@ -1,0 +1,15 @@
+﻿@( await Component.InvokeAsync<BodyHeaderViewComponent>(new BodyHeader { Nombre = "Consumos Inteligentes" }) )
+
+@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isConsulta = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORCONSULTA).Result;
+}
+<div ng-app="medicionInteligenteApp">
+    <div ng-controller="medicionInteligenteController">
+        <input type="hidden" id="input-id" value="@UserManager.GetUserId(User)" />
+        <input type="hidden" id="input-consulta" value="@(_isConsulta ? "Si" : "No")" />
+        <ui-view></ui-view>
+    </div>
+</div>
+

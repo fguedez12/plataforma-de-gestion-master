@@ -1,0 +1,266 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{titulo}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+       Cerrar
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="frm-vehiculo ion-padding">
+  <form [formGroup]="vehiculoForm" (ngSubmit)="submitForm()" novalidate>
+    <ion-item>
+      <ion-checkbox  (click)="toogleForm()" [checked]="swapForm">
+      </ion-checkbox>
+      <ion-label>&nbsp;&nbsp; La Marca o modelo no esta en la lista</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">Patente</ion-label>
+      <ion-input type="text" formControlName="patente" maxlength=6 ></ion-input>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.patente.errors?.required">
+      El campo patente es requerido
+    </span>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.patente.errors?.minLength">
+      El campo patente debe tener 6 caracteres
+    </span>
+    <div *ngIf="!swapForm">
+      <ion-item>
+        <ion-label position="floating">Marca o modelo</ion-label>
+        <ion-input type="text"  formControlName="modelo" (click)="presentPopoverModelos($event)"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.modelo.errors?.required">
+        El campo modelo es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Marca</ion-label>
+        <ion-input type="text"  formControlName="marca"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.marca.errors?.required">
+        El campo Marca es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Modelo</ion-label>
+        <ion-input type="text"  formControlName="modelootro"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.modelootro.errors?.required">
+        El campo modelo es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Tracción</ion-label>
+        <ion-input type="text"  formControlName="traccion"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.traccion.errors?.required">
+        El campo Tracción es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Transmisión</ion-label>
+        <ion-input type="text"  formControlName="transmision"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.transmision.errors?.required">
+        El campo Transmisión es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label>Propulsión</ion-label>
+        <ion-select 
+            placeholder="Seleccione" 
+            okText="Ok" 
+            cancelText="Cancelar" 
+            formControlName="propulsionId"  
+           >
+          <ion-select-option *ngFor="let propulsion of propulsiones" [value]="propulsion.id">{{propulsion.nombre}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.propulsionId.errors?.required">
+        El campo Propulsión es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label>Combustible</ion-label>
+        <ion-select 
+            placeholder="Seleccione" 
+            okText="Ok" 
+            cancelText="Cancelar" 
+            formControlName="combustibleId"  
+           >
+          <ion-select-option *ngFor="let combustible of combustibles" [value]="combustible.id">{{combustible.nombre}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.combustibleId.errors?.required">
+        El campo Combustible es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Cilindrada</ion-label>
+        <ion-input type="text"  formControlName="cilindrada"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.cilindrada.errors?.required">
+        El campo Cilindrada es requerido
+      </span>
+    </div>
+    <div *ngIf="swapForm">
+      <ion-item>
+        <ion-label position="floating">Carroceria</ion-label>
+        <ion-input type="text"  formControlName="carroceria"></ion-input>
+      </ion-item>
+      <span class="error ion-padding" *ngIf="submitted && errorCtr.carroceria.errors?.required">
+        El campo Carroceria es requerido
+      </span>
+    </div>
+
+    <ion-item>
+      <ion-label position="floating">Año</ion-label>
+      <ion-input type="number" formControlName="anio"  maxlength=4 (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.anio.errors?.required">
+      El campo Año es requerido
+    </span>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.anio.errors?.min">
+      El campo Año debe ser mayor a 1900
+    </span>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.anio.errors?.max">
+      El campo Año debe ser menor o igual al proximo año
+    </span>
+    <ion-item>
+      <ion-label position="floating">Kilometraje actual</ion-label>
+      <ion-input 
+      type="number" 
+      formControlName="kilometraje"  
+      (keypress)="numberOnlyValidation($event)"
+      [readonly] = "!isAdmin && editMode"
+      ></ion-input>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.kilometraje.errors?.required">
+      El campo Kilometraje actual es requerido
+    </span>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.kilometraje.errors?.min">
+      El campo Kilometraje actual debe ser mayor a 0
+    </span>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.kilometraje.errors?.pattern">
+      Solo numeros sin separadores de miles y punto para los decimales
+    </span>
+    <ion-item>
+      <ion-label>Tipo de propiedad</ion-label>
+      <ion-select placeholder="Seleccione" okText="Ok" cancelText="Cancelar" formControlName="tipoPropiedadId" >
+        <ion-select-option *ngFor="let tipoPropiedad of tiposPropiedad" [value]="tipoPropiedad.id">{{tipoPropiedad.nombre}}</ion-select-option>
+        
+      </ion-select>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.tipoPropiedadId.errors?.required">
+      El campo Tipo de propiedad es requerido
+    </span>
+    <ion-item>
+      <ion-label>Ministerio</ion-label>
+      <ion-select 
+          placeholder="Seleccione" 
+          okText="Ok" 
+          cancelText="Cancelar" 
+          formControlName="ministerioId"  
+          (ngModelChange)="changeInstitucion($event)">
+        <ion-select-option *ngFor="let institucion of instituciones" [value]="institucion.id">{{institucion.nombre}}</ion-select-option>
+        
+      </ion-select>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.ministerioId.errors?.required">
+      El campo Ministerio es requerido
+    </span>
+    <ion-item>
+      <ion-label>Servicio</ion-label>
+      <ion-select placeholder="Seleccione" okText="Ok" cancelText="Cancelar" formControlName="servicioId" >
+        <ion-select-option *ngFor="let servicio of servicios" [value]="servicio.id">{{servicio.nombre}}</ion-select-option>
+        
+      </ion-select>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.servicioId.errors?.required">
+      El campo Servicio es requerido
+    </span>
+    <ion-item>
+      <ion-label>Región</ion-label>
+      <ion-select 
+        placeholder="Seleccione" 
+        okText="Ok" 
+        cancelText="Cancelar" 
+        formControlName="regionId" 
+        (ngModelChange)="changeRegion($event)">
+        <ion-select-option *ngFor="let region of regiones" [value]="region.id">{{region.nombre}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.regionId.errors?.required">
+      El campo Región es requerido
+    </span>
+    <ion-item>
+      <ion-label>Comuna</ion-label>
+      <ion-select placeholder="Seleccione" okText="Ok" cancelText="Cancelar" formControlName="comunaId" >
+        <ion-select-option *ngFor="let comuna of comunas" [value]="comuna.id">{{comuna.nombre}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <span class="error ion-padding" *ngIf="submitted && errorCtr.comunaId.errors?.required">
+      El campo Comuna es requerido
+    </span>
+    <ion-row [hidden]="pltWeb">
+      <ion-col size="6">
+        <ion-button 
+        (click)="camaraImage()" 
+        expand="full"  
+        shape="round">
+        <ion-icon slot="start" name="camera"></ion-icon>
+          Cámara
+        </ion-button>
+      </ion-col>
+      <ion-col size="6">
+        <ion-button 
+        (click)="galeriaImage()" 
+        expand="full"  
+        shape="round">
+        <ion-icon slot="start" name="images"></ion-icon>
+          Galería
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row [hidden]="!pltWeb">
+      <ion-col size="12">
+        <input type="file" hidden="true" #fileInput (change)="uploadFile($event)" accept="image/*">
+        <ion-button 
+        (click)="fileImage()" 
+        expand="full"  
+        shape="round">
+        <ion-icon slot="start" name="images"></ion-icon>
+          Seleccionar imagenes
+        </ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="4" *ngFor="let imagen of imagenes; let i =index">
+        <ion-card>
+          <img [src]="imagen.url">
+          <ion-fab vertical="bottom" horizontal="end">
+            <ion-fab-button
+            color="danger"
+            size="small"
+            (click)="deleteImage(i,imagen.id, imagen.url)"
+            >
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-fab-button>
+          </ion-fab>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-button type="submit"  expand="block">
+      {{btnText}}
+    </ion-button>
+  </form>
+  
+</ion-content>

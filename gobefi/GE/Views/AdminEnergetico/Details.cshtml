@@ -1,0 +1,55 @@
+﻿@model GobEfi.Web.Models.EnergeticoModels.EnergeticoModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <h4>@Model.Nombre</h4>
+    </div>
+    <hr />
+</div>
+<div class="card container">
+    <div>
+        <h4>EnergeticoModel</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Icono)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Icono)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Posicion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Posicion)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.PermiteMedidor)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.PermiteMedidor)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Activo)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Activo)
+            </dd>
+        </dl>
+    </div>
+    <div>
+        <a asp-action="Edit" class="btn btn-warning" asp-route-id="@Model.Id"><span class="@Constants.Icons.EDITAR"></span> @Constants.Buttons.EDITAR</a>
+        <a asp-action="Index" class="btn btn-primary"><span class="@Constants.Icons.VOLVER"></span> @Constants.Buttons.VOLVER</a>
+    </div>
+</div>

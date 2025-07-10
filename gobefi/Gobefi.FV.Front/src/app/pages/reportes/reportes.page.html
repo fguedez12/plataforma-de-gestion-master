@@ -1,0 +1,22 @@
+<app-header-page [title]="title">
+</app-header-page>
+<ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      <ion-col size="4">
+        <ion-card color="success">
+          <ion-card-header>
+            <ion-icon name="document-attach-outline" size="large"></ion-icon>
+            <ion-card-title>Reporte de Vehículos</ion-card-title>
+          </ion-card-header>
+        
+          <ion-card-content>
+           <ion-button color="light" (click)="getReporte()">{{btnText}}</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  
+
+</ion-content>

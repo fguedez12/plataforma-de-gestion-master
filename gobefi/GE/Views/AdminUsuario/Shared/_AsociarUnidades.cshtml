@@ -1,0 +1,153 @@
+﻿@*@model IEnumerable<DivisionesToAssociate>*@
+@model DivisionesParaAsociar
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    string soloLectura = !Model.PermiteModificar ? "disabled" : "";
+}
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/vendor/DataTables/css/jquery.dataTables.min.css" />
+
+<script type="text/javascript" src="~/vendor/DataTables/js/datatables.min.js"></script>
+
+<br />
+<style>
+    .switch {
+        width: 50px;
+        height: 24px;
+    }
+
+    .slider:before {
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+    }
+
+    table {
+        font-size: 0.75rem;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+        table thead {
+            background-color: #0069d9;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    .footer {
+        text-align: center;
+    }
+</style>
+
+<input type="hidden" value="@ViewBag.NewUserId" id="UserId" />
+
+<button id="btn-asociar-todo" class="btn btn-warning">Asociar Todas las unidades</button>
+
+<table class="table table-bordered" id="divisionesParaAsociar">
+    <thead>
+        <tr>
+            <th class="text-center">Edificio</th>
+            <th class="text-center">Unidad</th>
+            <th class="text-center">Region</th>
+            <th class="text-center">Mide Intensidad de Consumo</th>
+            <th class="text-center">N° de Gestores de Unidad</th>
+            <th class="text-center">Unidad Asociada</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (DivisionesToAssociate item in Model.DivisionesList)
+        {
+            <tr id="@item.Id">
+                <td>@item.NombreEdificio</td>
+                <td>@item.NombreUnidad</td>
+                <td>@item.NombreRegion</td>
+                <td class="text-center">
+                    <label class="switch">
+                        <input type="checkbox" name="switcherIntensidadConsumo" @item.MideIntensidadConsumo disabled>
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+                <td class="text-center">@item.NumGestores</td>
+                <td class="text-center">
+                    <label class="switch">
+                        <input type="checkbox" name="switcherAsociar" @item.UnidadAsociada @soloLectura>
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $("#divisionesParaAsociar").DataTable({
+            "searching": true,
+            "lengthChange": false,
+            "language": {
+                "sProcessing": "Procesando...",
+                "sLengthMenu": "Mostrar _MENU_ registros",
+                "sZeroRecords": "No se encontraron resultados",
+                "sEmptyTable": "Ningún dato disponible en esta tabla",
+                "sInfo": "",
+                "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix": "",
+                "sSearch": "Buscar:",
+                "sUrl": "",
+                "sInfoThousands": ".",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst": "Primero",
+                    "sLast": "Último",
+                    "sNext": "Siguiente",
+                    "sPrevious": "Anterior"
+                }
+            }
+        });
+    });
+
+    $("#btn-asociar-todo").on('click', async function () {
+        console.log("Aca");
+        try {
+            response = await $.get({
+                url: "/asociar-todas-unidades" + "/" + $("#Id").val()
+            });
+            $("input[name='switcherAsociar']").prop("checked", true);
+
+        } catch (e) {
+            alert(e);
+        } finally {
+            alert("Unidades asociadas correctamente");
+        }
+    })
+
+    $("input[name='switcherAsociar']").change(function () {
+        let diviId = $(this).parent().parent().parent().attr("id");
+
+
+        const usuarioDivision = {
+            usuarioId: $("input[id='UserId']").val(),
+            divisionId: diviId,
+            isChecked: $(this).is(':checked')
+        };
+
+        $.ajax({
+            type: "POST",
+            accepts: "application/json",
+            url: apiDivision + "/AsociarUsuarioDivision",
+            contentType: "application/json",
+            data: JSON.stringify(usuarioDivision),
+            dataType: "json",
+            error: function (jqXHR, textStatus, errorThrown) {
+                alert("Algo salio mal!");
+            },
+            success: function (result) {
+                console.log("Funciono!!");
+            }
+        });
+    });
+</script>

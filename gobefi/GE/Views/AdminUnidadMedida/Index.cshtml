@@ -1,0 +1,43 @@
+﻿@model IEnumerable<GobEfi.Web.Data.Entities.UnidadMedida>
+
+@{
+    ViewData["Title"] = "Index";
+
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+<h2>Unidades de Medida Enérgeticos</h2>
+
+
+
+<p>
+    <a asp-action="Create" class="btn btn-primary"><span class="@Constants.Icons.CREAR"></span> Crear nuevo</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Abrv)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Abrv)
+            </td>
+            <td>
+                @(await Component.InvokeAsync<ActionsViewComponent>(new IActionList { Id = (item.Id).ToString(), Permisos = permisos }))
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

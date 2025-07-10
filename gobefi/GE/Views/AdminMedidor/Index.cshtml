@@ -1,0 +1,145 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+<div style="max-width:100%" ng-app="adminMedidoresApp">
+    <div ng-controller="adminMedidoresController">
+        <h2>Mantenedor de Medidores</h2>
+        <div class="card">
+            <div class="card-header">Filtros</div>
+            <div class="card-body">
+                <div class="container">
+                    <div class="form-group">
+                        <label>Id</label>
+                        <input type="text" class="form-control" ng-model="filtroId" />
+                        <button type="button" class="btn btn btn-success mt-1" ng-click="findById()">Buscar</button>
+                     </div>
+                    <div class="form-group">
+                        <label>Ministerio</label>
+                        <select class="custom-select"
+                                ng-model="filtroMinisterio"
+                                ng-options="item.id as item.nombre  for item in ministeriosList"
+                                ng-change="changeMinisterio()">
+                            <option value="">--Seleccione el Ministerio--</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Servicio</label>
+                        <select class="custom-select"
+                                ng-model="filtroServicio"
+                                ng-options="item.id as item.nombre  for item in filteredServicios" ng-disabled="disableServicios"
+                                ng-change="changeServicio()">
+                            <option value="">--Seleccione el Servicio--</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Medidores</div>
+            <div class="card-body">
+                <div class="container no-padding">
+                    <font size="2">
+                        <table class="table table-bordered table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Numero</th>
+                                    <th>Unidad Id</th>
+                                    <th>Unidad Propietaria</th>
+                                    <th>Numero Cliente</th>
+                                    <th>Es compartido</th>
+                                    <th>Es inteligente</th>
+                                    <th>Active</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody style="overflow-y:auto">
+                                <tr>
+                                    <td colspan="7" ng-show="loadingTable">Cargando datos....</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="7" ng-show="!loadingTable&&medidores.length==0">No hay datos para mostrar</td>
+                                </tr>
+                                <tr ng-repeat="medidor in medidores" ng-show="!loadingTable">
+                                    <td>{{medidor.id}}</td>
+                                    <td>{{medidor.numero}}</td>
+                                    <td>{{medidor.divisionId}}</td>
+                                    <td>{{medidor.division}} Horas</td>
+                                    <td>{{medidor.numeroCliente }}</td>
+                                    <td>{{medidor.esCompartido}}</td>
+                                    <td>{{medidor.esInteligente}}</td>
+                                    <td>{{medidor.active}}</td>
+                                    <td>
+                                        <button class="btn btn-success"
+                                                ng-click="editMedidor(medidor)">
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="ml-2" ng-show="!loadingTable&&medidores.length>0">
+                            <nav aria-label="Paginación">
+                                <ul class="pagination">
+                                    <li class="page-item"><a class="page-link" ng-click="prevPage()" ng-hide="pageIndex == startPageIndex">Anterior</a></li>
+                                    <li ng-repeat="x in [].constructor(stopPageIndex-startPageIndex+1) track by $index"
+                                        class="page-item"
+                                        ng-class="{'page-item active' : pageIndex==$index+startPageIndex}">
+                                        <a class="page-link" ng-click="goToPage($index+startPageIndex)">{{ $index+startPageIndex }}</a>
+                                    </li>
+                                    <li class="page-item"><a class="page-link" ng-click="nextPage()" ng-hide="pageIndex == stopPageIndex">Siguiente</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+
+                    </font>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="modalEdit" aria-hidden="true" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"> Editar Medidor</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="form-group">
+                                <label>Id Medidor</label>
+                                <input type="text" class="form-control" ng-model="medidorEdit.id" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label>Numero Medidor</label>
+                                <input type="text" class="form-control" ng-model="medidorEdit.numero" />
+                            </div>
+                            <div class="form-group">
+                                <label>Unidad Id</label>
+                                <input type="text" class="form-control" ng-model="medidorEdit.divisionId" />
+                            </div>
+                            <div class="form-group">
+                                <label>Numero de cliente</label>
+                                <input type="text" class="form-control" ng-model="medidorEdit.numeroCliente" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label>Activo</label>
+                                <input type="checkbox" class="form-check" ng-model="medidorEdit.active"/>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-primary" ng-click="updateMedidor()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

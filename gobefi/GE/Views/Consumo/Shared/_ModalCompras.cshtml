@@ -1,0 +1,152 @@
+﻿@{
+    PermisosModel permisos = (PermisosModel) ViewData["permisos"];
+}
+
+<input type="hidden" id="selectVal" value="@Constants.Titles.SELECCIONE" />
+
+<div class="modal fade" id="ModalCompras" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="max-width: 850px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLongTitle">
+                    Agregar Compra
+                </h5>
+
+            </div>
+            @*<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Contingencia Covid-19 Boletas sin Lectura</strong> <br />Debido a la contingencia, si la empresa distribuidora no ha realizado lectura al medidor y está entregando boletas con consumo cero, sin lectura o estimativa; solicitamos no considerarlas para su registro en la plataforma.
+                Próximamente, cuando la distribuidora tome lectura, tendremos un gran periodo de varios meses a ingresar.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>*@
+            <!-- Alerta que se muestra con $('frmComprasAlert').show() ; se oculta con $('frmComprasAlert').attr('display', 'none')-->
+            <div class="alert alert-success alert-dismissible" role="alert" id="frmComprasAlert" style="display:none;">
+                <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            </div>
+
+            <form action="javascript:void(0);" id="frmCompras" method="POST">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="id">Id Compra:</label>
+                        <div class="col-sm-6">
+                            <input type="text" id="id" name="id" value="0" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <!-- zona inicial -->
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="energeticoId">Energético:</label>
+                        <div class="col-sm-6">
+                            <select class="form-control custom-select" id="energeticoId">
+                                <option value="">@Constants.Titles.SELECCIONE</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="div-sin-medidor"  hidden>
+                        <hr />
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="sinMedidor">
+                            <label class="form-check-label" for="exampleCheck1">Compra sin medidor</label>
+                        </div>
+
+                    </div>
+                    <div id="camposDinamicos">
+
+                    </div>
+                    <div class="alert alert-success" role="alert" id="disclaimer-sin-medidor">
+                        <p style="text-align: justify;">Para la declaración de compras de energéticos sin medidor, podrás declarar consumos subiendo una factura o un archivo zip con un conjunto de facturas. También será posible subir un archivo excel con la lista de compras de un período, detallando para cada una de ellas al menos la fecha de compra y su costo ($).</p>
+                    </div>
+
+
+                    <!-- zona de medidores -->
+                    <!-- <fieldset id="listaMedidores"></fieldset> -->
+                    <!-- zona final -->
+                    <div class="form-group row" id="div-costo-total">
+                        <label class="col-sm-4 col-form-label" for="costo">Costo Total:</label>
+                        <div class="col-sm-6">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="textPeso">$</span>
+                                </div>
+                                <input type="text" class="form-control" id="costo" autocomplete="off">
+                                <p class="text-secondary small col-sm-12">El número sin separadores de miles ej: 1000</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="factura">Adjunto:</label>
+
+                        <div class="col-sm-6">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="factura" accept=".pdf, .jpeg, .png, .jpg, .zip,.xls,.xlsx">
+                                <label class="custom-file-label" for="factura"><small>Seleccione un Archivo...</small></label>
+                                @*<div class="invalid-feedback"></div> no borrar se levanta al precionar el submit, puede servir para poner texto a los demas campos *@
+                            </div>
+                            <p class="text-secondary"><small>Debe estar en formato pdf, zip, imagen jpg o png y no superar 4MB de tamaño.</small></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="observacion">Observaciones:</label>
+                        <div class="col-sm-6">
+                            <textarea class="form-control" id="observacion" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-4 col-form-label" for="createdAt">Creado en:</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="text" id="createdAt" name="createdAt" disabled readonly>
+                        </div>
+                    </div>
+
+                    <div id="camposDeEdicion">
+
+                    </div>
+
+                </div>
+            </form>
+
+            <div class="modal-footer">
+                <!-- Image loader -->
+                <div id='loader' style='display: none;' class="text-center">
+                    <img src='~/images/reload.gif' style="width:32px; height:32px">
+                </div>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+
+                @if (permisos.Escritura)
+                {
+                    <div id="btnAcciones">
+                        <button type="submit" form="frmCompras" class="btn btn-primary" id="btnAccion">Agregar Compra</button>
+                        <button type="button" class="btn btn-danger" id="btnEliminarCompra">
+                            <i class='fa fa-trash-o' aria-hidden='true'></i> Eliminar
+                        </button>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalConfirm" tabindex="-1" role="dialog" aria-labelledby="ModalConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalConfirmLabel">Confirmación</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ¿Estas seguro que quieres editar esta compra <label id="lblEstado"></label>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarCambios">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>

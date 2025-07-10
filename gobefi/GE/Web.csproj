@@ -1,0 +1,120 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <UserSecretsId>aspnet-GE-3507D48C-8AA4-4089-B5CE-AC12811FF693</UserSecretsId>
+    <RootNamespace>GobEfi.Web</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <StartupObject />
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageId>GobEFI</PackageId>
+    <Company>MinEnergia</Company>
+    <Product>GobEfi</Product>
+    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+    <AssemblyVersion>2.33</AssemblyVersion>
+    <Version>2.33</Version>
+    <FileVersion>2.33</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Migrations\20180814180647_ef-many-to-many.cs" />
+    <Compile Remove="Migrations\20180814180647_ef-many-to-many.Designer.cs" />
+    <Compile Remove="Migrations\20180821124731_CreateInitial.cs" />
+    <Compile Remove="Migrations\20180821124731_CreateInitial.Designer.cs" />
+    <Compile Remove="Migrations\20180822123122_addFkNCta-TipoTarifa.cs" />
+    <Compile Remove="Migrations\20180822123122_addFkNCta-TipoTarifa.Designer.cs" />
+    <Compile Remove="Migrations\20180822185325_divisionId1TodivisionId.cs" />
+    <Compile Remove="Migrations\20180822185325_divisionId1TodivisionId.Designer.cs" />
+    <Compile Remove="Migrations\20180822192949_divisionId1TodivisionId.cs" />
+    <Compile Remove="Migrations\20180822192949_divisionId1TodivisionId.Designer.cs" />
+    <Compile Remove="Migrations\20180824161757_tipoUso.cs" />
+    <Compile Remove="Migrations\20180824161757_tipoUso.Designer.cs" />
+    <Compile Remove="Migrations\20180904131407_deleteColumnDivisionMedidor.cs" />
+    <Compile Remove="Migrations\20180904131407_deleteColumnDivisionMedidor.Designer.cs" />
+    <Compile Remove="Migrations\20180904154042_test.cs" />
+    <Compile Remove="Migrations\20180904154042_test.Designer.cs" />
+    <Compile Remove="Migrations\20180904154239_removedivisionId_NumeroCliente.cs" />
+    <Compile Remove="Migrations\20180904154239_removedivisionId_NumeroCliente.Designer.cs" />
+    <Compile Remove="Migrations\20180904162822_addDivisionId.cs" />
+    <Compile Remove="Migrations\20180904162822_addDivisionId.Designer.cs" />
+    <Compile Remove="Migrations\20180904171050_RemoveDivisionId.cs" />
+    <Compile Remove="Migrations\20180904171050_RemoveDivisionId.Designer.cs" />
+    <Compile Remove="Migrations\20180904180053_changeNumCliente.cs" />
+    <Compile Remove="Migrations\20180904180053_changeNumCliente.Designer.cs" />
+    <Compile Remove="Migrations\20180905195522_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.cs" />
+    <Compile Remove="Migrations\20180905195522_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.Designer.cs" />
+    <Compile Remove="Migrations\20180905200233_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.cs" />
+    <Compile Remove="Migrations\20180905200233_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.Designer.cs" />
+    <Compile Remove="Migrations\20180905200804_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.cs" />
+    <Compile Remove="Migrations\20180905200804_ChangeNameUnidadToUnidadMedidaAndAddFKEnergeticoDivisionNCliente.Designer.cs" />
+    <Compile Remove="Migrations\20181108144428_user-role.cs" />
+    <Compile Remove="Migrations\20181108144428_user-role.Designer.cs" />
+    <Compile Remove="Migrations\20181108144642_user-role.cs" />
+    <Compile Remove="Migrations\20181108144642_user-role.Designer.cs" />
+    <Compile Remove="Migrations\20200205135005_posicion_ventanas_table.cs" />
+    <Compile Remove="Migrations\20200205135005_posicion_ventanas_table.Designer.cs" />
+    <Compile Remove="Migrations\20200625204018_camposv2_division.cs" />
+    <Compile Remove="Migrations\20200625204018_camposv2_division.Designer.cs" />
+    <Compile Remove="Migrations\20200625204528_campos_division.cs" />
+    <Compile Remove="Migrations\20200625204528_campos_division.Designer.cs" />
+    <Compile Remove="Migrations\Nueva carpeta\20180904181141_changeNumCliente.cs" />
+    <Compile Remove="Migrations\Nueva carpeta\20180904181141_changeNumCliente.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="ClosedXML.Report" Version="0.2.1" />
+    <PackageReference Include="EPPlus" Version="4.5.2.1" />
+    <PackageReference Include="FluentValidation" Version="8.4.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="8.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" PrivateAssets="All" />
+    <PackageReference Include="DotNetCore.NPOI" Version="1.2.1" />
+    <PackageReference Include="NetEscapades.Extensions.Logging.RollingFile" Version="1.0.1" />
+    <PackageReference Include="ReflectionIT.Mvc.Paging" Version="3.4.0" />
+    <PackageReference Include="SharpZipLib" Version="1.2.0">
+      <SpecificVersion>False</SpecificVersion>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\Consumos\Data\" />
+    <Folder Include="Areas\Consumos\Models\" />
+    <Folder Include="Areas\Consumos\Views\" />
+    <Folder Include="Core\Authorization\" />
+    <Folder Include="Core\Contracts\AppServices\" />
+    <Folder Include="Models\ManageViewModels\" />
+    <Folder Include="AppServices\" />
+    <Folder Include="Reportes\DisenioPasivo\" />
+    <Folder Include="Reportes\Templates\" />
+    <Folder Include="TagHelpers\" />
+    <Folder Include="wwwroot\vendor\Datatables\css\DataTables-1.10.18\images\" />
+    <Folder Include="wwwroot\vendor\chosen\" />
+    <Folder Include="wwwroot\vendor\rut\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GobEfi.Business.Security\GobEfi.Business.Security.csproj" />
+    <ProjectReference Include="..\GobEfi.Business.Validaciones\GobEfi.Business.Validaciones.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="Views\Account\Logout.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Views\Consumo\Index.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="" appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+</Project>

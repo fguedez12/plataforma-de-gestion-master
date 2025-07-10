@@ -1,0 +1,157 @@
+﻿<div ng-if="$ctrl.inmueble.tipoInmueble==1">
+    <div ng-repeat="edificio in $ctrl.inmueble.children">
+        <div class="row">
+            <div 
+                 class="alert mb-2 alert-inmueble col-md-10 " 
+                 ng-class="{'alert-primary':!edificio.blockedByUse,'alert-secondary':edificio.blockedByUse}"
+                 role="alert">
+                <div class="row">
+                    <img src="/images/Edificio_Letra.svg" style="width:50px" />
+                    <div class="ml-4">
+                        <h5 class="text-dark mt-2">
+                            {{edificio.nombre}}
+                        </h5>
+
+                    </div>
+                    <div class="text-danger mt-2 ml-5" ng-show="edificio.blockedByUse">
+                        Zona asignada a otra unidad perteneciente al servicio: {{edificio.blockedByUseName}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-check" ng-show="!edificio.blockedByUse">
+                <label class="switch mt-2">
+                    <input type="checkbox" ng-checked="edificio.checked" ng-disabled="!$ctrl.admin && $ctrl.editMode" ng-click="$ctrl.addEdificio(edificio)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div ng-repeat="piso in edificio.pisos">
+            <div class="row">
+                <div class="col-md-2">
+
+                </div>
+                <div 
+                     class="col-md-8 alert  mb-2 alert-inmueble "
+                     ng-class="{'alert-warning':!piso.blockedByUse,'alert-secondary':piso.blockedByUse}"
+                     role="alert">
+                    <div class="row">
+                        <div class="ml-4">
+                            <h5 class="text-dark mt-2">
+                                {{piso.numeroPisoNombre}}
+                            </h5>
+
+                        </div>
+                        <div class="text-danger mt-2 ml-5" ng-show="piso.blockedByUse">
+                            Zona asignada a otra unidad perteneciente al servicio: {{piso.blockedByUseName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="form-check" ng-show="!piso.blockedByUse">
+                    <label class="switch mt-2">
+                        <input type="checkbox" ng-checked="piso.checked" ng-disabled="!$ctrl.admin && $ctrl.editMode " ng-click="$ctrl.addPiso(piso,edificio)">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div ng-repeat="area in piso.areas">
+                <div class="row">
+                    <div class="col-md-4">
+
+                    </div>
+                    <div 
+                         ng-class="{'alert-success':!area.blockedByUse,'alert-secondary':area.blockedByUse}"
+                         class="col-md-6  alert  mb-2 alert-inmueble" 
+                         role="alert"
+                         >
+                        <div class="row">
+                            <div class="ml-4">
+                                <h5 class="text-dark mt-2">
+                                    {{area.nombre}}
+                                </h5>
+
+                            </div>
+                            <div class="text-danger mt-2 ml-5" ng-show="area.blockedByUse">
+                                Zona asignada a otra unidad perteneciente al servicio: {{area.blockedByUseName}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check" ng-show="!area.blockedByUse">
+                        <label class="switch mt-2">
+                            <input type="checkbox" ng-checked="area.checked" ng-disabled="!$ctrl.admin && $ctrl.editMode" ng-click="$ctrl.addArea(area,piso,edificio)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div ng-if="$ctrl.inmueble.tipoInmueble==2">
+    <div ng-repeat="piso in  $ctrl.inmueble.pisos">
+        <div class="row">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-8 alert  mb-2 alert-inmueble "  ng-class="{'alert-warning':!piso.blockedByUse,'alert-secondary':piso.blockedByUse}" role="alert">
+                <div class="row">
+                    <div class="ml-4">
+                        <h5 class="text-dark mt-2">
+                            {{piso.numeroPisoNombre}}
+                        </h5>
+
+                    </div>
+                    <div class="text-danger mt-2 ml-5" ng-show="piso.blockedByUse">
+                        Zona asignada a otra unidad perteneciente al servicio: {{piso.blockedByUseName}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-check" ng-show="!piso.blockedByUse">
+                <label class="switch mt-2">
+                    <input type="checkbox" ng-checked="piso.checked" ng-disabled="!$ctrl.admin && $ctrl.editMode" ng-click="$ctrl.addPiso(piso,edificio)">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div ng-repeat="area in piso.areas">
+            <div class="row">
+                <div class="col-md-4">
+
+                </div>
+                <div class="col-md-6  alert  mb-2 alert-inmueble" ng-class="{'alert-success':!area.blockedByUse,'alert-secondary':area.blockedByUse}" role="alert">
+                    <div class="row">
+                        <div class="ml-4">
+                            <h5 class="text-dark mt-2">
+                                {{area.nombre}}
+                            </h5>
+
+                        </div>
+                    </div>
+                    <div class="text-danger mt-2 ml-5" ng-show="area.blockedByUse">
+                        Zona asignada a otra unidad {{area.blockedByUseName}}
+                    </div>
+                </div>
+                <div class="form-check" ng-show="!area.blockedByUse">
+                    <label class="switch mt-2">
+                        <input type="checkbox" ng-checked="area.checked" ng-disabled="!$ctrl.admin && $ctrl.editMode" ng-click="$ctrl.addArea(area,piso)">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="row ml-auto mr-3 mt-3">
+    <button class="btn btn-danger btn-sm mr-2"
+            ng-click="$ctrl.back()">
+        Atras
+    </button>
+    <button class="btn btn-primary btn-sm" ng-show="$ctrl.admin || !$ctrl.editMode"
+            ng-click="$ctrl.saveUnidad()">
+        Guardar
+    </button>
+</div>

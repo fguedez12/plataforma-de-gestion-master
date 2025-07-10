@@ -1,0 +1,63 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Authentication
+@model LoginViewModel
+@inject SignInManager<Usuario> SignInManager
+
+@{
+    Layout = "/Views/Account/_Layout.cshtml";
+    ViewData["Title"] = "Ingresar";
+}
+<div ng-app="loginApp">
+    <div ng-controller="loginController">
+        <div class="row">
+            <div class="col-12 text-center">
+                <br />
+                <h3>Ingreso</h3>
+            </div>
+        </div>
+        <hr />
+        <form id="login-form" asp-controller="account" asp-action="login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input type="text" asp-for="Email" class="form-control" placeholder="email" ng-model="userCredentials.email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input type="password" asp-for="Password" class="form-control" placeholder="contraseña" ng-model="userCredentials.password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RememberMe"></label>
+                <input type="checkbox" asp-for="RememberMe" class="form-check-inline" />
+            </div>
+            <div class="row">
+                <div class="form-group w-75">
+                    <a asp-controller="account" asp-action="forgotpassword">¿Olvidó su contraseña?</a>
+                </div>
+                <div class="form-group ml-5">
+                    @*<a asp-controller="account" asp-action="register">¿Nuevo usuario?</a>*@
+                    <a href="https://soporte.gestionaenergia.cl/open.php">¿Nuevo usuario?</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <button type="button" class="btn btn-primary px-4" ng-click="loginApi()" ng-disabled="loading">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" ng-show="loading"></span>
+                        {{btnText}}
+                    </button>
+                </div>
+            </div>
+            <span ng-show="errorLogin" class="text-danger">Usuario o contraseña incorrectos</span>
+        </form>
+    </div>
+    <div class="row">
+        <p>Versión : @ViewData["version"]</p>
+    </div>
+
+</div>
+

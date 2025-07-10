@@ -1,0 +1,91 @@
+﻿@model IndexViewModel
+@{
+    ViewData["Title"] = "Datos personales";
+    ViewData.AddActivePage(ManageNavPages.Index);
+}
+
+<h4>@ViewData["Title"]</h4>
+
+@await Html.PartialAsync("_StatusMessage", Model.StatusMessage)
+
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Nombres"></label>
+                <input asp-for="Nombres" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Apellidos"></label>
+                <input asp-for="Apellidos" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Rut"></label>
+                <input asp-for="Rut" class="form-control" maxlength="12" autocomplete="off"  />
+                <span class="invalid-feedback"></span>
+            </div>
+            <div class="form-group">
+                <label>Tipo de gestor</label>
+                <select asp-items="ViewBag.Roles" class="form-control" multiple disabled></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="SexoId"></label>
+                <select asp-for="SexoId" class="form-control" asp-items="ViewBag.Sexos"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                @if (Model.IsEmailConfirmed)
+                {
+                    <div class="input-group">
+                        <input asp-for="Email" class="form-control" />
+                        <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>
+                    </div>
+                }
+                else
+                {
+                    <input asp-for="Email" class="form-control" />
+                    <button asp-action="SendVerificationEmail" class="btn btn-link">Enviar correo de confirmación</button>
+                }
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RegionId"></label>
+                <select asp-for="RegionId" class="form-control" asp-items="ViewBag.Regiones"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ProvinciaId"></label>
+                <select asp-for="ProvinciaId" class="form-control" asp-items="ViewBag.Provincias"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ComunaId"></label>
+                <select asp-for="ComunaId" class="form-control" asp-items="ViewBag.Comunas"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="City"></label>
+                <input asp-for="City" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" asp-for="Certificado" disabled class="" />
+                <label asp-for="Certificado"></label>
+                <br />
+                <input type="checkbox" asp-for="Validado" disabled class="" />
+                <label asp-for="Validado"></label>
+
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<script src="~/vendor/rut/jquery.rut.js"></script>
+<script src="~/js/manage.js"></script>

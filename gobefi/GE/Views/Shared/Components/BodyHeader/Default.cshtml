@@ -1,0 +1,124 @@
+﻿@inject UserManager<Usuario> UserManager
+@model BodyHeader
+
+    <div class="filtro-unidad">
+        <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#bh-Filters" aria-expanded="false" aria-controls="bh-Filters">
+            <span class="fa fa-filter"></span> Filtros
+        </button>
+        <hr />
+    </div>
+
+<div class="row">
+    <div class="col-12">
+        <h4>@Model.Nombre</h4>
+
+        <p class="h4 subtitulo"></p>
+        @*<input type="hidden" id="divisionName" value="@Model.Nombre" />*@
+    </div>
+</div>
+
+<div class="collapse filtro-unidad" id="bh-Filters">
+
+    <select class="custom-select w-25" id="bh-instituciones" style="width: 150px;">
+        @*<option value="">Instituciones</option>*@
+    </select>
+    <select class="custom-select w-25 ml-2" id="bh-servicios" style="width: 150px;">
+        @*<option value="">Servicios</option>*@
+    </select>
+    <select class="custom-select w-25 ml-2" id="bh-divisiones" style="width: 150px;">
+        @*<option value="">Unidades</option>*@
+    </select>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        CargarFiltrosPrincipales().then();
+    });
+
+
+    $("#bh-instituciones").change(function () {
+        if (!$(this).val())
+            return;
+
+        localStorage.setItem('institucionId', $(this).val());
+        $("#bh-divisiones").val("");
+
+
+        //$("#bh-servicios").html("<option value=''>Servicios</option>");
+        //loadSelectData($("#bh-servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val(), "", "", true, "Servicios");
+        loadSelectDataAsync($("#bh-servicios"), "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + $(this).val()).then(function () {
+
+            $("#bh-servicios option:first").text("Servicios");
+            $("#bh-servicios").val("");
+
+        });
+
+        
+    });
+
+    $("#bh-servicios").change(function () {
+        if (!$(this).val())
+            return;
+
+        localStorage.setItem('servicioId', $(this).val());
+        //$("#bh-divisiones").html("<option value=''>Unidades</option>");
+        //loadSelectData($("#bh-divisiones"), "@Url.Content("~/api/divisiones/getdivisionesbyuserandservicio")/@UserManager.GetUserId(User)/" + $(this).val(), "", "", true, "Unidades");
+
+        loadSelectDataAsync($("#bh-divisiones"), "@Url.Content("~/api/divisiones/getdivisionesbyuserandservicio")/@UserManager.GetUserId(User)/" + $(this).val()).then(function () {
+
+            $("#bh-divisiones option:first").text("Unidades");
+            $("#bh-divisiones").val("");
+        });
+
+        
+    });
+
+    $("#bh-divisiones").change(function () {
+        if (!$(this).val()) {
+            return;
+        }
+
+        localStorage.setItem('divisionId', $(this).val());
+        
+        localStorage.setItem('divisionName', $(this).children("option:selected").html());
+        $('.subtitulo').text('Unidad - ' + localStorage.getItem('divisionName'));
+    });
+
+    async function CargarFiltrosPrincipales() {
+
+        let response;
+
+        //$("#bh-instituciones, #bh-servicios, #bh-divisiones").attr("disabled", "disabled");
+        try {
+
+            response = await $.get({
+                url: "@Url.Content("~/api/divisiones/")" + localStorage.getItem("divisionId")
+            });
+
+            //console.log(response);
+
+            await loadSelectDataAsync($("#bh-instituciones"),
+                "@Url.Content("~/api/instituciones/getinstituciones")/@UserManager.GetUserId(User)");
+            $("#bh-instituciones option:first").text("Instituciones");
+            $("#bh-instituciones").val(localStorage.getItem("institucionId"));
+
+            await loadSelectDataAsync($("#bh-servicios"),
+                "@Url.Content("~/api/servicios/getserviciosbyuserandinstitucion")/@UserManager.GetUserId(User)/" + response.servicio.institucionId);
+            $("#bh-servicios option:first").text("Servicios");
+            $("#bh-servicios").val(localStorage.getItem("servicioId"));
+
+            await loadSelectDataAsync($("#bh-divisiones"),
+                "@Url.Content("~/api/divisiones/getdivisionesbyuserandservicio")/@UserManager.GetUserId(User)/" + response.servicioId);
+            $("#bh-divisiones option:first").text("Unidades");
+            $("#bh-divisiones").val(localStorage.getItem("divisionId"));
+
+        } catch (e) {
+
+        } finally {
+            //$("#bh-instituciones").removeAttr("disabled");
+        }
+    }
+
+ 
+</script>

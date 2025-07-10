@@ -1,0 +1,27 @@
+﻿@model GobEfi.Web.Models.RolModels.RolModel
+
+@{
+    ViewData["Title"] = "Eliminar";
+}
+
+<h2>Eliminar</h2>
+
+<h3>¿Esta seguro que desea eliminar este rol?</h3>
+<div>
+    <h4></h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Eliminar = true }) |
+        @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+    </form>
+</div>

@@ -1,0 +1,98 @@
+﻿@model DivisionVerModel
+@{
+    ViewData["Title"] = "Mi Edificio";
+
+    ICollection<MenuModel> subMenus = (ICollection<MenuModel>)ViewData["subMenus"];
+}
+
+<style type="text/css">
+
+    .grid-container {
+        display: grid;
+        grid-column-gap: 30px;
+        grid-template-columns: auto auto;
+        grid-auto-columns: max-content;
+        grid-auto-rows: max-content;
+        margin: 5px 5px 5px 5px;
+        padding: 10px;
+    }
+
+    .grid-item {
+        display: inline-grid;
+        padding: 20px;
+        /*text-align: center;*/
+    }
+
+    .icon-img {
+        width: 80px;
+        height: 80px;
+        margin: 2px 2px 2px 2px;
+        padding: 10px 10px 0px 10px;
+    }
+
+    .center-div {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+</style>
+
+@*<button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#cllpsBodyMainFilters" aria-expanded="false" aria-controls="cllpsBodyMainFilters">
+        <span class="fa fa-filter"></span> Filtros
+    </button>
+    <hr />
+    <div class="row">
+        <div class="col-12">
+            <p class="h6 subtitulo"></p>
+        @*<h4>Unidad @Model.Nombre</h4>
+            @*<input type="hidden" id="divisionName" value="@Model.Nombre" />
+        </div>
+    </div>*@
+
+@(await Component.InvokeAsync<BodyHeaderViewComponent>(new BodyHeader { Nombre = "Mi Edificio" }))
+
+<hr />
+@*<div class="row d-none">
+        <div class="col-md-3">
+            <h6>Nivel de eficiencia</h6>
+            <img class="img-fluid" src="http://via.placeholder.com/100x100">
+        </div>
+        <div class="col-md-3">
+            <h6>Gestores</h6>
+            <img class="img-fluid" src="http://via.placeholder.com/100x100">
+        </div>
+        <div class="col-md-6">
+            <h6>Mis usos</h6>
+            <img class="img-fluid" src="http://via.placeholder.com/200x100">
+        </div>
+    </div>*@
+<div class="grid-container">
+    @foreach (var item in subMenus)
+    {
+        <div class="grid-item">
+            <div class="row">
+                <div class="col-3">
+                    <img class="icon-img" src="@item.Icono" />
+                </div>
+                <div class="col">
+                    <a class="center-div sub-menu-miunidad" asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                        <h5>@item.Nombre</h5>
+                    </a>
+                    @*<p><small>Información y mapa de Santiago Chile y sus alrededores. Ubicación geográfica y mapa satelital interactivode Santiago.</small></p>*@
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<script>
+    $(".sub-menu-miunidad").click(function (e) {
+        e.preventDefault();
+
+        window.location.href = $(this).prop("href") + "/" + localStorage.getItem("divisionId");
+    });
+</script>
+

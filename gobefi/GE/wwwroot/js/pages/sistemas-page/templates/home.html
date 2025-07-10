@@ -1,0 +1,395 @@
+﻿<h1>Sistemas:</h1>
+<h3>{{selectedUnidadNombre}}</h3>
+<hr />
+<div style="overflow:scroll;max-height:1200px;">
+    <form name="sistemasForm" ng-submit="submitForm()" novalidate>
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="control-label"><span class="text-danger">* </span>Sistema de iluminación:</label>
+                    <select name="tipoLuminariaId"
+                            class="form-control"
+                            ng-model="data.tipoLuminariaId"
+                            ng-class="{'is-invalid':sistemasForm.tipoLuminariaId.$invalid  && (sistemasForm.tipoLuminariaId.$touched || sistemasForm.tipoLuminariaId.$dirty),'is-valid':sistemasForm.tipoLuminariaId.$valid  }"
+                            ng-disabled="!escritura"
+                            required>
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.luminarias" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.tipoLuminariaId.$invalid  && (sistemasForm.tipoLuminariaId.$touched || sistemasForm.tipoLuminariaId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="card-body">
+                <p>Sistema de Calefacción</p>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label"><span class="text-danger">* </span>Equipo Calefacción:</label>
+                    <select class="form-control"
+                            name="equipoCalefaccionId"
+                            ng-model="data.equipoCalefaccionId"
+                            ng-class="{'is-invalid':sistemasForm.equipoCalefaccionId.$invalid  && (sistemasForm.equipoCalefaccionId.$touched || sistemasForm.equipoCalefaccionId.$dirty),'is-valid':sistemasForm.equipoCalefaccionId.$valid  }"
+                            ng-change="changeEquipoCalefaccion()"
+                            ng-disabled="!escritura"
+                            required>
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.equiposCalefaccion" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.equipoCalefaccionId.$invalid  && (sistemasForm.equipoCalefaccionId.$touched || sistemasForm.equipoCalefaccionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><span ng-if="data.equipoCalefaccionId>1" class="text-danger">* </span>Energético Calefacción:</label>
+                    <select class="form-control"
+                            name="energeticoCalefaccionId"
+                            ng-model="data.energeticoCalefaccionId"
+                            ng-disabled="data.equipoCalefaccionId==0 || data.equipoCalefaccionId==1 || data.equipoCalefaccionId==null || !escritura"
+                            ng-required="data.equipoCalefaccionId>1"
+                            ng-class="{'is-invalid':sistemasForm.energeticoCalefaccionId.$invalid  && (sistemasForm.energeticoCalefaccionId.$touched || sistemasForm.energeticoCalefaccionId.$dirty),'is-valid':sistemasForm.energeticoCalefaccionId.$valid  }">
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.energeticosEquipo" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.energeticoCalefaccionId.$invalid  && (sistemasForm.energeticoCalefaccionId.$touched || sistemasForm.energeticoCalefaccionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><span ng-if="data.equipoCalefaccionId>1" class="text-danger">* </span>Temperatura de Seteo:</label>
+                    <select class="form-control"
+                            name="tempSeteoCalefaccionId"
+                            ng-model="data.tempSeteoCalefaccionId"
+                            ng-disabled="data.equipoCalefaccionId==0 || data.equipoCalefaccionId==1 || data.equipoCalefaccionId==null || !escritura"
+                            ng-required="data.equipoCalefaccionId>1"
+                            ng-class="{'is-invalid':sistemasForm.tempSeteoCalefaccionId.$invalid  && (sistemasForm.tempSeteoCalefaccionId.$touched || sistemasForm.tempSeteoCalefaccionId.$dirty),'is-valid':sistemasForm.tempSeteoCalefaccionId.$valid  }">
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-value=19>19</option>
+                        <option ng-value=20>20</option>
+                        <option ng-value=21>21</option>
+                        <option ng-value=22>22</option>
+                    </select>
+                    <span ng-show="sistemasForm.tempSeteoCalefaccionId.$invalid  && (sistemasForm.tempSeteoCalefaccionId.$touched || sistemasForm.tempSeteoCalefaccionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="card-body">
+                <p>Sistema de Refrigeración</p>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label"><span class="text-danger">* </span>Equipo Refrigeración:</label>
+                    <select class="form-control"
+                            name="equipoRefrigeracionId"
+                            ng-model="data.equipoRefrigeracionId"
+                            ng-change="changeEquipoRefrigeracion()"
+                            ng-class="{'is-invalid':sistemasForm.equipoRefrigeracionId.$invalid  && (sistemasForm.equipoRefrigeracionId.$touched || sistemasForm.equipoRefrigeracionId.$dirty),'is-valid':sistemasForm.equipoRefrigeracionId.$valid  }"
+                            ng-disabled="!escritura"
+                            required>
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.equiposRefrigeracion" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.equipoRefrigeracionId.$invalid  && (sistemasForm.equipoRefrigeracionId.$touched || sistemasForm.equipoRefrigeracionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><span ng-if="data.equipoRefrigeracionId>1" class="text-danger">* </span>Energético Refrigeración:</label>
+                    <select class="form-control"
+                            name="energeticoRefrigeracionId"
+                            ng-model="data.energeticoRefrigeracionId"
+                            ng-disabled="data.equipoRefrigeracionId==0 || data.equipoRefrigeracionId==1|| data.equipoRefrigeracionId==null || !escritura"
+                            ng-class="{'is-invalid':sistemasForm.energeticoRefrigeracionId.$invalid  && (sistemasForm.energeticoRefrigeracionId.$touched || sistemasForm.energeticoRefrigeracionId.$dirty),'is-valid':sistemasForm.energeticoRefrigeracionId.$valid  }"
+                            ng-required="data.equipoRefrigeracionId>1">
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.energeticosEquipoRefrigeracion" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.energeticoRefrigeracionId.$invalid  && (sistemasForm.energeticoRefrigeracionId.$touched || sistemasForm.energeticoRefrigeracionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><span ng-if="data.equipoRefrigeracionId>1" class="text-danger">* </span>Temperatura de Seteo:</label>
+                    <select class="form-control"
+                            name="tempSeteoRefrigeracionId"
+                            ng-model="data.tempSeteoRefrigeracionId"
+                            ng-disabled="data.equipoRefrigeracionId==0 || data.equipoRefrigeracionId==1 || data.equipoRefrigeracionId==null || !escritura"
+                            ng-class="{'is-invalid':sistemasForm.tempSeteoRefrigeracionId.$invalid  && (sistemasForm.tempSeteoRefrigeracionId.$touched || sistemasForm.tempSeteoRefrigeracionId.$dirty),'is-valid':sistemasForm.tempSeteoRefrigeracionId.$valid  }"
+                            ng-required="data.equipoRefrigeracionId>1">
+
+                        <option ng-value=null>--Seleccione--</option>
+                        <option ng-value=22>22</option>
+                        <option ng-value=23>23</option>
+                        <option ng-value=24>24</option>
+                    </select>
+                    <span ng-show="sistemasForm.tempSeteoRefrigeracionId.$invalid  && (sistemasForm.tempSeteoRefrigeracionId.$touched || sistemasForm.tempSeteoRefrigeracionId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="card-body">
+                <p>Agua Caliente Sanitaria (ACS)</p>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label"><span class="text-danger">* </span>Equipo ACS:</label>
+                    <select class="form-control"
+                            name="equipoAcsId"
+                            ng-model="data.equipoAcsId"
+                            ng-change="changeEquipoAcs()"
+                            ng-class="{'is-invalid':sistemasForm.equipoAcsId.$invalid  && (sistemasForm.equipoAcsId.$touched || sistemasForm.equipoAcsId.$dirty),'is-valid':sistemasForm.equipoAcsId.$valid  }"
+                            ng-disabled="!escritura"
+                            required>
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.equiposAc" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.equipoAcsId.$invalid  && (sistemasForm.equipoAcsId.$touched || sistemasForm.equipoAcsId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><span ng-if="data.equipoAcsId>1" class="text-danger">* </span>Energético ACS:</label>
+                    <select class="form-control"
+                            name="energeticoAcsId"
+                            ng-model="data.energeticoAcsId"
+                            ng-disabled="data.equipoAcsId==0 || data.equipoAcsId==1 || data.equipoAcsId==null || !escritura"
+                            ng-class="{'is-invalid':sistemasForm.energeticoAcsId.$invalid  && (sistemasForm.energeticoAcsId.$touched || sistemasForm.energeticoAcsId.$dirty),'is-valid':sistemasForm.energeticoAcsId.$valid  }"
+                            ng-required="data.equipoAcsId>1">
+                        <option ng-value="null">--Seleccione--</option>
+                        <option ng-repeat="item in data.energeticosEquipoAcs" ng-value={{item.id}}>{{item.nombre}}</option>
+                    </select>
+                    <span ng-show="sistemasForm.energeticoAcsId.$invalid  && (sistemasForm.energeticoAcsId.$touched || sistemasForm.energeticoAcsId.$dirty)" class="text-danger">
+                        Debe elegir una opción
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">¿Tiene un sistema solar térmico instalado?:</label>
+                    <div class="col" style="padding: 10px">
+                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="sissolter" type="checkbox" name="sissolter" ng-model="data.sistemaSolarTermico" ng-change="changeSistemaSolarTermico()">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                    </div>
+                </div>
+                <div ng-show="data.sistemaSolarTermico">
+                    <div class="form-group">
+                        <label class="control-label"><span class="text-danger">* </span>Tipo Colector:</label>
+                        <select class="form-control"
+                                name="colectorId"
+                                ng-model="data.colectorId"
+                                ng-class="{'is-invalid':sistemasForm.colectorId.$invalid  && (sistemasForm.colectorId.$touched || sistemasForm.colectorId.$dirty),'is-valid':sistemasForm.colectorId.$valid  }"
+                                ng-required="data.sistemaSolarTermico"
+                                ng-disabled="!escritura">
+                            <option ng-value="null">--Seleccione--</option>
+                            <option ng-repeat="item in data.tiposColectores" ng-value={{item.id}}>{{item.nombre}}</option>
+                        </select>
+                        <span ng-show="sistemasForm.colectorId.$invalid  && (sistemasForm.colectorId.$touched || sistemasForm.colectorId.$dirty)" class="text-danger">
+                            Debe elegir una opción
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.colectorId>1" class="text-danger">* </span>Superficie instalada en colectores (M2)</label>
+                        <input type="number" class="form-control" name="supColectores"
+                               ng-model="data.supColectores"
+                               ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                               ng-disabled="data.colectorId==0 || data.colectorId==1 || data.colectorId==null || !escritura"
+                               ng-required="data.sistemaSolarTermico && data.colectorId>1"
+                               ng-class="{'is-invalid':sistemasForm.supColectores.$invalid  && (sistemasForm.supColectores.$touched || sistemasForm.supColectores.$dirty),'is-valid':sistemasForm.supColectores.$valid  }" />
+                        <span ng-show="sistemasForm.supColectores.$error.required  && (sistemasForm.supColectores.$touched || sistemasForm.supColectores.$dirty)" class="text-danger">
+                            El campo Superficie instalada es requerido
+                        </span>
+                        <span ng-show="sistemasForm.supColectores.$error.number  && (sistemasForm.supColectores.$touched || sistemasForm.supColectores.$dirty)" class="text-danger">
+                            El campo Superficie instalada debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.supColectores.$error.pattern  && (sistemasForm.supColectores.$touched || sistemasForm.supColectores.$dirty)" class="text-danger">
+                            El campo Superficie instalada debe ser mayor o igual a cero y tener máximo dos decimales
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.colectorId>1" class="text-danger">* </span>N° de mantenimientos/limpieza al año</label>
+                        <input type="number" class="form-control" name="mantColectores"
+                               ng-model="data.mantColectores"
+                               min="0"
+                               step="1"
+                               ng-disabled="data.colectorId==0 || data.colectorId==1 || data.colectorId==null || !escritura"
+                               ng-required="data.sistemaSolarTermico && data.colectorId>1"
+                               ng-class="{'is-invalid':sistemasForm.mantColectores.$invalid  && (sistemasForm.mantColectores.$touched || sistemasForm.mantColectores.$dirty),'is-valid':sistemasForm.mantColectores.$valid  }" />
+                        <span ng-show="sistemasForm.mantColectores.$error.required  && (sistemasForm.mantColectores.$touched || sistemasForm.mantColectores.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año instalada es requerido
+                        </span>
+                        <span ng-show="sistemasForm.mantColectores.$error.number  && (sistemasForm.mantColectores.$touched || sistemasForm.mantColectores.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.mantColectores.$error.min  && (sistemasForm.mantColectores.$touched || sistemasForm.mantColectores.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe ser mayor o igual a cero
+                        </span>
+                        <span ng-show="sistemasForm.mantColectores.$error.step  && (sistemasForm.mantColectores.$touched || sistemasForm.mantColectores.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe numero entero
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="card shadow p-3 mb-4 bg-white rounded">
+            <div class="card-body">
+                <p>Sistema Fotovoltaico</p>
+                <hr />
+                <div class="form-group">
+                    <label class="control-label">¿Tiene el edificio Superficie propia de techo, es decir sin compartir con otras instituciones?:</label>
+                    <div class="col" style="padding: 10px">
+                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="sissolter" type="checkbox" name="sissolter" ng-model="data.fotoTecho" ng-change="changeFotoTecho()" ng-disabled="!escritura">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                    </div>
+                </div>
+                <div ng-show="data.fotoTecho">
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.fotoTecho" class="text-danger">* </span>Superficie (M2):</label>
+                        <input type="number" class="form-control" name="supFotoTecho" ng-model="data.supFotoTecho"
+                               ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                               ng-required="data.fotoTecho"
+                               ng-class="{'is-invalid':sistemasForm.supFotoTecho.$invalid  && (sistemasForm.supFotoTecho.$touched || sistemasForm.supFotoTecho.$dirty),'is-valid':sistemasForm.supFotoTecho.$valid  }" 
+                               ng-disabled="!escritura"/>
+                        <span ng-show="sistemasForm.supFotoTecho.$error.required  && (sistemasForm.supFotoTecho.$touched || sistemasForm.supFotoTecho.$dirty)" class="text-danger">
+                            El campo Superficie es requerido
+                        </span>
+                        <span ng-show="sistemasForm.supFotoTecho.$error.number  && (sistemasForm.supFotoTecho.$touched || sistemasForm.supFotoTecho.$dirty)" class="text-danger">
+                            El campo Superficie debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.supFotoTecho.$error.pattern  && (sistemasForm.supFotoTecho.$touched || sistemasForm.supFotoTecho.$dirty)" class="text-danger">
+                            El campo Superficie debe ser mayor o igual a cero y tener máximo dos decimales
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">¿Tiene el edificio superficie de terreno propio en que se podría destinar a la instalación de sistemas fotovoltaicos? :</label>
+                    <div class="col" style="padding: 10px">
+                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="instTerSisFv" type="checkbox" name="instTerSisFv" ng-model="data.instTerSisFv" ng-disabled="!escritura">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                    </div>
+                </div>
+                <div ng-show="data.instTerSisFv">
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.instTerSisFv" class="text-danger">* </span>Superficie (M2):</label>
+                        <input type="number" class="form-control" name="supInstTerSisFv" ng-model="data.supInstTerSisFv"
+                               ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                               ng-required="data.instTerSisFv"
+                               ng-class="{'is-invalid':sistemasForm.supInstTerSisFv.$invalid  && (sistemasForm.supInstTerSisFv.$touched || sistemasForm.supInstTerSisFv.$dirty),'is-valid':sistemasForm.supInstTerSisFv.$valid  }" 
+                               ng-disabled="!escritura"/>
+                        <span ng-show="sistemasForm.supInstTerSisFv.$error.required  && (sistemasForm.supInstTerSisFv.$touched || sistemasForm.supInstTerSisFv.$dirty)" class="text-danger">
+                            El campo Superficie es requerido
+                        </span>
+                        <span ng-show="sistemasForm.supInstTerSisFv.$error.number  && (sistemasForm.supInstTerSisFv.$touched || sistemasForm.supInstTerSisFv.$dirty)" class="text-danger">
+                            El campo Superficie debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.supInstTerSisFv.$error.pattern  && (sistemasForm.supInstTerSisFv.$touched || sistemasForm.supInstTerSisFv.$dirty)" class="text-danger">
+                            El campo Superficie debe ser mayor o igual a cero y tener máximo dos decimales
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label">¿Tiene implementado un sistema fotovoltaico? :</label>
+                    <div class="col" style="padding: 10px">
+                        <span class="mr-2" style="font-size: 1rem;">No</span>
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input id="impSisFv" type="checkbox" name="impSisFv" ng-model="data.impSisFv" ng-change="changeImpSisFv()" ng-disabled="!escritura">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="ml-2" style="font-size: 1rem;">Si</span>
+                    </div>
+                </div>
+                <div ng-show="data.impSisFv">
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.impSisFv" class="text-danger">* </span>Superficie (M2):</label>
+                        <input type="number" class="form-control" name="supImptSisFv" ng-model="data.supImptSisFv"
+                               ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                               ng-required="data.impSisFv"
+                               ng-class="{'is-invalid':sistemasForm.supImptSisFv.$invalid  && (sistemasForm.supImptSisFv.$touched || sistemasForm.supImptSisFv.$dirty),'is-valid':sistemasForm.supImptSisFv.$valid  }"
+                               ng-disabled="!escritura" />
+                        <span ng-show="sistemasForm.supImptSisFv.$error.required  && (sistemasForm.supImptSisFv.$touched || sistemasForm.supImptSisFv.$dirty)" class="text-danger">
+                            El campo Superficie es requerido
+                        </span>
+                        <span ng-show="sistemasForm.supImptSisFv.$error.number  && (sistemasForm.supImptSisFv.$touched || sistemasForm.supImptSisFv.$dirty)" class="text-danger">
+                            El campo Superficie debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.supImptSisFv.$error.pattern  && (sistemasForm.supImptSisFv.$touched || sistemasForm.supImptSisFv.$dirty)" class="text-danger">
+                            El campo Superficie debe ser mayor o igual a cero y tener máximo dos decimales
+                        </span>
+                    </div>
+                    <!--<div class="form-group">
+        <label class="control-label"><span ng-if="data.impSisFv" class="text-danger">* </span>Tipo de equipo fotovoltaico:</label>
+        <select class="form-control"
+                name="colectorSfId"
+                ng-model="data.colectorSfId"
+                ng-class="{'is-invalid':sistemasForm.colectorSfId.$invalid  && (sistemasForm.colectorSfId.$touched || sistemasForm.colectorSfId.$dirty),'is-valid':sistemasForm.colectorSfId.$valid }"
+                ng-required="data.impSisFv"
+                ng-disabled="!escritura">
+            <option ng-value="null">--Seleccione--</option>
+            <option ng-repeat="item in data.tiposColectoresSf" ng-value={{item.id}}>{{item.nombre}}</option>
+        </select>
+        <span ng-show="sistemasForm.colectorSfId.$invalid  && (sistemasForm.colectorSfId.$touched || sistemasForm.colectorSfId.$dirty)" class="text-danger">
+            Debe elegir una opción
+        </span>
+    </div>-->
+                    <div class="form-group" ng-show="data.impSisFv">
+                        <label class="control-label"><span class="text-danger">* </span>Potencia Instalada (kW):</label>
+                        <input type="number" class="form-control" name="potIns" ng-model="data.potIns"
+                               ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
+                               ng-required="data.impSisFv"
+                               ng-class="{'is-invalid':sistemasForm.potIns.$invalid  && (sistemasForm.potIns.$touched || sistemasForm.potIns.$dirty),'is-valid':sistemasForm.potIns.$valid }"
+                               ng-disabled="!escritura" />
+                        <span ng-show="sistemasForm.potIns.$error.required  && (sistemasForm.potIns.$touched || sistemasForm.potIns.$dirty)" class="text-danger">
+                            El campo Potencia Instalada es requerido
+                        </span>
+                        <span ng-show="sistemasForm.potIns.$error.number  && (sistemasForm.potIns.$touched || sistemasForm.potIns.$dirty)" class="text-danger">
+                            El campo Potencia Instalada debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.potIns.$error.pattern  && (sistemasForm.potIns.$touched || sistemasForm.potIns.$dirty)" class="text-danger">
+                            El campo Potencia Instalada debe ser mayor o igual a cero y tener máximo dos decimales
+                        </span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"><span ng-if="data.impSisFv" class="text-danger">* </span>N° de mantenimientos/limpieza al año</label>
+                        <input type="number" class="form-control" name="mantSfv"
+                               ng-model="data.mantSfv"
+                               min="0"
+                               step="1"
+                               ng-disabled="!escritura"
+                               ng-required="data.impSisFv"
+                               ng-class="{'is-invalid':sistemasForm.mantSfv.$invalid  && (sistemasForm.mantSfv.$touched || sistemasForm.mantSfv.$dirty),'is-valid':sistemasForm.mantSfv.$valid  }" />
+                        <span ng-show="sistemasForm.mantSfv.$error.required  && (sistemasForm.mantSfv.$touched || sistemasForm.mantSfv.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año instalada es requerido
+                        </span>
+                        <span ng-show="sistemasForm.mantSfv.$error.number  && (sistemasForm.mantSfv.$touched || sistemasForm.mantSfv.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe ser un número valido
+                        </span>
+                        <span ng-show="sistemasForm.mantSfv.$error.min  && (sistemasForm.mantSfv.$touched || sistemasForm.mantSfv.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe ser mayor o igual a cero
+                        </span>
+                        <span ng-show="sistemasForm.mantSfv.$error.step  && (sistemasForm.mantSfv.$touched || sistemasForm.mantSfv.$dirty)" class="text-danger">
+                            El campo N° de mantenimientos/limpieza al año debe numero entero
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end p-4">
+            <button type="submit" class="btn btn-primary" ng-disabled="sistemasForm.$invalid || !escritura">Guardar</button>
+        </div>
+    </form>
+</div>

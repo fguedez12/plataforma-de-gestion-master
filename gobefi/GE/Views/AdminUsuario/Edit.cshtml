@@ -1,0 +1,488 @@
+﻿@model UsuarioModel
+
+@{
+    ViewData["Title"] = "Editar";
+
+    string disabledByUserRole = ViewBag.CurrentUserIsAdmin ? "" : "disabled";
+
+    bool disabledByrestrictGs = ViewBag.restrictGs;
+    
+}
+
+<script src="~/js/UsersEdit.js" asp-append-version="true"></script>
+
+<h2>@($"{Model.Nombres} {Model.Apellidos}")</h2>
+
+<br />
+
+<ul class="nav nav-tabs" id="navegacionDatosUnidades" style="color:blue;">
+    <li class="nav-item">
+        <a class="nav-link active" style="cursor:pointer;" data-item="#Datos">Datos</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" style="cursor:pointer;" data-item="#Unidades">Unidades</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" style="cursor:pointer;" data-item="#Unidadesv2">Unidades V2</a>
+    </li>
+</ul>
+
+<br />
+
+<div id="Datos">
+    <ul>
+        <li><small>Los campos con (*) son obligatorios.</small></li>
+    </ul>
+
+    <form asp-action="Edit" id="editForm">
+        <input type="hidden" asp-for="Id" id="editId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row">
+            <div class="col-4 form-group">
+                <label asp-for="Nombres" class="control-label"></label>
+                <input asp-for="Nombres" class="form-control" />
+                <span asp-validation-for="Nombres" class="text-danger"></span>
+            </div>
+            <div class="col-4 form-group">
+                <label asp-for="Apellidos" class="control-label"></label>
+                <input asp-for="Apellidos" class="form-control" />
+                <span asp-validation-for="Apellidos" class="text-danger"></span>
+            </div>
+            <div class="col-4 form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                @*<span asp-validation-for="Email" class="text-danger"></span>*@
+                <span class="invalid-feedback"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-4">
+                <label asp-for="RegionId"></label>
+                <select asp-for="RegionId" class="form-control" asp-items="ViewBag.Regiones"></select>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="ProvinciaId"></label>
+                <select asp-for="ProvinciaId" class="form-control" asp-items="ViewBag.Provincias"></select>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="ComunaId"></label>
+                <select asp-for="ComunaId" class="form-control" asp-items="ViewBag.Comunas"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-4 form-group">
+                <label asp-for="SexoId"></label>
+                <select asp-for="SexoId" class="form-control" required asp-items="ViewBag.Sexos"></select>
+                <span asp-validation-for="SexoId" class="text-danger"></span>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="NumeroTelefono" class="control-label"></label>
+                <input asp-for="NumeroTelefono" class="form-control" />
+                <span asp-validation-for="NumeroTelefono" class="text-danger"></span>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="NumeroTelefonoOpcional" class="control-label"></label>
+                <input asp-for="NumeroTelefonoOpcional" class="form-control" />
+                <span asp-validation-for="NumeroTelefonoOpcional" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-4">
+                <label asp-for="Cargo" class="control-label"></label>
+                <input asp-for="Cargo" class="form-control" />
+                <span asp-validation-for="Cargo" class="text-danger"></span>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="Rut" class="control-label"></label>
+                <input asp-for="Rut" class="form-control" maxlength="12" autocomplete="off" />
+                @*<span asp-validation-for="Rut" class="text-danger"></span>*@
+                <span class="invalid-feedback"></span>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="Active" class="control-label"></label> <br />
+                <label class="switch">
+                    <input type="checkbox" asp-for="Active">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-4">
+                <label asp-for="Certificado" class="control-label"></label> <br />
+                <label class="switch">
+                    @if (ViewBag.CurrentUserIsAdmin)
+                    {
+                        <input type="checkbox" asp-for="Certificado">
+                    }
+                    else
+                    {
+                        <input type="checkbox" asp-for="Certificado" class="disable-check">
+                    }
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="form-group col-4">
+                <label asp-for="Validado" class="control-label"></label> <br />
+                <label class="switch">
+
+                    @if (ViewBag.CurrentUserIsAdmin || ViewBag.CurrentUserIsGestorServicio)
+                    {
+                        @if (disabledByrestrictGs)
+                        {
+                            <input type="checkbox" asp-for="Validado" disabled>
+                        } else
+                        {
+                            <input type="checkbox" asp-for="Validado" >
+                        }
+
+                    }
+                    else
+                    {
+                        <input type="checkbox" asp-for="Validado" disabled>
+                    }
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label asp-for="RolesId" class="control-label"></label>
+                <div class="input-group">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">
+                            Asociados
+                        </div>
+
+                        <div class="card-body p-0">
+                            <select asp-for="RolesId" asp-items="ViewBag.RolesAsociados" class="form-control" multiple></select>
+                        </div>
+                    </div>
+
+                    <div class="col-1 text-center btn-group-vertical">
+
+                        <a class="btn btn-danger" id="removeRoles"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a class="btn btn-info" id="addRoles"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+
+                    </div>
+
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">No asociados</div>
+                        <div class="card-body p-0">
+                            <select asp-items="ViewBag.RolesNoAsociados" id="RolesNoAsociados" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label asp-for="Instituciones" class="control-label"></label>
+
+                <div class="input-group">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">
+                            Asociados
+                        </div>
+
+                        <div class="card-body p-0">
+                            <select asp-for="InstitucionesId" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                    @if (ViewBag.CurrentUserIsAdmin)
+                    {
+                        <div class="col-1 text-center btn-group-vertical">
+
+                            <a class="btn btn-danger" id="removeInstituciones"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                            <a class="btn btn-info" id="addInstituciones"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+
+                        </div>
+
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header small">No asociados</div>
+                            <div class="card-body p-0">
+                                <select asp-for="InstitucionesNoAsociados" id="InstitucionesNoAsociados" class="form-control" multiple></select>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col">
+                <label asp-for="Servicios" class="control-label"></label>
+
+                <div class="input-group">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-header small">
+                            Asociados
+                        </div>
+
+                        <div class="card-body p-0">
+                            <select asp-for="ServiciosId" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                    @if (ViewBag.CurrentUserIsAdmin)
+                    {
+                        <div class="col-1 text-center btn-group-vertical">
+
+                            <a class="btn btn-danger" id="removeServicios"><i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                            <a class="btn btn-info" id="addServicios"><i class="fa fa-angle-left" aria-hidden="true"></i></a>
+
+                        </div>
+
+                        <div class="card" style="width: 18rem;">
+                            <div class="card-header small">No asociados</div>
+                            <div class="card-body p-0">
+                                <select id="ServiciosNoAsociados" asp-for="ServiciosNoAsociados" class="form-control" multiple disabled>
+                                    <option value='optionCargando'>Cargando...</option>
+                                </select>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="form-group col">
+            @await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Guardar = true, Volver = true })
+            @*<a asp-action="Index" class="btn btn-dark"><span class="@Constants.Icons.VOLVER"></span> @Constants.Buttons.VOLVER</a>
+                <a class="btn btn-primary saveForm"><span class="@Constants.Icons.GUARDAR"></span> @Constants.Buttons.GUARDAR</a>*@
+        </div>
+    </div>
+
+    @await Html.PartialAsync("Shared/_UsuarioClave", new UsuarioCambioClaveModel { Id = Model.Id, CambioEmail = Model.Email })
+
+
+</div>
+
+<div id="Unidades" style="display:none;">
+
+    <div id='loader' style='display: none;' class="text-center">
+        <img src='~/images/reload.gif' style="width:32px; height:32px">
+    </div>
+</div>
+<div id="Unidadesv2" style="display:none;">
+
+    <div id='loaderv2' style='display: none;' class="text-center">
+        <img src='~/images/reload.gif' style="width:32px; height:32px">
+    </div>
+</div>
+<script src="~/vendor/rut/jquery.rut.js"></script>
+<script src="~/js/Validaciones.js"></script>
+
+<script src="~/js/AdminUsuario/JSComun.js" asp-append-version="true"></script>
+<script>
+    let $institucionesId = $("#InstitucionesId");
+    let $institucionesNoAsociados = $("select#InstitucionesNoAsociados");
+    let $serviciosNoAsociados = $("#ServiciosNoAsociados");
+    let $serviciosId = $("#ServiciosId");
+
+
+    $('.disable-check').on('click', function (ev) {
+        ev.preventDefault();
+    })
+    
+
+
+    $("#btnActions-btnVolver").click(function (e) {
+        e.preventDefault();
+        window.location = "@Url.Action("Index","AdminUsuario")";
+     });
+
+       $("#Email").keyup(function () {
+        if (validaEmail($(this).val())) {
+            $(this).next().removeClass("d-block");
+        } else {
+            $(this).next().addClass("d-block").html("Email invalido");
+        }
+
+    });
+
+    $(document).ready(function () {
+        $("#Rut").rut({ formatOn: 'keyup', validateOn: 'keyup' })
+            .on('rutInvalido', function () {
+                $(this).next().addClass("d-block").html("Rut invalido");
+            })
+            .on('rutValido', function (e, rut) {
+                if (rut > 1000000) {
+                    $(this).next().removeClass("d-block");
+                }
+            });
+
+        let currentUserIsAdmin = "@ViewBag.CurrentUserIsAdmin" == "True";
+
+        loadSelectDataAsync($("#InstitucionesId"), apiInstituciones + "/getAsociadosByUserId/" + $("input#Id").val(), "", "", currentUserIsAdmin, true).then(function () {
+            $.each($("select#InstitucionesId option"), function (i, item) {
+                loadSelectData($("#ServiciosNoAsociados"), apiServicios + "/byUserId/" + $("input#Id").val() + "/byInstitucionId/" + item.value, "", "", true, "", true);
+            });
+        });
+
+        loadSelectData($("#InstitucionesNoAsociados"), apiInstituciones + "/getNoAsociadosByUserId/" + $("input#Id").val(), "", "", currentUserIsAdmin, "", true);
+        
+        //loadSelectData($("#ServiciosId"), apiServicios + "/getAsociadosByUserId/" + $("input#Id").val(), "", "", currentUserIsAdmin, "", true);
+        CargarSelectMultiples($serviciosId, apiServicios + "/getAsociadosByUserId/" + $("input#Id").val(), "institucionId", undefined);
+
+        /* Instituciones */
+        $('#addInstituciones').click(function () {
+            addSelectData($("select#InstitucionesId"), $("select#InstitucionesNoAsociados"));
+
+            $("#ServiciosNoAsociados").empty();
+            $.each($("select#InstitucionesId option"), function (i, item) {
+                //loadSelectData($("#ServiciosNoAsociados"), apiServicios + "/byUserId/" + $("input#Id").val() + "/byInstitucionId/" + item.value,"","", true,"",true);
+                CargarSelectMultiples($serviciosNoAsociados, apiServicios + "/getByInstitucionId/" + item.value,"", $serviciosId);
+            });
+        });
+
+        $('#removeInstituciones').click(function () {
+            removeSelectData($("select#InstitucionesId"), $institucionesNoAsociados);
+
+            //$("#ServiciosNoAsociados").empty();
+
+            $institucionesNoAsociados.find("option").each(function (i, item){
+                $serviciosId.find("option[parentId=" + item.value + "]").remove();//.prop("selected", "selected");
+                //removeSelectData($serviciosId, $serviciosNoAsociados);
+            });
+
+            
+            $("#ServiciosNoAsociados").empty();
+            $.each($("select#InstitucionesId option"), function (i, item) {
+                CargarSelectMultiples($serviciosNoAsociados, apiServicios + "/byUserId/" + $("input#Id").val() + "/byInstitucionId/" + item.value, "", undefined);
+                //loadSelectData($("#ServiciosNoAsociados"), apiServicios + "/byUserId/" + $("input#Id").val() + "/byInstitucionId/" + item.value, "", "", true, "", true);
+            });
+
+        });
+
+        /* Servicios */
+        $("body").on("click", "#addServicios", function (event) {
+            addSelectData($("select#ServiciosId"), $("select#ServiciosNoAsociados"));
+        });
+
+        $("body").on("click", "#removeServicios", function (event) {
+            removeSelectData($("select#ServiciosId"), $("select#ServiciosNoAsociados"));
+        });
+
+        /* Roles */
+        $('#addRoles').click(function () {
+            if ($("select#RolesNoAsociados option:selected").length > 1 || $("select#RolesId option").length == 1) {
+                //$(this).removeAttr("selected");
+                alert('Solo puede selecionar 1 tipo de gestor.');
+            } else {
+                addSelectData($("select#RolesId"), $("select#RolesNoAsociados"));
+            }
+        });
+
+        $('#removeRoles').click(function () {
+            removeSelectData($("select#RolesId"), $("select#RolesNoAsociados"));
+        });
+
+        $("#btnGuardar").click(function (e) {
+            e.preventDefault();
+            $('select#RolesId option').prop("selected", "selected");
+            $('select#InstitucionesId option').prop("selected", "selected");
+            $('select#ServiciosId option').prop("selected", "selected");
+            $("select#ServiciosNoAsociados option").prop("selected", "selected");
+            $("select#InstitucionesNoAsociados option").prop("selected", "selected");
+
+            Guardar().then();
+
+        });
+    });
+
+    async function Guardar() {
+        let response;
+        try {
+            $("#btnGuardar").button("loading");
+
+            response = await $.post({
+                url: $("#editForm").attr("action"),
+                data: $("#editForm").serialize()
+            });
+
+            $("#Unidades").html(response);
+
+            $("#navegacionDatosUnidades li a").removeClass('active');
+            $("#navegacionDatosUnidades li a[data-item='#Unidades']").addClass('active');
+
+            $("#Datos, #Unidades").hide();
+            $("#Unidades").show();
+
+            $(".is-invalid").removeClass("is-invalid");
+            $(".invalid-feedback").remove();
+
+        } catch (e) {
+            MostrarErrores(e);
+        } finally {
+            $("#btnGuardar").button("reset");
+        }
+
+    }
+
+    $("#navegacionDatosUnidades li a").click(function () {
+        $("#navegacionDatosUnidades li a").removeClass("active");
+        $("#Datos, #Unidades , #Unidadesv2").hide();
+
+        var actual = $(this).attr("data-item");
+
+        $(actual).show();
+        $("a[data-item='" + actual + "']").addClass('active');
+
+        if (actual == "#Datos") {
+            return;
+        }
+
+        if (actual == "#Unidades") {
+            if (!$("#loader").length) {
+                return;
+            }
+            GetUnidades().then();
+        }
+
+        if (actual == "#Unidadesv2") {
+            if (!$("#loaderv2").length) {
+                return;
+            }
+
+            GetUnidadesv2().then();
+            
+        }
+
+        
+
+        return false;
+
+    });
+
+
+    $("#RegionId").change(function () {
+        $("#ProvinciaId").html("<option value=''>-- SELECCIONE --</option>").prop("disabled","disabled");;
+        $("#ComunaId").html("<option value=''>-- SELECCIONE --</option>").prop("disabled","disabled");
+
+        if ($(this).val() != "") {
+            loadSelectDataAsync($("#ProvinciaId"), apiProvincia + "/getByRegionId/" + $(this).val(), "", "", true);
+        } 
+
+
+    });
+
+    $("#ProvinciaId").change(function () {
+        $("#ComunaId").html("<option value=''>-- SELECCIONE --</option>").prop("disabled","disabled");
+
+        if ($(this).val() !== "") {
+            loadSelectDataAsync($("#ComunaId"), apiComuna + "/getByProvinciaId/" + $(this).val(), "", "", true);
+        }
+    });
+
+</script>
+

@@ -1,0 +1,544 @@
+﻿<h1>Gestión de Papel</h1>
+<h3>{{selectedUnidadNombre}}</h3>
+<hr />
+<div>
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+        <span class="fa fa-filter"></span> Filtros
+    </button>
+    <div class="collapse" id="collapseFiltros">
+        <hr />
+        <form class="form-inline">
+            <select-institucion user-id="{{userId}}"
+                                institucion-id="{{selectedInstitucionId}}"
+                                on-institucion-change="changeInstitucion(institucionId)">
+            </select-institucion>
+            <select-servicio servicios="servicios"
+                             servicio-id="{{selectedServicioId}}"
+                             on-servicio-change="changeServicio(servicioId)">
+            </select-servicio>
+            <select-unidad unidades="unidades"
+                           unidad-id="{{selectedUnidadId}}"
+                           on-unidad-change="changeUnidad(unidadId)">
+            </select-unidad>
+        </form>
+    </div>
+</div>
+<hr />
+<div>
+    <div class="mt-3">
+        <p>
+            ¿La unidad utiliza papel? 
+        </p>
+        <label>NO utiliza</label>
+        <label class="switch" style="margin-bottom: -0.5rem!important;">
+            <input type="checkbox" ng-model="noDeclaraImpresoras" ng-disabled="isConsulta" ng-change="changeNoDeclaraImpresoras()">
+            <span class="slider round disable-check"></span>
+        </label>
+        <label>SI utiliza</label>
+
+    </div>
+    <hr />
+    <p>
+        ingreso de Observación y/o Fundamentación de inexistencia
+    </p>
+    <div class="form-group">
+        <label class="form-label">
+            No
+        </label>
+        <label class="switch" style="margin-bottom: -0.5rem!important;">
+            <input ng-disabled="isConsulta" type="checkbox" ng-model="observa.checkObserva">
+            <span class="slider round"></span>
+        </label>
+        <label class="form-label">
+            Si
+        </label>
+    </div>
+    <div>
+        <div class="form-group" ng-show="observa.checkObserva">
+            <label class="form-label">Observación</label>
+            <textarea ng-disabled="isConsulta" ng-model="observa.observacion" class="form-control" rows="3"></textarea>
+        </div>
+        <button ng-show="!isConsulta" ng-click="saveObservacion()" class="btn btn-secondary">Guardar Observación</button>
+    </div>
+
+</div>
+<hr />
+<button ng-show="!isConsulta" class="btn btn-primary btn-sm" ng-click="showModal()">Agregar</button>
+<hr />
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+        <a ng-show="noDeclaraImpresoras" class="nav-item nav-link active"
+           id="nav-impresoras-tab"
+           data-toggle="tab"
+           href="#nav-impresoras"
+           role="tab">
+            Impresoras
+        </a>
+        <a class="nav-link"
+           id="nav-consumo-tab"
+           data-toggle="tab"
+           href="#nav-consumo"
+           role="tab">
+            Adquisición y gasto de resmas
+        </a>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent-papel">
+    <div class="tab-pane fade show active" id="nav-impresoras" role="tabpanel">
+        <div ng-show="impresoras.length>0 && !loadingTableImpresoras && noDeclaraImpresoras">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo Impresora</th>
+                            <th>N° Impresiones / año</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="impresora in impresoras">
+                            <td>
+                                {{impresora.nombre}}
+                            </td>
+                            <td>
+                                {{impresora.tipoImpresora}}
+                            </td>
+                            <td>
+                                {{impresora.numeroImpresiones}}
+                            </td>
+                            <td>
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="edit(impresora.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteImpresora(impresora.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageImpresoras()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': page==arrPage}" ng-repeat="arrPage in arrayPages">
+                        <button class="page-link" ng-click="setPageImpresoras(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageImpresoras()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="impresoras.length==0 && !loadingTableImpresoras">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableImpresoras">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-consumo" role="tabpanel">
+        <div class="form-group mt-3">
+            <label class="control-label">Año:</label>
+            <select name="selectedYear"
+                    ng-model="selectedYear"
+                    ng-change="changeYear()"
+                    class="form-control">
+                <option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+            </select>
+        </div>
+        <div ng-show="resmas.length>0 && !loadingTableResmas">
+            <div style="min-height:400px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cantidad Resmas</th>
+                            <th>Fecha</th>
+                            <th>Año</th>
+                            <th>Consumo agregado anual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="resma in resmas">
+                            <td>
+                                {{resma.cantidadResmas}}
+                            </td>
+                            <td>
+                                {{resma.agregada ?'-': resma.fechaAdquisicion  | date : 'dd-MM-yyyy'}}
+                            </td>
+                            <td>
+                                {{!resma.agregada?'-':resma.anioAdquisicion}}
+                            </td>
+                            <td>
+                                {{resma.agregada ? 'Si' : 'No'}}
+                            </td>
+                            <td>
+                                <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                        class="btn"
+                                        ng-click="editResma(resma.id)">
+                                    {{editText}}
+                                </button>
+                                <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteResma(resma.id)">Eliminar</button>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Previous" ng-click="prevPageResmas()">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </button>
+                    </li>
+                    <li class="page-item" ng-class="{'active': pageResmas==arrPage}" ng-repeat="arrPage in arrayPagesResmas">
+                        <button class="page-link" ng-click="setPageResmas(arrPage)">{{arrPage}}</button>
+                    </li>
+
+                    <li class="page-item">
+                        <button class="page-link" aria-label="Next" ng-click="nextPageResmas()">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div ng-show="resmas.length==0 && !loadingTableResmas">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableResmas">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+                <button type="button" class="close" ng-click="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="papelForm" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="tipo">Tema:</label>
+                        <select id="tipoId"
+                                name="tipoId"
+                                ng-class="{'is-invalid':papelForm.tipoId.$invalid  && (papelForm.tipoId.$touched || papelForm.tipoId.$dirty) }"
+                                class="form-control"
+                                ng-model="gestion.tipoId"
+                                ng-change="changeTipo()"
+                                ng-disabled="isConsulta"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option ng-show="noDeclaraImpresoras" value="1">Impresoras</option>
+                            <option value="2">Adquisición y gasto de resmas</option>
+                        </select>
+                        <span ng-show="papelForm.tipoId.$invalid  && (papelForm.tipoId.$touched || papelForm.tipoId.$dirty)"
+                              class="text-danger">Debe seleccionar una opción</span>
+                    </div>
+                    <div ng-show="gestion.tipoId==1">
+                        <div class="alert alert-info" role="alert">
+                            No es un requisito para cumplir con PMG
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo">Tipo Impresora:</label>
+                            <select id="tipoImpresora"
+                                    name="tipoImpresora"
+                                    class="form-control"
+                                    ng-disabled="isConsulta"
+                                    ng-class="{'is-invalid':papelForm.tipoImpresora.$invalid  && (papelForm.tipoImpresora.$touched || papelForm.tipoImpresora.$dirty)}"
+                                    ng-model="gestion.tipoImpresora"
+                                    ng-required="gestion.tipoId==1">
+                                <option value="">--Seleccione--</option>
+                                <option value="Multifuncional">Multifuncional</option>
+                                <option value="Fotocopiadora">Fotocopiadora</option>
+                                <option value="Individual">Individual</option>
+                                <option value="Plotter">Plotter</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                            <span ng-show="papelForm.tipoImpresora.$invalid  && (papelForm.tipoImpresora.$touched || papelForm.tipoImpresora.$dirty)"
+                                  class="text-danger">Debe seleccionar una opción</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre">Nombre:</label>
+                            <input id="nombre"
+                                   name="nombre"
+                                   ng-disabled="isConsulta"
+                                   type="text"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':papelForm.nombre.$invalid  && (papelForm.nombre.$touched || papelForm.nombre.$dirty) }"
+                                   ng-model="gestion.nombre"
+                                   ng-required="gestion.tipoId==1" />
+                            <span ng-show="papelForm.nombre.$invalid  && (papelForm.nombre.$touched || papelForm.nombre.$dirty)" class="text-danger">
+                                El campo Nombre es requerido
+                            </span>
+                        </div>
+                        <!--<div class="form-group">
+                            <label for="marca">Marca:</label>
+                            <input id="marca"
+                                   name="marca"
+                                   ng-disabled="isConsulta"
+                                   type="text"
+                                   class="form-control"
+                                   ng-model="gestion.marca" />
+                        </div>
+                        <div class="form-group">
+                            <label for="modelo">Modelo:</label>
+                            <input id="modelo"
+                                   name="modelo"
+                                   type="text"
+                                   ng-disabled="isConsulta"
+                                   class="form-control"
+                                   ng-model="gestion.modelo" />
+                        </div>
+                        <div class="form-group">
+                            <label for="potencia">Potencia:</label>
+
+                            <div class="input-group mb-2">
+
+                                <input id="potencia"
+                                       name="potencia"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       ng-class="{'is-invalid':papelForm.potencia.$invalid  && (papelForm.potencia.$touched || papelForm.potencia.$dirty) }"
+                                       class="form-control"
+                                       ng-model="gestion.potencia"
+                                       ng-pattern="/^\d+(\.\d{1,2})?$/" />
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="validationTooltipUsernamePrepend">KW</span>
+                                </div>
+                            </div>
+                            <span ng-show="papelForm.potencia.$error.pattern  && (papelForm.potencia.$touched || papelForm.potencia.$dirty)"
+                                  class="text-danger">El formato debe ser numero con dos decimales máximo</span>
+                        </div>-->
+                        <div class="form-group">
+                            <label for="numeroImpresiones">N° Impresiones periodo PMG:</label>
+                            <input id="numeroImpresiones"
+                                   name="numeroImpresiones"
+                                   ng-disabled="isConsulta"
+                                   type="number"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':papelForm.numeroImpresiones.$invalid  && (papelForm.numeroImpresiones.$touched || papelForm.numeroImpresiones.$dirty) }"
+                                   ng-model="gestion.numeroImpresiones"
+                                   ng-required="gestion.tipoId==1" />
+                            <span ng-show="papelForm.numeroImpresiones.$invalid  && (papelForm.numeroImpresiones.$touched || papelForm.numeroImpresiones.$dirty)" class="text-danger">
+                                El campo N° Impresiones / año es requerido
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between">
+                                <p>Blanco y negro</p>
+                                <p>Color</p>
+                            </div>
+
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipUsernamePrepend">{{gestion.bcnColor}}%</span>
+                                </div>
+                                <div class="col-8">
+                                    <input id="bcnColor"
+                                           name="bcnColor"
+                                           ng-disabled="isConsulta"
+                                           type="range"
+                                           class="form-control-range  ml-1 mr-1"
+                                           style="margin-top:10px;"
+                                           ng-model="gestion.bcnColor" />
+                                </div>
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipUsernamePrepend">{{100-gestion.bcnColor}}%</span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between">
+                                <p>Una Cara</p>
+                                <p>Doble Cara</p>
+                            </div>
+
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipUsernamePrepend">{{gestion.caras}}%</span>
+                                </div>
+                                <div class="col-8">
+                                    <input id="caras"
+                                           name="caras"
+                                           ng-disabled="isConsulta"
+                                           type="range"
+                                           class="form-control-range  ml-1 mr-1"
+                                           style="margin-top:10px;"
+                                           ng-model="gestion.caras" />
+                                </div>
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipUsernamePrepend">{{100-gestion.caras}}%</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div ng-show="gestion.tipoId==2">
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <label class="mr-5" style="font-size: 1.2rem;">Adquisición y gasto anual:</label>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input id="compraAgredada"
+                                           type="checkbox"
+                                           ng-disabled="isConsulta"
+                                           ng-model="gestion.agregada">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <!--<div class="form-check" ng-show="!gestion.agregada">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   id="papelReciclado"
+                                   ng-disabled="isConsulta"
+                                   ng-model="gestion.papelReciclado">
+                            <label class="form-check-label" for="papelReciclado">
+                                Papel reciclado
+                            </label>
+                        </div>-->
+                        <!--<div class="form-group" ng-show="gestion.agregada">
+                            <label class="form-check-label" for="papelRecicladoRango">
+                                Papel reciclado:
+                            </label>
+                            <div class="input-group mb-2">
+                                <input id="papelRecicladoRango"
+                                       name="papelRecicladoRango"
+                                       ng-disabled="isConsulta"
+                                       type="range"
+                                       class="form-control-range col-10 ml-1 mr-1"
+                                       ng-model="gestion.papelRecicladoRango" />
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipPapelRecicladoRango">{{gestion.papelRecicladoRango}}%</span>
+                                </div>
+                            </div>
+
+                        </div>-->
+                        <div class="form-group mt-3">
+                            <label for="potencia">Cantidad de resmas no recicladas:</label>
+                            <div class="input-group mb-2">
+                                <input id="cantidadResmas"
+                                       name="cantidadResmas"
+                                       ng-disabled="isConsulta"
+                                       type="number"
+                                       class="form-control"
+                                       ng-model="gestion.cantidadResmas" />
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="potencia">Cantidad Resmas recicladas:</label>
+                            <div class="input-group mb-2">
+                                <input id="cantidadResmasRecicladas"
+                                       name="cantidadResmasRecicladas"
+                                       ng-disabled="isConsulta"
+                                       type="number"
+                                       class="form-control"
+                                       ng-model="gestion.cantidadResmasRecicladas" />
+                            </div>
+                        </div>
+                        <div class="form-group mt-3" ng-show="!gestion.agregada">
+                            <label for="fechaAdquisicion">
+                                Fecha de adquisición de resmas:</label>
+                            <div class="input-group mb-2">
+                                <input id="fechaAdquisicion"
+                                       name="fechaAdquisicion"
+                                       type="date"
+                                       min="{{gestion.agregada?'':'2023-11-01'}}"
+                                       ng-disabled="isConsulta"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':papelForm.fechaAdquisicion.$invalid  && (papelForm.fechaAdquisicion.$touched || papelForm.fechaAdquisicion.$dirty) }"
+                                       ng-model="gestion.fechaAdquisicion"
+                                       ng-required="!gestion.agregada && gestion.tipoId==2" />
+                            </div>
+                            <span ng-show="papelForm.fechaAdquisicion.$invalid  && (papelForm.fechaAdquisicion.$touched || papelForm.fechaAdquisicion.$dirty)" class="text-danger">
+                                El campo Fecha de Adquisición es requerido
+                            </span>
+                        </div>
+                        <div class="form-group mt-3" ng-show="gestion.agregada">
+                            <label for="fechaAdquisicion">Periodo PMG de adquisición de resmas (Corresponde al periodo comprendido entre el 1 de noviembre del año anterior y el 31 de octubre del año en curso):</label>
+                            <div class="input-group mb-2">
+                                <input id="anioAdquisicion"
+                                       name="anioAdquisicion"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':papelForm.anioAdquisicion.$invalid  && (papelForm.anioAdquisicion.$touched || papelForm.anioAdquisicion.$dirty) }"
+                                       ng-model="gestion.anioAdquisicion"
+                                       ng-required="gestion.agregada && gestion.tipoId==2"
+                                       min="2022" />
+                            </div>
+                            <span ng-show="papelForm.anioAdquisicion.$error.required  && (papelForm.anioAdquisicion.$touched || papelForm.anioAdquisicion.$dirty)" class="text-danger">
+                                El campo Año de Adquisición es requerido
+                            </span>
+                            <span ng-show="papelForm.anioAdquisicion.$error.min  && (papelForm.anioAdquisicion.$touched || papelForm.anioAdquisicion.$dirty)" class="text-danger">
+                                El campo Año debe ser mayor a 2022
+                            </span>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="costoEstimado">Gasto:</label>
+                            <div class="input-group mb-2">
+                                <input id="costoEstimado"
+                                       name="costoEstimado"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':papelForm.costoEstimado.$invalid  && (papelForm.costoEstimado.$touched || papelForm.costoEstimado.$dirty) }"
+                                       ng-model="gestion.costoEstimado"
+                                       ng-required="gestion.tipoId==2"
+                                       min="0" />
+                            </div>
+                            <span ng-show="papelForm.costoEstimado.$error.required  && (papelForm.costoEstimado.$touched || papelForm.costoEstimado.$dirty)" class="text-danger">
+                                El campo Gasto es requerido
+                            </span>
+                            <span ng-show="papelForm.costoEstimado.$error.min  && (papelForm.costoEstimado.$touched || papelForm.costoEstimado.$dirty)" class="text-danger">
+                                El campo Gasto debe ser mayor o igual a 0
+                            </span>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label for="idMercadoPublico">Id Mercado Público:</label>
+                            <div class="input-group mb-2">
+                                <input id="idMercadoPublico"
+                                       name="idMercadoPublico"
+                                       ng-disabled="isConsulta"
+                                       type="text"
+                                       class="form-control"
+                                       placeholder="si es más de un id de compra, separar por ';'"
+                                       ng-model="gestion.idMercadoPublico" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModal()">Cancelar</button>
+                    <button ng-show="!isConsulta" type="button" class="btn btn-primary" ng-click="submitForm()" ng-disabled="papelForm.$invalid">Guardar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

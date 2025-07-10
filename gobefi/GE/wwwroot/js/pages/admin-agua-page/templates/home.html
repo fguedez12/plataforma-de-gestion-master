@@ -1,0 +1,556 @@
+﻿<h1>Gestión de Agua:</h1>
+<h3>{{selectedUnidadNombre}}</h3>
+<hr />
+<div>
+    <button type="button" class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#collapseFiltros" aria-expanded="false" aria-controls="collapseFiltros">
+        <span class="fa fa-filter"></span> Filtros
+    </button>
+    <div class="collapse" id="collapseFiltros">
+        <hr />
+        <form class="form-inline">
+            <select-institucion user-id="{{userId}}"
+                                institucion-id="{{selectedInstitucionId}}"
+                                on-institucion-change="changeInstitucion(institucionId)">
+            </select-institucion>
+            <select-servicio servicios="servicios"
+                             servicio-id="{{selectedServicioId}}"
+                             on-servicio-change="changeServicio(servicioId)">
+            </select-servicio>
+            <select-unidad unidades="unidades"
+                           unidad-id="{{selectedUnidadId}}"
+                           on-unidad-change="changeUnidad(unidadId)">
+            </select-unidad>
+        </form>
+    </div>
+</div>
+<hr />
+<div class="d-flex">
+    <div class="mr-5">
+        <p>
+            ¿La unidad tiene artefactos de agua?
+        </p>
+        <label>NO tiene</label>
+        <label class="switch" style="margin-bottom: -0.5rem!important;">
+            <input type="checkbox" ng-model="noDeclaraArtefactos" ng-disabled="isConsulta" ng-change="changeNoDeclaraArtefactos()">
+            <span class="slider round disable-check"></span>
+        </label>
+        <label>SI tiene</label>
+
+    </div>
+    <div class="ml-5">
+        <p>
+            ¿La unidad consume agua en bidones?
+        </p>
+        <label>NO consume</label>
+        <label class="switch" style="margin-bottom: -0.5rem!important;">
+            <input type="checkbox" ng-model="consumeBidon" ng-disabled="isConsulta" ng-change="changeConsumeBidon()">
+            <span class="slider round disable-check"></span>
+        </label>
+        <label>SI consume</label>
+
+    </div>
+</div>
+<hr />
+<div class="d-flex" style="background-color: #FFFFD4;">
+    <div class="form-group">
+        <label for="accesoFacturaId">Tiene acceso a las facturas de agua:</label>
+        <select id="accesoFacturaId"
+                name="accesoFacturaId"
+                class="form-control"
+                ng-model="accesoFacturaAgua" disabled>
+            <option value="">Sin Información</option>
+            <option value="1">Si</option>
+            <option value="2">No, Otro servicio público</option>
+            <option value="3">No, Otra organización</option>
+        </select>
+    </div>
+    <div class="col-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Comparte Medidor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Agua:</td>
+                    <td class="text-center">
+                        <label class="switch" style="margin-bottom: -0.5rem!important;">
+                            <input type="checkbox" ng-model="comparteMedidorAgua" disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+</div>
+<div class="alert alert-info" role="alert">
+  Para editar se hace en configuración de unidad y/o actualización datos unidad
+</div>
+<hr />
+<div>
+    <p>
+        ingreso de Observación y/o Fundamentación de inexistencia
+    </p>
+    <div class="form-group">
+        <label class="form-label">
+            No
+        </label>
+        <label class="switch" style="margin-bottom: -0.5rem!important;">
+            <input ng-disabled="isConsulta" type="checkbox" ng-model="observa.checkObserva">
+            <span class="slider round"></span>
+        </label>
+        <label class="form-label">
+            Si
+        </label>
+    </div>
+    <div>
+        <div class="form-group" ng-show="observa.checkObserva">
+            <label class="form-label">Observación</label>
+            <textarea ng-disabled="isConsulta" ng-model="observa.observacion" class="form-control" rows="3"></textarea>
+        </div>
+        <button ng-show="!isConsulta" ng-click="saveObservacion()" class="btn btn-secondary">Guardar Observación</button>
+    </div>
+
+</div>
+<hr />
+<button ng-show="!isConsulta" class="btn btn-primary btn-sm" ng-click="showModal()">Agregar</button>
+<hr />
+<nav>
+    <div class="nav nav-tabs" id="nav-tab-me" role="tablist">
+        <a class="nav-item nav-link"
+           ng-class="activeConsumo"
+           id="nav-consumos-tab"
+           data-toggle="tab"
+           href="#nav-consumos"
+           role="tab">
+            Consumo de Agua
+        </a>
+        <a ng-show="noDeclaraArtefactos" class="nav-link"
+           ng-class="activeArtefactos"
+           id="nav-artefactos-tab"
+           data-toggle="tab"
+           href="#nav-artefactos"
+           role="tab">
+            Artefactos de Agua
+        </a>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent-agua">
+    <div class="tab-pane fade show active" id="nav-consumos" role="tabpanel">
+        <div class="form-group mt-3">
+            <label class="control-label">Año:</label>
+            <select name="selectedYear"
+                    ng-model="selectedYear"
+                    ng-change="changeYear()"
+                    class="form-control">
+                <option ng-repeat="y in years" value="{{y}}">{{y}}</option>
+            </select>
+        </div>
+        <div ng-show="consumos.length>0 && !loadingTableConsumos">
+            <div style="min-height:400px">
+                <div style="min-height:400px">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id Compra Agua</th>
+                                <th>Fecha</th>
+                                <th>Año</th>
+                                <th>Tipo de suministro</th>
+                                <th>Consumo (m<sup>3</sup> / Lts)</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="consumo in consumos">
+                                <td>
+                                    {{consumo.id}}
+                                </td>
+                                <td>
+                                    {{consumo.tipoSuministroId==1 ? consumo.inicioLectura : consumo.tipoSuministroId== 2 ? consumo.fecha : '-' | date : 'dd-MM-yyyy'}}
+                                </td>
+                                <td>
+                                    {{consumo.anioAdquisicion?consumo.anioAdquisicion: '-'}}
+
+                                </td>
+                                <td>
+                                    {{consumo.tipoSuministroId == 1 ? 'Agua Potable' : 'Agua Bidon'}}
+                                </td>
+                                <td>
+                                    {{consumo.cantidad}}
+                                </td>
+                                <td>
+                                    <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                            class="btn"
+                                            ng-click="editConsumo(consumo.id)">
+                                        {{editText}}
+                                    </button>
+                                    <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteConsumo(consumo.id)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <button class="page-link" aria-label="Previous" ng-click="prevPageConsumo()">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </button>
+                        </li>
+                        <li class="page-item" ng-class="{'active': page==pageConsumos}" ng-repeat="arrPage in arrayPagesConsumos">
+                            <button class="page-link" ng-click="setPageConsumos(arrPage)">{{arrPage}}</button>
+                        </li>
+
+                        <li class="page-item">
+                            <button class="page-link" aria-label="Next" ng-click="nextPageConsumos()">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div ng-show="consumos.length==0 && !loadingTableConsumos">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableConsumos">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+    <div class="tab-pane fade show" id="nav-artefactos" role="tabpanel">
+        <div ng-show="artefactos.length>0 && !loadingTableArtefactos && noDeclaraArtefactos ">
+            <div style="min-height:400px">
+                <div style="min-height:400px">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id Artefacto</th>
+                                <th>Tipo Artefacto</th>
+                                <th>Cantidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="artefacto in artefactos">
+                                <td>
+                                    {{artefacto.tipoArtefactoId}}
+                                </td>
+                                <td>
+                                    {{artefacto.tipoArtefacto}}
+                                </td>
+                                <td>
+                                    {{artefacto.cantidadArtefactos}}
+
+                                </td>
+                                <td>
+                                    <button ng-class="{'btn-warning':!isConsulta, 'btn-secondary':isConsulta }"
+                                            class="btn"
+                                            ng-click="editArtefacto(artefacto.id)">
+                                        {{editText}}
+                                    </button>
+                                    <button ng-show="!isConsulta" class="btn btn-danger" ng-click="deleteArtefacto(artefacto.id)">Eliminar</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <button class="page-link" aria-label="Previous" ng-click="prevPageArtefacto()">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                            </button>
+                        </li>
+                        <li class="page-item" ng-class="{'active': page==pageArtefactos}" ng-repeat="arrPage in arrayPagesArtefactos">
+                            <button class="page-link" ng-click="setPageArtefactos(arrPage)">{{arrPage}}</button>
+                        </li>
+
+                        <li class="page-item">
+                            <button class="page-link" aria-label="Next" ng-click="nextPageArtefactos()">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div ng-show="artefactos.length==0 && !loadingTableArtefactos">
+            <h3 class="mt-5">No existen registros para mostrar</h3>
+        </div>
+        <div class="d-flex" ng-show="loadingTableArtefactos">
+            <h3 class="mt-5">Cargando datos..</h3>
+            <img class=" ml-5 mt-5" src='./images/reload.gif' style="width:32px; height:32px">
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{modalTitle}}</h5>
+                <button type="button" class="close" ng-click="closeModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form name="aguaForm" enctype="multipart/form-data" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="tipo">Tipo:</label>
+                        <select id="tipoId"
+                                name="tipoId"
+                                ng-disabled="isConsulta"
+                                ng-class="{'is-invalid':aguaForm.tipoId.$invalid  && (aguaForm.tipoId.$touched || aguaForm.tipoId.$dirty) }"
+                                class="form-control"
+                                ng-model="gestion.tipoId"
+                                ng-change="changeTipo()"
+                                required>
+                            <option value="">--Seleccione--</option>
+                            <option value="1">Consumos</option>
+                            <option ng-show="noDeclaraArtefactos" value="2">Artefactos</option>
+                        </select>
+                        <span ng-show="aguaForm.tipoId.$invalid  && (aguaForm.tipoId.$touched || aguaForm.tipoId.$dirty)"
+                              class="text-danger">Debe seleccionar una opción</span>
+                    </div>
+                    <div ng-show="gestion.tipoId==1">
+                        <div class="form-group">
+                            <label for="tipoSuministroId">Tipo de suministro:</label>
+                            <select id="tipoSuministroId"
+                                    name="tipoSuministroId"
+                                    ng-disabled="isConsulta"
+                                    ng-class="{'is-invalid':aguaForm.tipoSuministroId.$invalid  && (aguaForm.tipoSuministroId.$touched || aguaForm.tipoSuministroId.$dirty) }"
+                                    class="form-control"
+                                    ng-model="gestion.tipoSuministroId"
+                                    ng-change="changeTipoSuministro()"
+                                    ng-required="gestion.tipoId==1">
+                                <option value="">--Seleccione--</option>
+                                <option value="1">Agua Potable</option>
+                                <option ng-show="consumeBidon" value="2">Agua Bidón</option>
+                            </select>
+                            <span ng-show="aguaForm.tipoSuministroId.$invalid  && (aguaForm.tipoSuministroId.$touched || aguaForm.tipoSuministroId.$dirty)"
+                                  class="text-danger">Debe seleccionar una opción</span>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <label class="mr-5" style="font-size: 1.2rem;">{{agredadoText}}:</label>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input id="compraAgredada"
+                                           ng-disabled="isConsulta"
+                                           type="checkbox"
+                                           ng-model="gestion.compraAgregada">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning" ng-if="!gestion.compraAgregada">
+                            Se deberá cargar 12 meses de consumo cubriendo todo el perído t
+                        </div>
+                        <div class="form-group" ng-show="gestion.tipoSuministroId==1 && !gestion.compraAgregada">
+                            <label for="inicioLectura">Inicio Lectura:</label>
+                            <input id="inicioLectura"
+                                   name="inicioLectura"
+                                   type="date"
+                                   ng-disabled="isConsulta"
+                                   min="2023-06-01"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':aguaForm.inicioLectura.$invalid  && (aguaForm.inicioLectura.$touched || aguaForm.inicioLectura.$dirty) }"
+                                   ng-model="gestion.inicioLectura"
+                                   ng-required="gestion.tipoId==1 && gestion.tipoSuministroId==1 && !gestion.compraAgregada" />
+                            <span ng-show="aguaForm.inicioLectura.$invalid  && (aguaForm.inicioLectura.$touched || aguaForm.inicioLectura.$dirty)"
+                                  class="text-danger">El campo inicio lectura es requerido</span>
+                        </div>
+                        <div class="form-group" ng-show="gestion.tipoSuministroId==1 && !gestion.compraAgregada">
+                            <label for="finLectura">Fin Lectura:</label>
+                            <input id="finLectura"
+                                   name="finLectura"
+                                   type="date"
+                                   ng-disabled="isConsulta"
+                                   min="2023-10-01"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':aguaForm.finLectura.$invalid  && (aguaForm.finLectura.$touched || aguaForm.finLectura.$dirty) }"
+                                   ng-model="gestion.finLectura"
+                                   ng-required="gestion.tipoId==1 && gestion.tipoSuministroId==1 && !gestion.compraAgregada" />
+                            <span ng-show="aguaForm.finLectura.$invalid  && (aguaForm.finLectura.$touched || aguaForm.finLectura.$dirty)"
+                                  class="text-danger">El campo fin lectura es requerido</span>
+                        </div>
+                        <div class="form-group" ng-show="gestion.tipoSuministroId==2 && !gestion.compraAgregada">
+                            <label for="fecha">Fecha de adquisición agua de bidón:</label>
+                            <input id="fecha"
+                                   name="fecha"
+                                   type="date"
+                                   ng-disabled="isConsulta"
+                                   min="2023-11-01"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':aguaForm.fecha.$invalid  && (aguaForm.fecha.$touched || aguaForm.fecha.$dirty) }"
+                                   ng-model="gestion.fecha"
+                                   ng-required="gestion.tipoId==1 && gestion.tipoSuministroId==2 && !gestion.compraAgregada" />
+                            <span ng-show="aguaForm.fecha.$invalid  && (aguaForm.fecha.$touched || aguaForm.fecha.$dirty)"
+                                  class="text-danger">El campo Fecha es requerido</span>
+                        </div>
+                        <div class="form-group" ng-show="gestion.compraAgregada">
+                            <label for="anioAdquisicion">Periodo PMG de adquisición {{adquicisionBidonText}}:</label>
+                            <div class="input-group mb-2">
+                                <input id="anioAdquisicion"
+                                       name="anioAdquisicion"
+                                       type="number"
+                                       ng-disabled="isConsulta"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':aguaForm.anioAdquisicion.$invalid  && (aguaForm.anioAdquisicion.$touched || aguaForm.anioAdquisicion.$dirty) }"
+                                       ng-model="gestion.anioAdquisicion"
+                                       ng-required="gestion.tipoId==1 && gestion.compraAgregada"
+                                       min="2022" />
+                            </div>
+                            <span ng-show="aguaForm.anioAdquisicion.$error.required  && (aguaForm.anioAdquisicion.$touched || aguaForm.anioAdquisicion.$dirty)" class="text-danger">
+                                El campo Año de Adquisición es requerido
+                            </span>
+                            <span ng-show="aguaForm.anioAdquisicion.$error.min  && (aguaForm.anioAdquisicion.$touched || aguaForm.anioAdquisicion.$dirty)" class="text-danger">
+                                El campo Año debe ser mayor a 2022
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <div class="d-flex">
+                                <input id="cantidad"
+                                       name="cantidad"
+                                       type="text"
+                                       ng-disabled="isConsulta"
+                                       class="form-control"
+                                       ng-class="{'is-invalid':aguaForm.cantidad.$invalid  && (aguaForm.cantidad.$touched || aguaForm.cantidad.$dirty) }"
+                                       ng-model="gestion.cantidad"
+                                       ng-pattern="/^[0-9]+(?:\.[0-9]{0,2})?$/"
+                                       ng-required="gestion.tipoId==1" />
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="validationTooltipUsernamePrepend">{{gestion.tipoSuministroId==1?'m3':'Lts'}}</span>
+                                </div>
+                            </div>
+                            <span ng-show="aguaForm.cantidad.$error.required  && (aguaForm.cantidad.$touched || aguaForm.cantidad.$dirty)"
+                                  class="text-danger">El campo Cantidad es requerido</span>
+                            <span ng-show="aguaForm.cantidad.$error.pattern && (aguaForm.cantidad.$touched || aguaForm.cantidad.$dirty)"
+                                  class="text-danger">Solo numeros sin separadores de miles y punto para los decimales, máximo dos decimales</span>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="costo">Costo:</label>
+                            <input id="costo"
+                                   name="costo"
+                                   type="number"
+                                   ng-disabled="isConsulta"
+                                   class="form-control"
+                                   ng-model="gestion.costo" />
+                        </div> -->
+                        <!--<div ng-show="gestion.adjuntoUrl" class="form-group">
+                            <label>Documento Adjunto:</label>
+                            <a href="{{linkToDownload}}" target="_blank">{{gestion.adjuntoNombre}}</a>
+                        </div>-->
+                        <!--<div class="form-group">
+                            <label for="adjunto">Adjunto:</label>
+                            <input id="adjunto"
+                                   name="adjunto"
+                                   type="file"
+                                   class="form-control"
+                                   ng-model="gestion.adjuntoPath"
+                                   demo-file-model="adjunto"
+                                   ng-class="{'is-invalid':aguaForm.adjunto.$invalid  && (aguaForm.adjunto.$touched || aguaForm.adjunto.$dirty) }"
+                                   valid-file
+                                   accept="image/*,.pdf,.rar,.zip"
+                                   ng-required="gestion.tipoId==1 && !gestion.adjuntoUrl" />
+                            <span ng-show="aguaForm.adjunto.$invalid  && (aguaForm.adjunto.$touched || aguaForm.adjunto.$dirty)"
+                                  class="text-danger">Debe adjuntar un documento</span>
+                        </div>-->
+                    </div>
+                    <div ng-show="gestion.tipoId==2">
+                        <div class="form-group">
+                            <label for="tipo">Tipo de Artefacto:</label>
+                            <select id="tipoArtefactoId"
+                                    name="tipoArtefactoId"
+                                    ng-disabled="isConsulta"
+                                    ng-class="{'is-invalid':aguaForm.tipoArtefactoId.$invalid  && (aguaForm.tipoArtefactoId.$touched || aguaForm.tipoArtefactoId.$dirty) }"
+                                    class="form-control"
+                                    ng-model="gestion.tipoArtefactoId"
+                                    ng-required="gestion.tipoId==2">
+                                <option value="">--Seleccione--</option>
+                                <option ng-repeat="tipoArtefacto in tipoArtefactos" value="{{tipoArtefacto.id}}">{{tipoArtefacto.nombre}}</option>
+                            </select>
+                            <span ng-show="aguaForm.tipoArtefactoId.$invalid  && (aguaForm.tipoArtefactoId.$touched || aguaForm.tipoArtefactoId.$dirty)"
+                                  class="text-danger">Debe seleccionar una opción</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidad">Cantidad:</label>
+                            <input id="cantidadArtefactos"
+                                   name="cantidadArtefactos"
+                                   type="number"
+                                   ng-disabled="isConsulta"
+                                   class="form-control"
+                                   ng-class="{'is-invalid':aguaForm.cantidadArtefactos.$invalid  && (aguaForm.cantidadArtefactos.$touched || aguaForm.cantidadArtefactos.$dirty) }"
+                                   ng-model="gestion.cantidadArtefactos"
+                                   ng-required="gestion.tipoId==2" />
+                            <span ng-show="aguaForm.cantidadArtefactos.$invalid  && (aguaForm.cantidadArtefactos.$touched || aguaForm.cantidadArtefactos.$dirty)"
+                                  class="text-danger">El campo Cantidad es requerido</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipo">Estado:</label>
+                            <select id="estadoId"
+                                    name="estadoId"
+                                    ng-disabled="isConsulta"
+                                    ng-class="{'is-invalid':aguaForm.estadoId.$invalid  && (aguaForm.estadoId.$touched || aguaForm.estadoId.$dirty) }"
+                                    class="form-control"
+                                    ng-model="gestion.estadoId"
+                                    ng-required="gestion.tipoId==2">
+                                <option value="">--Seleccione--</option>
+                                <option value="1">Funcionando</option>
+                                <option value="2">Regular</option>
+                                <option value="3">Malo</option>
+                            </select>
+                            <span ng-show="aguaForm.estadoId.$invalid  && (aguaForm.estadoId.$touched || aguaForm.estadoId.$dirty)"
+                                  class="text-danger">Debe seleccionar una opción</span>
+                        </div>
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                                <input type="checkbox"
+                                       ng-disabled="isConsulta"
+                                       class="form-check-input"
+                                       ng-model="gestion.tecnologiaAhorro"
+                                       value="1"
+                                       name="tecnologiaAhorro">Tecnología de Ahorro
+                            </label>
+                        </div>
+                        <div class="form-group mt-3" ng-show="gestion.tecnologiaAhorro">
+                            <label for="tipo">Porcentaje de artefactos con Tecnología de Ahorro:</label>
+                            <div class="input-group mb-2">
+                                <div class="col-md-10">
+                                    <input id="bcnColor"
+                                           name="bcnColor"
+                                           ng-disabled="isConsulta"
+                                           type="range"
+                                           class="form-control-range ml-1 mr-1"
+                                           style="margin-top:10px"
+                                           ng-model="gestion.tecnologiaAhorroPorcentaje" />
+                                </div>
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style="min-width:70px;" id="validationTooltipUsernamePrepend">{{gestion.tecnologiaAhorroPorcentaje}}%</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" ng-click="closeModal()">Cancelar</button>
+                    <button ng-show="!isConsulta" type="button" class="btn btn-primary" ng-click="submitForm()" ng-disabled="aguaForm.$invalid">Guardar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

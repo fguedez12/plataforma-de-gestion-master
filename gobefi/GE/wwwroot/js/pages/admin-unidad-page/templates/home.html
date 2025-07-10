@@ -1,0 +1,23 @@
+﻿
+<filtro-unidades title="Unidades"
+                 nuevo="!isConsulta"
+                 volver="true"
+                 user-id="{{userId}}"
+                 ng-if="true"
+                 on-institucion-change="changeInstitucion(institucionId)"
+                 on-servicio-change="changeServicio(servicioId)"
+                 on-region-change="changeRegion(regionId)"
+                 on-new-click="newClick()"
+                 on-back-click="backClick()">
+</filtro-unidades>
+<unidades-table user-id="{{userId}}"
+                admin="admin"
+                loading="loading"
+                unidades="unidades"
+                activo="true"
+                acciones="true"
+                on-delete="eliminar(unidad)"
+                on-edit="editar(unidad)"
+                on-view="editar(unidad)"
+                >
+</unidades-table>

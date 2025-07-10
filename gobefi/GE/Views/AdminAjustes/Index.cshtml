@@ -1,0 +1,107 @@
+﻿@inject UserManager<Usuario> UserManager
+@{
+    var _usuario = (UserManager.GetUserAsync(User)).Result;
+    bool _isAdmin = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_ADMINISTRADOR).Result;
+    bool _isGs = UserManager.IsInRoleAsync(_usuario, Constants.Claims.ES_GESTORSERVICIO).Result;
+
+}
+
+
+<div style="max-width:100%" ng-app="adminAjustesApp">
+    <div ng-controller="adminAjustesController">
+        <h2 class="mb-3">Ajustes del sistema</h2>
+        <div class="card">
+            <div class="card-header">Parámetros</div>
+            <div class="card-body">
+                <div class="container">
+                    @if (_isAdmin)
+                    {
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Modulo información - Alcance activo:</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="activeAlcance" ng-click="ActiveAlcanceModulo()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Edición unidades para servicios PMG</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="editUnidadPMG" ng-click="EditUniDadPmg()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Creación de unidades para servicios PMG</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="createUnidadPMG" ng-click="createUniDadPmg()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Eliminación unidades para servicios PMG</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="deleteUnidadPMG" ng-click="DeleteUniDadPmg()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Boton para desactivar compras</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="comprasServicio" ng-click="ComprasServicio()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Bloquear el ingreso de información(Para todos los servicios):</span>
+                                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                                    <input type="checkbox" ng-model="bloqInfo" ng-click="BloqueoInfoTodosLosServicios()">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                    }
+                    @if (_isGs)
+                    {
+                        <div class="form-group">
+                            <div class="col" style="padding: 15px">
+                                <span class="mr-5" style="font-size: 1.2rem;">Deshabilitación de información:</span>
+                                <div class="col" style="padding: 15px">
+                                    <span> Se aplicara el bloqueo a los siguientes servicios:</span>
+                                    <ul>
+                                        <li ng-repeat="servicio in serviciosABloquear">{{servicio.servicioNombre}}</li>
+                                        
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-danger" ng-disabled="loading" ng-click="BloqueoInfoServicio()">Bloquear Servicio(s)</button>
+                            </div>
+                            <div class="alert alert-warning">
+                                @Html.Raw(@"La deshabilitación del ingreso de información a la plataforma ES OPCIONAL y se hará cambiando el perfil de TODOS los usuarios de su servicio a perfil de consulta, que serán restaurados a su estado original cuando finalice la revisión el auditor externo de DIPRES a inicio de 2025.<br/>
+                                            <strong>IMPORTANTE 1</strong>: Para que se haga efectiva esta acción deberá salir de su perfil y volver a ingresar en plataforma<br/>
+                                            <strong>IMPORTANTE 2</strong>: Cuando vuelva a ingresar, su perfil ahora será de gestor de consulta, por lo que ni usted, ni ningún otro perfil de su servicio, ahora podrán cargar nueva información o editarla.<br/>
+                                            <strong>IMPORTANTE 3</strong>: Por lo anterior debe realizar esa acción cuando esté 100 % seguro que está toda la información cargada en plataforma para el cierre del PMG 2024.En caso que quisiera deshacer el efecto de esta acción, deberá enviar un ticket eligiendo el tema: ""Activación ingreso/edición  datos"" para que los administradores procesen este requerimiento.")
+                                
+                            </div>
+                        </div>
+                    }
+
+
+                </div>
+                    </div>
+        </div>
+    </div>
+</div>
+
+
+
+

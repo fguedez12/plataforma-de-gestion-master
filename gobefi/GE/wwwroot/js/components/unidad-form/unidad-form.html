@@ -1,0 +1,192 @@
+﻿<form name="unidadForm" novalidate>
+    <div class="card">
+        <div class="card-body">
+            <div class="form-group mb-0" ng-if="$ctrl.admin || !$ctrl.editMode">
+                <label for="instituciones" class="col-form-label">Ministerio</label>
+                <div>
+                    <div ng-show="$ctrl.loadingInstituciones">
+                        <img src='/images/reload.gif' style="width:32px; height:32px">
+                    </div>
+
+                    <select ng-show="!$ctrl.loadingInstituciones" id="instituciones" class="custom-select" name="instituciones"
+                            ng-class="{'is-invalid':unidadForm.instituciones.$invalid  && (unidadForm.instituciones.$touched || unidadForm.instituciones.$dirty) }"
+                            ng-model="$ctrl.unidad.institucionId"
+                            ng-options="institucion.id as institucion.nombre for institucion in $ctrl.instituciones"
+                            ng-change="$ctrl.changeInstitucion()"
+                            required>
+                        <option value="">--Seleccione--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb-0" ng-if="!$ctrl.admin && $ctrl.editMode">
+                <label for="instituciones" class="col-form-label">Ministerio</label>
+                <input type="text" class="form-control" value="{{$ctrl.unidad.institucionNombre}}" readonly />
+            </div>
+            <div class="form-group mb-0" ng-if="$ctrl.admin || !$ctrl.editMode">
+                <label for="servicio" class="col-form-label">Servicio</label>
+                <div ng-show="$ctrl.loadingServicio">
+                    <img src='/images/reload.gif' style="width:32px; height:32px">
+                </div>
+                <select ng-show="!$ctrl.loadingServicio" id="servicio" class="custom-select" name="servicio"
+                        ng-class="{'is-invalid':unidadForm.servicio.$invalid  && (unidadForm.servicio.$touched || unidadForm.servicio.$dirty) }"
+                        ng-model="$ctrl.unidad.servicioId"
+                        ng-disabled="$ctrl.disabledServicio"
+                        ng-options="serivicio.id as serivicio.nombre for serivicio in $ctrl.servicios"
+                        required>
+                    <option value="">--Seleccione--</option>
+                </select>
+
+            </div>
+            <div class="form-group mb-0" ng-if="!$ctrl.admin && $ctrl.editMode">
+                <label for="servicio" class="col-form-label">Servicio</label>
+                <input type="text" class="form-control" value="{{$ctrl.unidad.servicioNombre}}" readonly />
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <label class="col-form-label">Id unidad version 2.0 (Opcional)</label>
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           ng-disabled="!$ctrl.admin && $ctrl.editMode"
+                           id="oldId"
+                           name="oldId"
+                           ng-model="$ctrl.unidad.oldId">
+                </div>
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <label class="col-form-label">Nombre de la Unidad</label>
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           id="nombreUnidad"
+                           ng-disabled="!$ctrl.admin && $ctrl.editMode"
+                           name="nombreUnidad"
+                           ng-class="{'is-invalid':unidadForm.nombreUnidad.$invalid  && (unidadForm.nombreUnidad.$touched || unidadForm.nombreUnidad.$dirty) }"
+                           ng-model="$ctrl.unidad.nombre"
+                           required>
+
+                </div>
+                <div class="row">
+                    <small ng-show="unidadForm.nombreUnidad.$error.required && (unidadForm.nombreUnidad.$touched || unidadForm.nombreUnidad.$dirty)"
+                           id="nombreUnidadHelp" class="form-text text-danger pl-3">Campo requerido</small>
+                    <small ng-show="$ctrl.nameTaken"
+                           id="nombreUnidadHelp" class="form-text text-danger pl-3">El nombre de la unidad ya existe en el servicio seleccionado</small>
+                </div>
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <label class="col-form-label">N° de Funcionarios</label>
+                <div class="input-group">
+                    <input type="number"
+                           class="form-control"
+                           id="funcionarios"
+                           ng-disabled="!$ctrl.admin && $ctrl.editMode"
+                           name="funcionarios"
+                           ng-model="$ctrl.unidad.funcionarios">
+                </div>
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <span class="mr-5" style="font-size: 1.2rem;">Reporta PMG</span>
+                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                    <input type="checkbox" id="reportaPMG" name="reportaPMG" ng-model="$ctrl.unidad.reportaPMG" ng-disabled="!$ctrl.admin && $ctrl.editMode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <span class="mr-5" style="font-size: 1.2rem;">Indicador EE</span>
+                <label class="switch" style="margin-bottom: -0.5rem!important;">
+                    <input type="checkbox" id="indicadorEE" name="indicadorEE" ng-model="$ctrl.unidad.indicadorEE" ng-disabled="!$ctrl.admin && $ctrl.editMode">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="form-group mb-0 mt-2">
+                <label class="control-label">Acceso a factura</label>
+                <select class="form-control"
+                        id="accesoFactura"
+                        name="accesoFactura"
+                        ng-disabled="!$ctrl.admin && $ctrl.editMode"
+                        ng-model="$ctrl.unidad.accesoFactura"
+                        ng-class="{'is-invalid':unidadForm.accesoFactura.$invalid  && (unidadForm.accesoFactura.$touched || unidadForm.accesoFactura.$dirty) }"
+                        required>
+                    <option value="">--Seleccione--</option>
+                    <option value="1">Si</option>
+                    <option value="2">No, Otro servicio público</option>
+                    <option value="3">No, Otra organización (especificar)</option>
+                </select>
+            </div>
+            <div class="row">
+                <small ng-show="unidadForm.accesoFactura.$error.required && (unidadForm.accesoFactura.$touched || unidadForm.accesoFactura.$dirty)" class="form-text text-danger pl-3">
+                    Debe seleccionar una opción
+                </small>
+            </div>
+            <div class="form-group mb-0" ng-show="$ctrl.unidad.accesoFactura==2" ng-if="$ctrl.admin || !$ctrl.editMode">
+                <label for="institucionResponsableId" class="col-form-label">Institución responsable de los consumos</label>
+                <div>
+                    <select id="institucionResponsableId" class="custom-select" name="institucionResponsableId"
+                            ng-class="{'is-invalid':unidadForm.institucionResponsableId.$invalid  && (unidadForm.institucionResponsableId.$touched || unidadForm.institucionResponsableId.$dirty) }"
+                            ng-model="$ctrl.unidad.institucionResponsableId"
+                            ng-options="institucion.id as institucion.nombre for institucion in $ctrl.institucionesResponsables"
+                            ng-change="$ctrl.changeInstitucionResponsable()"
+                            ng-required="$ctrl.unidad.accesoFactura==2">
+                        <option value="">--Seleccione--</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group mb-0" ng-if="!$ctrl.admin && $ctrl.editMode" ng-show="$ctrl.unidad.accesoFactura==2">
+                <label for="institucionResponsableId" class="col-form-label">Institución responsable de los consumos</label>
+                <input type="text" class="form-control" value="{{$ctrl.unidad.institucionResponsableNombre}}" readonly />
+            </div>
+            <div class="form-group mb-0" ng-show="$ctrl.unidad.accesoFactura==2" ng-if="$ctrl.admin || !$ctrl.editMode">
+                <label for="servicioResponsable" class="col-form-label">Servicio Responsable</label>
+                <div ng-show="$ctrl.loadingServicioResponsable">
+                    <img src='/images/reload.gif' style="width:32px; height:32px">
+                </div>
+                <select ng-show="!$ctrl.loadingServicioResponsable" id="servicioResponsable" class="custom-select" name="servicio"
+                        ng-class="{'is-invalid':unidadForm.servicioResponsable.$invalid  && (unidadForm.servicioResponsable.$touched || unidadForm.servicioResponsable.$dirty) }"
+                        ng-model="$ctrl.unidad.servicioResponsableId"
+                        ng-disabled="$ctrl.disabledServicioResponsable"
+                        ng-options="serivicioResponsable.id as serivicioResponsable.nombre for serivicioResponsable in $ctrl.seriviciosResponsables"
+                        ng-required="$ctrl.unidad.accesoFactura==2">
+                    <option value="">--Seleccione--</option>
+                </select>
+            </div>
+            <div class="row">
+                <small ng-show="unidadForm.institucionResponsableId.$error.required && (unidadForm.institucionResponsableId.$touched || unidadForm.institucionResponsableId.$dirty)" class="form-text text-danger pl-3">
+                    Debe seleccionar una opción
+                </small>
+            </div>
+            <div class="form-group mb-0" ng-if="!$ctrl.admin && $ctrl.editMode" ng-show="$ctrl.unidad.accesoFactura==2">
+                <label for="institucionResponsableId" class="col-form-label">Servicio Responsable</label>
+                <input type="text" class="form-control" value="{{$ctrl.unidad.servicioResponsableNombre}}" readonly />
+            </div>
+            <div class="form-group mb-0 mt-2" ng-show="$ctrl.unidad.accesoFactura==3">
+                <label class="col-form-label">Organización responsable de los consumos</label>
+                <div class="input-group">
+                    <input type="text"
+                           ng-class="{'is-invalid':unidadForm.organizacionResponsable.$invalid  && (unidadForm.organizacionResponsable.$touched || unidadForm.organizacionResponsable.$dirty) }"
+                           class="form-control"
+                           id="organizacionResponsable"
+                           name="organizacionResponsable"
+                           ng-model="$ctrl.unidad.organizacionResponsable"
+                           ng-required="$ctrl.unidad.accesoFactura==3">
+                </div>
+
+            </div>
+            <div class="row">
+                <small ng-show="unidadForm.organizacionResponsable.$error.required && (unidadForm.organizacionResponsable.$touched || unidadForm.organizacionResponsable.$dirty)" class="form-text text-danger pl-3">
+                    El campo organización responsable es requerido
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="row ml-auto mr-3 mt-3">
+        <button class="btn btn-danger btn-sm mr-2"
+                ng-click="$ctrl.back()">
+            Atras
+        </button>
+        <button class="btn btn-primary btn-sm"
+                ng-click="$ctrl.saveUnidad()"
+                ng-show="!unidad.unidadId"
+                ng-disabled="unidadForm.$invalid">
+            Siguiente
+        </button>
+    </div>
+</form>

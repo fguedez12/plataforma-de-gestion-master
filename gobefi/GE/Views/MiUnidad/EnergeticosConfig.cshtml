@@ -1,0 +1,495 @@
+﻿@{
+    ViewData["Title"] = "Configurar Medidor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+<script>
+    $(document).ready(function () {
+
+        $('.item-tabs-selector').click(function (a) {
+            $('.item-tabs-selector').removeClass('active');
+            $('.contenedor').addClass('d-none');
+
+            var $clicked = $(this);
+            $('.item-tabs-selector').each(function () {
+                var $menu = $(this);
+                if (!$menu.is($clicked)) {
+                    $($menu.attr('data-item')).hide();
+                }
+            });
+
+
+            $($clicked.attr('data-item')).removeClass('d-none').show();
+            $(this).addClass('active');
+        });
+
+        $('#miUnidad').children().children().addClass('active');
+
+         $("#btnAbrirModalNumCliente").click(function () {
+
+            $("#alertModalClienteMedidores").hide();
+            $("#divNumCliente").show();
+            $("#divMedidores").hide();
+        });
+    });
+
+    function Botonera(item, dataTarget) {
+        return "<tr class='" + item.id + "'>" +
+                        "<td class='text-center'>" +
+                        "<a class='btn btn-info btn-sm' data-toggle='modal' href='#' data-target='" + dataTarget + "'title='Editar'>" +
+                        "<span class='@Constants.Icons.EDITAR' aria-hidden='true'></span>" +
+                        "</a>" +
+                        "<a class='btn btn-danger btn-sm' href='#' data-accion='delete' title='Eliminar'>" +
+                        "<span class='@Constants.Icons.ELIMINAR' aria-hidden='true'></span>" +
+                        "</a>" +
+                        "</td>";
+    }
+
+     //accion listar todos los clientes
+    function GetAll() {
+
+        let urlMethod = "/miunidad/ListClientes";
+
+        BuscarNumerosDeClienteMedidores(urlMethod).then(function (response) {
+
+            $("#NClienteTable tbody").empty();
+
+            $.each(response, function (index, item) {
+                let newRow = Botonera(item, "#ModalNumCliente");
+
+                let nombreEmpresa = "";
+                if (item.empresaDistribuidora != null) {
+                    nombreEmpresa = item.empresaDistribuidora.nombre;
+                }
+
+                newRow +=
+                    "<td>" + item.numero + "</td>" +
+                    "<td>" + nombreEmpresa + "</td>";
+
+                if ($("#hddnPermiteTipoTarifa").val()) {
+                    newRow += "<td>" + item.tipoTarifa.nombre + "</td>";
+                }
+
+                if ($("#hddnPermitePotenciaSum").val()) {
+                    newRow += "<td class='text-center'>" + item.potenciaSuministrada + "</td>";
+                }
+                newRow += "<td class='text-center'>" + item.numMedidoresExclusivos + "</td>";
+                newRow += "<td class='text-center'>" + item.numMedidoresCompartidos + "</td>";
+                newRow += "<td class='text-center'>" + item.totalMedidores + "</td>";
+
+                $("#NClienteTable tbody").append(newRow);
+
+            });
+
+
+        });
+
+    }
+
+    async function BuscarNumerosDeClienteMedidores(urlMethod) {
+        let response;
+
+        try {
+
+            response = await $.post({
+                url: urlMethod,
+            });
+
+            return response;
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async function BuscarMedidoresAsociados() {
+        let response;
+        $("#MedidorTable tbody").empty()
+
+        try {
+
+            let urlMethod = "/miunidad/ListMedidores";
+
+            response = await BuscarNumerosDeClienteMedidores(urlMethod);
+
+            let newRow;
+
+
+            $.each(response, function (index, item) {
+
+                let newRow = Botonera(item, "#ModalMedidor");
+
+                let i = $.trim(item.medicion);
+                        if (typeof i == "undefined" || i == '' || (i == null || i == NULL)) {
+                            item.medicion = '';
+                        }
+
+                        let inteligente = (item._inteligente) ? "checked" : "";
+                        let compartido = (item._compartido) ? "checked" : "";
+
+                newRow +=
+                        "<td class='text-center'>" + item.numero + "</td>" +
+                        "<td class='text-center'>" + item.numeroCliente.numero + "</td>" +
+                        "<td class='text-center'><label class='switch'><input type='checkbox' name='switcher' " + inteligente + " disabled><span class='slider round'></span></label></td>" +
+                        "<td class='text-center'><label class='switch'><input type='checkbox' name='switcher' " + compartido + " disabled><span class='slider round'></span></label></td>" +
+                "<td><button type='button' class='btn btn-info' data-toggle='popover' data-placement='top' data-html='true' data-content='unidad: " + item.divisionNombre + "</br> Servicio:+" + item.servicioNombre +" </br>Insitucion:"+item.institucionNombre+"'>Ver</button></td>"+
+                        "</tr>";
+
+                $("#MedidorTable tbody").append(newRow);
+               
+            });
+
+            $('[data-toggle="popover"]').popover();
+
+        } catch (e) {
+            console.log("Error funcion BuscarMedidoresAsociados" + e    );
+        }
+
+    }
+
+</script>
+
+<style>
+    .switch {
+        width: 50px;
+        height: 24px;
+    }
+
+    .slider:before {
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+    }
+
+    table {
+        font-size: 0.75rem;
+        table-layout: fixed;
+        word-wrap: break-word;
+    }
+
+        table thead {
+            background-color: #0069d9;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+    .footer {
+        text-align: center;
+    }
+</style>
+
+@{
+    EnergeticoConfigModel data = (EnergeticoConfigModel)ViewData["EnergeticoConfigModelData"];
+    PermisosModel permisos = (PermisosModel)ViewData["permisos"];
+}
+
+
+
+<div class="row mb-2">
+    <div class="col-12">
+        <h4>Energéticos</h4>
+        <p class="h6 subtitulo"></p>
+
+        <div class="row col-md-6">
+            <div class="col-md-3">
+                <span class="ge @(data.Icono) active"></span>
+            </div>
+            <div class="col-md-6" style="padding: 15px">
+                <h4>@(data.Nombre)</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("../Shared/_BtnActions", new BtnActions { Volver = true })
+
+<div class="card container py-2 mt-2" id="datosConfiguracion">
+
+
+    <ul class="nav nav-tabs" style="cursor:pointer;color:blue;">
+        <li class="nav-item">
+            <a class="nav-link active item-tabs-selector" data-item="#numCliente">N° de Clientes</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link item-tabs-selector" data-item="#medidores">Medidores</a>
+        </li>
+    </ul>
+
+    <br />
+
+
+
+    <input type="hidden" id="hiddenId" name="hiddenId" value="0">
+    <div id="numCliente" class="contenedor">
+        <br />
+        @if (permisos.Escritura)
+        {
+            <button type="button" id="btnAbrirModalNumCliente" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ModalNumCliente">
+                Agregar N° de Cliente
+            </button>
+            <br />
+        }
+
+        @await Html.PartialAsync("Shared/_ModalNCliente", new NumeroClienteModel())
+        <br />
+
+        <table class="table table-bordered" id="NClienteTable">
+            <thead>
+                <tr>
+                    <th class="text-center">@Constants.Titles.ACCION</th>
+                    @*<th class="text-center">Consumo/Generación</th>*@
+                    <th class="text-center">N° de Clientes</th>
+                    <th class="text-center">Empresa distribuidora</th>
+
+                    @if (ViewBag.PermiteTipoTarifa)
+                    {
+                        <th class="text-center">Tipo de Tarifa</th>
+                    }
+
+                    @if (ViewBag.PermitePotenciaSum)
+                    {
+                        <th class="text-center">Potencia Conectada</th>
+                    }
+                    <th class="text-center">N° Medidores Exclusivos</th>
+                    <th class="text-center">N° Medidores Compartidos</th>
+                    <th class="text-center">Total Medidores</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (NumeroClienteModel item in data.Clientes)
+                {
+                <tr class="@item.Id">
+                    <td class="text-center">
+                        @if (permisos.Escritura)
+                        {
+                            <a class="btn btn-info btn-sm" data-toggle="modal" href='#' data-target="#ModalNumCliente" title="Editar">
+                                <span class="@Constants.Icons.EDITAR" aria-hidden="true"></span>
+                            </a><a class="btn btn-danger btn-sm" data-accion="delete" href='#' title="Eliminar">
+                                <span class="@Constants.Icons.ELIMINAR" aria-hidden="true"></span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-primary btn-sm" data-toggle="modal" href='#' data-target="#ModalNumCliente" title="Ver">
+                                <span class="@Constants.Icons.VER" aria-hidden="true"></span>
+                            </a>
+                        }
+                    </td>
+                    <td>@item.Numero</td>
+                    <td>@item.EmpresaDistribuidora?.Nombre</td>
+
+                    @if (ViewBag.PermiteTipoTarifa)
+                    {
+                        <td>@item.TipoTarifa.Nombre</td>
+                    }
+
+                    @if (ViewBag.PermitePotenciaSum)
+                    {
+                        <td class="text-center">@item.PotenciaSuministrada</td>
+                    }
+
+                    <td class="text-center">@item.NumMedidoresExclusivos</td>
+                    <td class="text-center">@item.NumMedidoresCompartidos</td>
+                    <td class="text-center">@item.TotalMedidores</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+        <input type="hidden" id="hddnPermiteTipoTarifa" value="@ViewBag.PermiteTipoTarifa" />
+        <input type="hidden" id="hddnPermitePotenciaSum" value="@ViewBag.PermitePotenciaSum" />
+
+
+
+
+
+    </div>
+
+
+    <div id="medidores" class="contenedor d-none">
+        <script src="~/js/MiUnidad/EnergeticosConfig/_ModalMedidor.js" asp-append-version="true"></script>
+        <br />
+        @if (permisos.Escritura)
+        {
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#ModalMedidor">
+                Agregar Medidor
+            </button>
+
+            <br />
+        }
+
+        <br />
+
+
+        <table class="table table-bordered" id="MedidorTable">
+            <thead style="background-color:#0069d9; color:#fff; border-color:#007bff">
+                <tr>
+
+                    <th class="text-center">@Constants.Titles.ACCION</th>
+                    <th class="text-center">N° de Medidor</th>
+                    <th class="text-center">N° de Cliente</th>
+                    <th class="text-center">Medidor Inteligente</th>
+                    <th class="text-center">Medidor Compartido</th>
+                    <th class="text-center">Unidad  responsable</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (MedidorModel item in data.Medidores)
+                {
+                    <tr class="@item.Id">
+                        <td class="text-center">
+                            @if (permisos.Escritura)
+                            {
+
+                                <a class="btn btn-info btn-sm" data-toggle="modal" href='#' data-target="#ModalMedidor" title="Editar">
+                                    <span class="@Constants.Icons.EDITAR" aria-hidden="true"></span>
+                                </a><a class="btn btn-danger btn-sm" data-accion="delete" href='#' title="Eliminar">
+                                    <span class="@Constants.Icons.ELIMINAR" aria-hidden="true"></span>
+                                </a>
+
+                            }
+                            else
+                            {
+                                <a class="btn btn-primary btn-sm" data-toggle="modal" href='#' data-target="#ModalMedidor" title="Ver">
+                                    <span class="@Constants.Icons.VER" aria-hidden="true"></span>
+                                </a>
+                            }
+                        </td>
+                        <td class="text-center">@item.Numero</td>
+                        <td class="text-center">@item.NumeroCliente.Numero</td>
+
+                        <td class="text-center">
+                            <label class="switch">
+                                <input type="checkbox" name="switcher" checked="@item._inteligente" disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+
+                        <td class="text-center">
+                            <label class="switch">
+                                <input type="checkbox" name="switcher" checked="@item._compartido" disabled>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <button type="button" 
+                                    class="btn btn-info" 
+                                    data-toggle="popover" 
+                                    data-placement="top" 
+                                    data-html="true" 
+                                    data-content="unidad: @item.DivisionNombre </br> Servicio: @item.ServicioNombre </br>Insitucion: @item.InstitucionNombre">Ver</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="divModalMedidorParaEditar">
+            <div class="modal fade" id="ModalMedidor" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 style="color: #4787d2;" class="modal-title" id="tituloModalMedidor">
+                                <strong>
+                                    Editar Medidor
+                                </strong>
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            @await Html.PartialAsync("Shared/_ModalMedidor", new MedidorModel { Medidores = new List<MedidorParaAsociar>() })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@await Html.PartialAsync("../Shared/_ModalConfirm", new ModalConfirmModel { TagId = "deleteConfirm", Title = "Eliminar", BodyText = "¿Esta Seguro de Eliminar el item seleccionado?" })
+
+<script type="text/javascript">
+
+    $("#btnActions-btnVolver").click(function (e) {
+
+        e.preventDefault();
+        window.location = "@Url.Action("Energeticos", "MiUnidad")" + "/" + localStorage.getItem("divisionId");
+
+    });
+
+    $(document).ready(function () {
+
+       
+        $('[data-toggle="popover"]').popover();
+       
+        //accion Eliminar
+        $("body").on('click', "a[data-accion='delete']", function (e) {
+            e.preventDefault();
+            var idToDelete = $(this).parent().parent().attr('class'); //obtiene el id de la fila (row class)
+
+            console.log(99);
+            $('#hiddenId').val(idToDelete);
+
+            let menuActivo = $("#datosConfiguracion .nav-tabs").find('.active');
+
+            let mensajeEliminacion = "¿Esta Seguro de eliminar el numero de cliente " + $(this).parent().next().html() + "?";
+            if (menuActivo.attr('data-item') === "#medidores") {
+                mensajeEliminacion = "¿Esta Seguro de eliminar el medidor " + $(this).parent().next().html() + "?";
+            }
+
+
+            $("#deleteConfirm #bodyText").html(mensajeEliminacion);
+            $("#deleteConfirm").modal("show");
+        });
+
+        $("#modal-btn-si").on("click", function () {
+            modalConfirm(true);
+            $("#deleteConfirm").modal('hide');
+        });
+
+        $("#modal-btn-no").on("click", function () {
+            modalConfirm(false);
+            $("#deleteConfirm").modal('hide');
+        });
+
+        function modalConfirm(confirm) {
+            if (confirm) {
+                //Acciones si el usuario confirma
+                var numId = $('#hiddenId').val();
+                var urlMethod = "/miunidad/DeleteNCliente";
+
+                if ($('#MedidorTable').is(':visible')) {
+                    urlMethod = "/miunidad/DeleteMedidor"
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: urlMethod,// same case sensitive action name
+                    data: { id: numId }, //small letter id, same as in controller parameter
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {
+                        //do something
+                    },
+                    complete: function () {
+                        GetAll();
+                        BuscarMedidoresAsociados();
+                    },
+                    error: function () {
+                        alert("Error while deleting data");
+                    }
+                });
+
+
+            } else {
+                //Acciones si el usuario no confirma
+
+            }
+        }
+
+    });
+
+            </script>

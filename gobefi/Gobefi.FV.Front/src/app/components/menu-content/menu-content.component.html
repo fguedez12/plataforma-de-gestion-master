@@ -1,0 +1,22 @@
+<div class="menu-header-bg">
+</div>
+<div class="header-content">
+  <img *ngIf="usuario.sexo=='Mujer'" src="/assets/images/user-icon-f.jpg">
+  <img *ngIf="usuario.sexo=='Hombre'"src="/assets/images/user-icon-m.png">
+  <ion-label>
+    <div class="ion-text-capitalize">
+      <h2 >{{usuario.nombre}}</h2>
+    </div>
+    <p>{{usuario.role}}</p>
+  </ion-label>
+</div>
+<ion-list class="menu-items" lines="none">
+  <ion-item [routerLink]="menu.url"  *ngFor="let menu of menus">
+    <ion-icon slot="start" name="{{menu.icono}}"></ion-icon>
+    <ion-label>{{menu.nombre}}</ion-label>
+  </ion-item>
+  <ion-item href="#" (click)="logout()">
+    <ion-icon slot="start" name="log-out-outline" ></ion-icon>
+    <ion-label>Salir</ion-label>
+  </ion-item>
+</ion-list>

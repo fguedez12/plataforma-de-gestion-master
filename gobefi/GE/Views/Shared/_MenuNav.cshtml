@@ -1,0 +1,128 @@
+﻿@{
+    /*
+     * Menu compartido izquierdo, de Unidad y Edificios
+     * Tiene todas las opciones para navegar en la pagina, la unica validacion es que el usuario debe estar dentro de una "division" o "unidad" la cual se guarda
+     * en la variable localstorage "divisionId"
+     *
+     * */
+
+    ViewData["Title"] = "_MenuNavPages";
+}
+<script>
+    $(document).ready(function () {
+        //agrega el nombre de la division como subtitulo de cada pagina que agregue <p class="subtitulo"></p>
+        $('.subtitulo').text('Unidad - ' + localStorage.getItem('divisionName'));
+
+        if ($('#divisionName').val() !== undefined)
+            localStorage.setItem('divisionName', $('#divisionName').val());
+
+        
+
+        $("body").on('click', "#myTabContent .nav-link", function (e) {
+
+            let idMenu = $(this).parent().attr('id');
+
+            localStorage.setItem("menuActual", idMenu);
+
+            let attr = $(this).parent().attr('id')
+
+            if (attr !== "configurations" && attr != "information") {
+                e.preventDefault();
+                var division = localStorage.getItem('divisionId');
+
+                if (division == null || division == "") {
+                    alert("Para acceder al módulo \"" + $("#" + idMenu + " p small").html() + "\" primero debe elegir su Unidad.");
+                    return false;
+                }
+
+                var link = $(this).attr('href');
+                window.location.href = link + localStorage.getItem('divisionId');
+
+            } else {
+                var link = $(this).attr('href');
+                window.location.href = link ;
+            }
+        });
+
+        $.ajax({
+        url: apiMenu, 
+        type: "GET",
+        cache: false,
+            success: function (response, status, xhr) {
+                let menuTab = localStorage.getItem('menuTab');
+                if (menuTab == null) {
+                    menuTab="Unidad"
+                }
+            let cantidad = response.length;
+            let style = "";
+            if (cantidad == 1)
+                style = "style='width: 100%;text-align: center;'";
+
+            $.each(response, function(x, item) {
+                let activo = "";
+                if (menuTab == item.nombre) {
+                    activo = "active ";
+
+                    $(`#${menuTab.toLowerCase()}`).addClass("active show");
+                }
+                   
+                if (item !== null) {
+                    $("#myTab").append(`<li class='nav-item${style}'><a class='nav-link ${activo}' id='${item.tagId}' data-toggle='tab' href='#${item.tagHref}' role='tab' aria-controls='${item.tagHref}' aria-selected='true' onClick='setMenuTab("${item.nombre}")'> ${item.nombre}</a></li>`);
+
+                    $.each(item.menus, function (y, menu) {
+                        $("#" + item.tagHref + " ul").append("<li class='nav-item mx-auto' id='" + menu.idTag + "'><a class='nav-link' href='" + menu.url + "' title='" + menu.title + "'><span class='" + menu.icono + "'></span><p class='text-center'><small>" + menu.nombre + "</small></p></a></li>");
+                    });
+                }
+            });
+            // activar menu
+                $("#" + localStorage.getItem("menuActual") + " span:first").addClass("active");
+          
+
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrow) {
+            alert("Error al obtener menu principal");
+        }
+        });
+
+    });
+
+    function setMenuTab(menu) {
+        localStorage.setItem('menuTab', menu);
+    }
+</script>
+<style>
+    ul.nav-tabs li a {
+        padding: 0.5rem 0.7rem;
+    }
+
+    #myTabContent a {
+        height: 115px;
+    }
+</style>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade" id="unidad" role="tabpanel" aria-labelledby="unidad-tab">
+        <ul class="nav flex-column">
+            
+        </ul>
+    </div>
+    <div class="tab-pane fade" id="edificio" role="tabpanel" aria-labelledby="edificio-tab">
+        <ul class="nav flex-column">
+        </ul> 
+    </div>
+</div>
+<hr />
+<div>
+    <ul class="nav flex-column">
+        <li class="nav-item mx-auto" id="ticket">
+            <a class="nav-link" href="https://soporte.gestionaenergia.cl/" target="_blank" title="Ticket">
+                <span class="ge ge-muros"></span>
+                <p class="text-center">
+                    <small>Soporte</small>
+                </p>
+            </a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,7 @@
+{
+  "name": "Gobefi.FV.Front",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

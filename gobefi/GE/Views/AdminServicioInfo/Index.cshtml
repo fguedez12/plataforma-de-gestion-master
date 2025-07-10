@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    List<MenuModel> subMenus = (List<MenuModel>)ViewData["subMenus"];
+}
+
+<style type="text/css">
+    .grid-container {
+        display: grid;
+        grid-column-gap: 30px;
+        grid-template-columns: auto auto auto auto;
+        grid-auto-columns: max-content;
+        grid-auto-rows: max-content;
+        margin: 5px 5px 5px 5px;
+        padding: 10px;
+    }
+
+    .grid-item {
+        display: inline-grid;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .icon-img {
+        width: 100px;
+        height: 100px;
+        margin: 2px 2px 2px 2px;
+        padding: 10px 10px 0px 10px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12">
+        <h2 id="h2-title">Información del Servicio </h2>
+    </div>
+</div>
+<div class="card container">
+    <div class="grid-container">
+        @foreach (var item in subMenus)
+        {
+            <div class="grid-item">
+                <a asp-controller="@item.ControllerName" asp-action="@item.ActionName">
+                    <img title="@item.Title" class="icon-img" src="@item.Icono" />
+                    <br />
+                    @item.Title
+                </a>
+            </div>
+        }
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        const servicioEvId = localStorage.getItem('servicioEvId');
+        const servicioEvNombre = localStorage.getItem('servicioEvNombre');
+        console.log(servicioEvId)
+        if (!servicioEvId) {
+            window.location.href = '/AdminMisServicios';
+        }
+        $("#h2-title").html("Información del Servicio : " + servicioEvNombre)
+        
+    });
+   
+</script>

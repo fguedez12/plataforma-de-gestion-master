@@ -1,0 +1,52 @@
+<!-- <ion-fab vertical="top" horizontal="end" slot="fixed" [hidden]="pltWeb">
+    <ion-fab-button (click)="showModal()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+</ion-fab>
+<ion-fab vertical="top" horizontal="end" slot="fixed" [hidden]="!pltWeb" style="margin-right: 20px;">
+  <ion-button (click)="showModal()" shape="round" style="width:190px;">
+    Nuevo Vehiculo  
+  </ion-button>
+</ion-fab>
+<ion-fab vertical="top" horizontal="end" slot="fixed" style="margin-top: 50px; margin-right: 20px;">
+  <ion-button shape="round" style="width:190px;">
+    Acciones
+  </ion-button>
+  <ion-fab-list side="bottom">
+    <ion-button shape="round" color="secondary" style="width:190px;">
+      Buscar
+    </ion-button>
+    <ion-button shape="round" color="secondary" style="width:190px;">
+      Filtros
+    </ion-button>
+  </ion-fab-list>
+</ion-fab> -->
+<h3 class="ion-margin">{{mensaje}}</h3>
+<ion-refresher slot="fixed" (ionRefresh)="recargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+<ion-grid fixed>
+    <ion-row *ngIf="vehiculos.length>0">
+        <ion-col *ngFor="let vehiculo of vehiculos" size="12" size-xl="3" size-lg="3" size-md="4" size-sm="6" size-xs="12">
+            <app-vehiculo  
+            [vehiculo]="vehiculo" 
+            (editVehiculo)="editarVehiculo($event,vehiculo.id)"
+            (deleteVehiculo)="eliminarVehiculo($event,vehiculo.id)"
+            >
+          </app-vehiculo>
+        </ion-col>
+    </ion-row>
+    <ion-row *ngIf="vehiculos.length==0">
+      <h4>No existe un vehículo con estas características dentro de sus registros,<br/>recomendamos verificar su búsqueda</h4>
+    </ion-row>
+</ion-grid>
+<ion-infinite-scroll [disabled]="!habilitado"
+                      threshold="150px" 
+                      (ionInfinite)="next($event)">
+  <ion-infinite-scroll-content
+  loadingSpinner="bubbles"
+  loadingText="Cargando mas datos...">
+  </ion-infinite-scroll-content>
+</ion-infinite-scroll>
+
+
